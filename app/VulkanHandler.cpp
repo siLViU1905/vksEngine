@@ -436,8 +436,8 @@ void VulkanHandler::createImageViews()
 
 void VulkanHandler::createComplexMeshGraphicsPipeline()
 {
-    auto vertexShaderCode = readFile("../app/shaders/compiled/ComplexMeshShaderVert.spv");
-    auto fragmentShaderCode = readFile("../app/shaders/compiled/ComplexMeshShaderFrag.spv");
+    auto vertexShaderCode = readFile("../app/shaders/compiled/complexmesh/ComplexMeshShaderVert.spv");
+    auto fragmentShaderCode = readFile("../app/shaders/compiled/complexmesh/ComplexMeshShaderFrag.spv");
 
     auto vertexShaderModule = createShaderModule(vertexShaderCode, m_Device);
     auto fragmentShaderModule = createShaderModule(fragmentShaderCode, m_Device);
@@ -571,8 +571,8 @@ void VulkanHandler::createComplexMeshGraphicsPipeline()
 
 void VulkanHandler::createSimpleMeshGraphicsPipeline()
 {
-    auto vertexShaderCode = readFile("../app/shaders/compiled/SimpleMeshShaderVert.spv");
-    auto fragmentShaderCode = readFile("../app/shaders/compiled/SimpleMeshShaderFrag.spv");
+    auto vertexShaderCode = readFile("../app/shaders/compiled/simplemesh/SimpleMeshShaderVert.spv");
+    auto fragmentShaderCode = readFile("../app/shaders/compiled/simplemesh/SimpleMeshShaderFrag.spv");
 
     auto vertexShaderModule = createShaderModule(vertexShaderCode, m_Device);
     auto fragmentShaderModule = createShaderModule(fragmentShaderCode, m_Device);
