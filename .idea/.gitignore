@@ -6,3 +6,10 @@
 # Datasource local storage ignored files
 /dataSources/
 /dataSources.local.xml
+/editor.xml
+/material_theme_project_new.xml
+/misc.xml
+/modules.xml
+/dictionaries/project.xml
+/vcs.xml
+/vulkan++.iml
