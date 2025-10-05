@@ -83,6 +83,12 @@ add_executable(vksEngine
         app/scene/components/PointLightComponent.cpp
 
         app/objects/timer/Clock.cpp
+
+        app/objects/input/Key.cpp
+
+        app/handlers/InputHandler.cpp
+
+        app/objects/input/Button.cpp
 )
 
 

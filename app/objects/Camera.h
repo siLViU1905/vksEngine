@@ -21,7 +21,7 @@ namespace vks_engine
 
         void updateLookAt(float deltaTime);
 
-        void updateProjection();
+        void updateProjection(int width, int height);
 
         void gainFocus();
 

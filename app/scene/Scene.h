@@ -6,6 +6,7 @@
 #include "SceneComponent.h"
 #include "../handlers/ImGuiHandler.h"
 #include "../Window.h"
+#include "../handlers/InputHandler.h"
 #include "../objects/Mesh.h"
 #include "../objects/lights/DirectionalLight.h"
 #include "../objects/lights/PointLight.h"
@@ -44,6 +45,8 @@ namespace vks_engine
         VulkanHandler &m_Vk;
 
         ImGuiHandler m_ImGui;
+
+        InputHandler m_InputHandler;
 
         Camera m_Camera;
 
@@ -121,7 +124,7 @@ namespace vks_engine
 
         void waitForFences();
 
-        void handleSwapChainRecreation();
+        void handleSwapChainRecreation(int width, int height);
 
         void createCommandBuffers();
 
@@ -144,6 +147,11 @@ namespace vks_engine
         void renderMenus();
 
         void updateUBO(uint32_t frame);
+
+        //======== Event handlers ========
+        void setHandlers();
+
+        void handleFramebufferResize(int width, int height);
 
         void handleEvents();
     };

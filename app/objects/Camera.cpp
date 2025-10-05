@@ -103,12 +103,8 @@ namespace vks_engine
                              m_Up);
     }
 
-    void Camera::updateProjection()
+    void Camera::updateProjection(int width, int height)
     {
-        int width, height;
-
-        glfwGetFramebufferSize(m_Window, &width, &height);
-
         m_Projection = glm::perspective(glm::radians(45.f), static_cast<float>(width) / static_cast<float>(height),
                                         0.1f,
                                         100.f);

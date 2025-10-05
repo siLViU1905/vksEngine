@@ -19,7 +19,11 @@ namespace vks_engine
 
         glfwSetWindowUserPointer(m_Window, this);
 
-        glfwSetFramebufferSizeCallback(m_Window, framebufferCallback);
+        glfwSetFramebufferSizeCallback(m_Window, glfw_framebufferCallback);
+
+        glfwSetKeyCallback(m_Window, glfw_keyboardCallback);
+
+        glfwSetMouseButtonCallback(m_Window, glfw_mouseCallback);
     }
 
     bool Window::isOpen() const
@@ -46,11 +50,44 @@ namespace vks_engine
         return temp;
     }
 
-    void Window::framebufferCallback(GLFWwindow *window, int width, int height)
+    void Window::setFramebufferResizeCallback(std::function<void(int, int)> function)
     {
-        auto myWindow = static_cast<Window *>(glfwGetWindowUserPointer(window));
+        m_FramebufferResizeCallbackFunction = std::move(function);
+    }
 
-        myWindow->m_FramebufferResized = true;
+    void Window::setKeyCallback(std::function<void(int, int, int, int)> function)
+    {
+        m_KeyCallbackFunction = std::move(function);
+    }
+
+    void Window::setButtonCallback(std::function<void(int, int, int)> function)
+    {
+        m_ButtonCallbackFunction = std::move(function);
+    }
+
+    void Window::glfw_framebufferCallback(GLFWwindow *window, int width, int height)
+    {
+        auto *self = static_cast<Window *>(glfwGetWindowUserPointer(window));
+
+        self->m_FramebufferResized = true;
+
+        self->m_Width = width;
+
+        self->m_Height = height;
+    }
+
+    void Window::glfw_keyboardCallback(GLFWwindow *window, int key, int scancode, int action, int mods)
+    {
+        auto *self = static_cast<Window *>(glfwGetWindowUserPointer(window));
+
+        self->m_KeyCallbackFunction(key, scancode, action, mods);
+    }
+
+    void Window::glfw_mouseCallback(GLFWwindow *window, int button, int action, int mods)
+    {
+        auto *self = static_cast<Window *>(glfwGetWindowUserPointer(window));
+
+        self->m_ButtonCallbackFunction(button, action, mods);
     }
 
     Window::~Window()

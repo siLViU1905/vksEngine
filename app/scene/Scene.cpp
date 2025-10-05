@@ -5,6 +5,7 @@
 #include <glm/gtc/type_ptr.inl>
 
 #include "../objects/menus/MeshMenu.h"
+#include <print>
 
 namespace vks_engine
 {
@@ -17,6 +18,8 @@ namespace vks_engine
 
     void Scene::init()
     {
+        setHandlers();
+
         m_ImGui.init(m_Vk, m_Window.getWindow());
 
         m_ColorAttachmentFormat = m_ImGui.m_ColorAttachmentFormat;
@@ -79,16 +82,8 @@ namespace vks_engine
                vk::Result::eTimeout);
     }
 
-    void Scene::handleSwapChainRecreation()
+    void Scene::handleSwapChainRecreation(int width, int height)
     {
-        int width = 0, height = 0;
-        glfwGetFramebufferSize(m_Window.getWindow(), &width, &height);
-        while (width == 0 || height == 0)
-        {
-            glfwGetFramebufferSize(m_Window.getWindow(), &width, &height);
-            glfwWaitEvents();
-        }
-
         m_Vk.waitIdle();
 
         ImGui_ImplVulkan_Shutdown();
@@ -420,14 +415,43 @@ namespace vks_engine
         m_UBODirectionalLightBuffer.update(m_UBOdirectionalLight.data(), m_ActiveDirectionalLights, frame);
     }
 
+    void Scene::setHandlers()
+    {
+        m_Window.setKeyCallback([this](int key, int scancode, int action, int mods)
+        {
+            this->m_InputHandler.handleKeyboard(key, scancode, action, mods);
+        });
+
+        m_InputHandler.setKeyCallbackFunction(Key(GLFW_KEY_ESCAPE,GLFW_PRESS),
+                                              [this] { this->m_Window.close(); });
+
+        m_Window.setButtonCallback([this](int button, int action, int mods)
+        {
+            this->m_InputHandler.handleMouse(button, action, mods);
+        });
+    }
+
+    void Scene::handleFramebufferResize(int width, int height)
+    {
+        handleSwapChainRecreation(width, height);
+
+        m_Camera.updateProjection(width, height);
+    }
+
     void Scene::handleEvents()
     {
         m_Window.pollEvents();
 
-        if (m_Vk.m_FramebufferResized)
+        if (m_Window.wasResized())
         {
-            handleSwapChainRecreation();
-            m_Camera.updateProjection();
+            int w, h;
+            glfwGetFramebufferSize(m_Window.getWindow(), &w, &h);
+
+            if (w != 0 && h != 0)
+            {
+                handleSwapChainRecreation(w, h);
+                m_Camera.updateProjection(w, h);
+            }
         }
     }
 }
