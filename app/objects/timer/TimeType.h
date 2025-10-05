@@ -1,11 +1,14 @@
-#ifndef TIMETYPE_H
-#define TIMETYPE_H
+#ifndef VKSENGINETIMETYPE_H
+#define VKSENGINETIMETYPE_H
 
-enum class TimeType
+namespace vks_engine
 {
-  Microseconds,
-  Milliseconds,
-  Seconds
-};
+    enum class TimeType
+    {
+        Microseconds,
+        Milliseconds,
+        Seconds
+    };
+}
 
-#endif //TIMETYPE_H
+#endif //VKSENGINETIMETYPE_H

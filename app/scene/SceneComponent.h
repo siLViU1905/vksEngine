@@ -1,20 +1,23 @@
-#ifndef SCENECOMPONENT_H
-#define SCENECOMPONENT_H
+#ifndef VKSENGINESCENECOMPONENT_H
+#define VKSENGINESCENECOMPONENT_H
 #include "../objects/menus/Menu.h"
 
-template<typename Component>
-class SceneComponent
+namespace vks_engine
 {
-public:
-    Component m_Mesh;
-
-    Menu<Component> m_Menu;
-
-    void bind()
+    template<typename Component>
+    class SceneComponent
     {
-        m_Menu.setComponent(m_Mesh);
-    }
-};
+    public:
+        Component m_Mesh;
+
+        Menu<Component> m_Menu;
+
+        void bind()
+        {
+            m_Menu.setComponent(m_Mesh);
+        }
+    };
+}
 
 
-#endif //SCENECOMPONENT_H
+#endif //VKSENGINESCENECOMPONENT_H

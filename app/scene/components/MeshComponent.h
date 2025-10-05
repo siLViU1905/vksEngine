@@ -1,15 +1,18 @@
-#ifndef MESHCOMPONENT_H
-#define MESHCOMPONENT_H
+#ifndef VKSENGINEMESHCOMPONENT_H
+#define VKSENGINEMESHCOMPONENT_H
 #include "../../objects/Mesh.h"
 #include "../../objects/menus/MeshMenu.h"
 
-struct MeshComponent
+namespace vks_engine
 {
-    Mesh m_Mesh;
+    struct MeshComponent
+    {
+        Mesh m_Mesh;
 
-    MeshMenu m_Menu;
+        MeshMenu m_Menu;
 
-    void bind();
-};
+        void bind();
+    };
+}
 
-#endif //MESHCOMPONENT_H
+#endif //VKSENGINEMESHCOMPONENT_H

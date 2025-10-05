@@ -1,6 +1,9 @@
 #include "MeshComponent.h"
 
-void MeshComponent::bind()
+namespace vks_engine
 {
-    m_Menu.setComponent(m_Mesh);
+    void MeshComponent::bind()
+    {
+        m_Menu.setComponent(m_Mesh);
+    }
 }

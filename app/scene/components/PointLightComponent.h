@@ -1,21 +1,19 @@
-//
-// Created by Silviu on 20.09.2025.
-//
-
-#ifndef POINTLIGHTCOMPONENT_H
-#define POINTLIGHTCOMPONENT_H
+#ifndef VKSENGINEPOINTLIGHTCOMPONENT_H
+#define VKSENGINEPOINTLIGHTCOMPONENT_H
 #include "../../objects/lights/PointLight.h"
 #include "../../objects/menus/PointLightMenu.h"
 
+namespace vks_engine
+{
+    struct PointLightComponent
+    {
+        PointLight m_Light;
 
-struct PointLightComponent {
-    PointLight m_Light;
+        PointLightMenu m_Menu;
 
-    PointLightMenu m_Menu;
-
-    void bind();
-};
+        void bind();
+    };
+}
 
 
-
-#endif //POINTLIGHTCOMPONENT_H
+#endif //VKSENGINEPOINTLIGHTCOMPONENT_H

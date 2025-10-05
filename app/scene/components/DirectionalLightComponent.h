@@ -1,19 +1,18 @@
-//
-// Created by Silviu on 20.09.2025.
-//
-
-#ifndef DIRECTIONALLIGHTCOMPONENT_H
-#define DIRECTIONALLIGHTCOMPONENT_H
+#ifndef VKSENGINEDIRECTIONALLIGHTCOMPONENT_H
+#define VKSENGINEDIRECTIONALLIGHTCOMPONENT_H
 #include "../../objects/lights/DirectionalLight.h"
 #include "../../objects/menus/DirectionalLightMenu.h"
 
+namespace vks_engine
+{
+    struct DirectionalLightComponent
+    {
+        DirectionalLight m_Light;
 
-struct DirectionalLightComponent {
-  DirectionalLight m_Light;
+        DirectionalLightMenu m_Menu;
 
-  DirectionalLightMenu m_Menu;
+        void bind();
+    };
+}
 
-  void bind();
-};
-
-#endif //DIRECTIONALLIGHTCOMPONENT_H
+#endif //VKSENGINEDIRECTIONALLIGHTCOMPONENT_H

@@ -1,20 +1,21 @@
-#ifndef FILEEXPLORER_H
-#define FILEEXPLORER_H
+#ifndef VKSENGINEFILEEXPLORER_H
+#define VKSENGINEFILEEXPLORER_H
 #include <string>
 
-
-class FileExplorer
+namespace vks_engine
 {
-public:
-    FileExplorer();
+    class FileExplorer
+    {
+    public:
+        FileExplorer();
 
-    void open();
+        void open();
 
-    constexpr const std::string& getPath() const {return m_Path;}
+        constexpr const std::string &getPath() const { return m_Path; }
 
-private:
-    std::string m_Path;
-};
+    private:
+        std::string m_Path;
+    };
+}
 
-
-#endif //FILEEXPLORER_H
+#endif //VKSENGINEFILEEXPLORER_H

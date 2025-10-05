@@ -1,10 +1,13 @@
 #include "UniformBuffer.h"
 
-void UniformBuffer::cleanUp()
+namespace vks_engine
 {
-    m_Buffers.clear();
+    void UniformBuffer::cleanUp()
+    {
+        m_Buffers.clear();
 
-    m_Memories.clear();
+        m_Memories.clear();
 
-    m_MappedMemories.clear();
+        m_MappedMemories.clear();
+    }
 }

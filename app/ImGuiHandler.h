@@ -1,5 +1,5 @@
-#ifndef IMGUIHANDER_H
-#define IMGUIHANDER_H
+#ifndef VKSENGINEIMGUIHANDER_H
+#define VKSENGINEIMGUIHANDER_H
 
 #include <imgui/imgui.h>
 #include <imgui/imgui_impl_glfw.h>
@@ -7,48 +7,53 @@
 
 #include "VulkanHandler.h"
 
-
-class ImGuiHandler
+namespace vks_engine
 {
-public:
-    ImGuiHandler();
+    class ImGuiHandler
+    {
+    public:
+        ImGuiHandler();
 
-    void init(VulkanHandler& vkHandler, GLFWwindow* window);
+        void init(VulkanHandler &vkHandler, GLFWwindow *window);
 
-    void beginFrame();
+        void beginFrame();
 
-    void endFrame();
+        void endFrame();
 
-    void renderDockspace();
+        void renderDockspace();
 
-    void recordCommandBuffer(uint32_t currentFrame);
+        void recordCommandBuffer(uint32_t currentFrame);
 
-    constexpr vk::raii::CommandBuffer &getCommandBuffer(uint32_t currentFrame) {return m_CommandBuffers[currentFrame];}
+        constexpr vk::raii::CommandBuffer &getCommandBuffer(uint32_t currentFrame)
+        {
+            return m_CommandBuffers[currentFrame];
+        }
 
-    void updateSwapChain(VulkanHandler& vkHandler);
+        void updateSwapChain(VulkanHandler &vkHandler);
 
-    ~ImGuiHandler();
+        ~ImGuiHandler();
 
-    friend class Scene;
-private:
-    vk::raii::DescriptorPool m_DescriptorPool;
+        friend class Scene;
 
-    ImGuiContext *m_Context;
+    private:
+        vk::raii::DescriptorPool m_DescriptorPool;
 
-    vk::raii::CommandPool m_CommandPool;
+        ImGuiContext *m_Context;
 
-    std::vector<vk::raii::CommandBuffer> m_CommandBuffers;
+        vk::raii::CommandPool m_CommandPool;
 
-    vk::Format m_ColorAttachmentFormat;
+        std::vector<vk::raii::CommandBuffer> m_CommandBuffers;
 
-    vk::Format m_DepthAttachmentFormat;
+        vk::Format m_ColorAttachmentFormat;
 
-    vk::SampleCountFlagBits m_MsaaSamples;
+        vk::Format m_DepthAttachmentFormat;
 
-    void createDescriptorPool(const vk::raii::Device &device);
+        vk::SampleCountFlagBits m_MsaaSamples;
 
-    void applyTheme();
-};
+        void createDescriptorPool(const vk::raii::Device &device);
 
+        void applyTheme();
+    };
+}
 
-#endif //IMGUIHANDER_H
+#endif //VKSENGINEIMGUIHANDER_H

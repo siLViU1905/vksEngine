@@ -2,18 +2,21 @@
 // Created by Silviu on 20.09.2025.
 //
 
-#ifndef UBOCOUNTERS_H
-#define UBOCOUNTERS_H
+#ifndef VKSENGINEUBOCOUNTERS_H
+#define VKSENGINEUBOCOUNTERS_H
 
-struct UBOcounters
+namespace vks_engine
 {
-    int pointLightCount;
+    struct UBOcounters
+    {
+        int pointLightCount;
 
-    int directionalLightCount;
+        int directionalLightCount;
 
-    int _pad0;
+        int _pad0;
 
-    int _pad1;
-};
+        int _pad1;
+    };
+}
 
-#endif //UBOCOUNTERS_H
+#endif //VKSENGINEUBOCOUNTERS_H

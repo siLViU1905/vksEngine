@@ -1,5 +1,5 @@
-#ifndef SCENE_H
-#define SCENE_H
+#ifndef VKSENGINESCENE_H
+#define VKSENGINESCENE_H
 #include <vector>
 
 #include "FileExplorer.h"
@@ -16,135 +16,137 @@
 #include "ubocomponents/UBOmvp.h"
 #include "ubocomponents/UBOcounters.h"
 
-class Scene
+namespace vks_engine
 {
-private:
-    static constexpr uint32_t MAX_ALLOWED_MESH_COUNT = 2;
+    class Scene
+    {
+    private:
+        static constexpr uint32_t MAX_ALLOWED_MESH_COUNT = 2;
 
-    static constexpr uint32_t MAX_ALLOWED_POINT_LIGHT_COUNT = 10;
+        static constexpr uint32_t MAX_ALLOWED_POINT_LIGHT_COUNT = 10;
 
-    static constexpr uint32_t MAX_ALLOWED_DIRECTIONAL_LIGHT_COUNT = 10;
+        static constexpr uint32_t MAX_ALLOWED_DIRECTIONAL_LIGHT_COUNT = 10;
 
-public:
-    Scene(Window &window, VulkanHandler &vkHandler);
+    public:
+        Scene(Window &window, VulkanHandler &vkHandler);
 
-    void init();
+        void init();
 
-    void run();
+        void run();
 
-    friend class Application;
+        friend class Application;
 
-private:
-    //======== MEMBERS ========
+    private:
+        //======== MEMBERS ========
 
-    Window &m_Window;
+        Window &m_Window;
 
-    VulkanHandler &m_Vk;
+        VulkanHandler &m_Vk;
 
-    ImGuiHandler m_ImGui;
+        ImGuiHandler m_ImGui;
 
-    Camera m_Camera;
+        Camera m_Camera;
 
-    Clock m_Clock;
+        Clock m_Clock;
 
-    FileExplorer m_FileExplorer;
+        FileExplorer m_FileExplorer;
 
-    vk::Format m_ColorAttachmentFormat;
+        vk::Format m_ColorAttachmentFormat;
 
-    vk::Format m_DepthAttachmentFormat;
+        vk::Format m_DepthAttachmentFormat;
 
-    std::vector<vk::raii::CommandBuffer> m_MeshCommandBuffers;
+        std::vector<vk::raii::CommandBuffer> m_MeshCommandBuffers;
 
-    std::vector<MeshComponent> m_MeshComponents;
+        std::vector<MeshComponent> m_MeshComponents;
 
-    //=====================================CAMERA RELATED=====================================
+        //=====================================CAMERA RELATED=====================================
 
-    //======== MVP UBO ========
+        //======== MVP UBO ========
 
-    UBOmvp<MAX_ALLOWED_MESH_COUNT> m_UBOmvp;
+        UBOmvp<MAX_ALLOWED_MESH_COUNT> m_UBOmvp;
 
-    UniformBuffer m_UBOmvpBuffer;
+        UniformBuffer m_UBOmvpBuffer;
 
-    void updateUBOmvpModel(const Mesh &mesh);
+        void updateUBOmvpModel(const Mesh &mesh);
 
-    void updateUBOmvpCam();
+        void updateUBOmvpCam();
 
-    void updateCamera(float deltaTime);
+        void updateCamera(float deltaTime);
 
-    //=====================================LIGHTS RELATED=====================================
+        //=====================================LIGHTS RELATED=====================================
 
-    //======== PointLight UBO ========
+        //======== PointLight UBO ========
 
-    uint32_t m_ActivePointLights;
+        uint32_t m_ActivePointLights;
 
-    std::array<PointLightComponent, MAX_ALLOWED_POINT_LIGHT_COUNT> m_PointLightComponents;
+        std::array<PointLightComponent, MAX_ALLOWED_POINT_LIGHT_COUNT> m_PointLightComponents;
 
-    UniformBuffer m_UBOPointLightBuffer;
+        UniformBuffer m_UBOPointLightBuffer;
 
-    std::array<PointLight::Aligned, MAX_ALLOWED_POINT_LIGHT_COUNT> m_UBOpointLight;
+        std::array<PointLight::Aligned, MAX_ALLOWED_POINT_LIGHT_COUNT> m_UBOpointLight;
 
-    void initUBOPointLight();
+        void initUBOPointLight();
 
-    void updateUBOpointLight(const PointLight &pointLight);
+        void updateUBOpointLight(const PointLight &pointLight);
 
-    //======== DirectionalLight UBO ========
+        //======== DirectionalLight UBO ========
 
-    uint32_t m_ActiveDirectionalLights;
+        uint32_t m_ActiveDirectionalLights;
 
-    std::array<DirectionalLightComponent, MAX_ALLOWED_DIRECTIONAL_LIGHT_COUNT> m_DirectionalLightComponents;
+        std::array<DirectionalLightComponent, MAX_ALLOWED_DIRECTIONAL_LIGHT_COUNT> m_DirectionalLightComponents;
 
-    UniformBuffer m_UBODirectionalLightBuffer;
+        UniformBuffer m_UBODirectionalLightBuffer;
 
-    std::array<DirectionalLight::Aligned, MAX_ALLOWED_DIRECTIONAL_LIGHT_COUNT> m_UBOdirectionalLight;
+        std::array<DirectionalLight::Aligned, MAX_ALLOWED_DIRECTIONAL_LIGHT_COUNT> m_UBOdirectionalLight;
 
-    void initUBODirectionalLight();
+        void initUBODirectionalLight();
 
-    void updateUBOdirectionalLight(const DirectionalLight &directionalLight);
+        void updateUBOdirectionalLight(const DirectionalLight &directionalLight);
 
-    //======== COUNTERS UBO ========
+        //======== COUNTERS UBO ========
 
-    UBOcounters m_Counters;
+        UBOcounters m_Counters;
 
-    UniformBuffer m_UBOCountersBuffer;
+        UniformBuffer m_UBOCountersBuffer;
 
-    void initUBOCounters();
+        void initUBOCounters();
 
-    void updateUBOcounters();
+        void updateUBOcounters();
 
-    //======== FUNCTIONS ========
+        //======== FUNCTIONS ========
 
-    void updateScene();
+        void updateScene();
 
-    void render();
+        void render();
 
-    void waitForFences();
+        void waitForFences();
 
-    void handleSwapChainRecreation();
+        void handleSwapChainRecreation();
 
-    void createCommandBuffers();
+        void createCommandBuffers();
 
-    void createUniformBuffers();
+        void createUniformBuffers();
 
-    void initUBOmvp();
+        void initUBOmvp();
 
-    void initUBO();
+        void initUBO();
 
-    void addMesh(const std::string &path);
+        void addMesh(const std::string &path);
 
-    void addSphereMesh();
+        void addSphereMesh();
 
-    void addPointLight();
+        void addPointLight();
 
-    void addDirectionalLight();
+        void addDirectionalLight();
 
-    void recordMeshCommands();
+        void recordMeshCommands();
 
-    void renderMenus();
+        void renderMenus();
 
-    void updateUBO(uint32_t frame);
+        void updateUBO(uint32_t frame);
 
-    void handleEvents();
-};
+        void handleEvents();
+    };
+}
 
-
-#endif //SCENE_H
+#endif //VKSENGINESCENE_H

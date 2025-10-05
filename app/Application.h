@@ -1,24 +1,26 @@
-#ifndef APPLICATION_H
-#define APPLICATION_H
+#ifndef VKSENGINEAPPLICATION_H
+#define VKSENGINEAPPLICATION_H
 #include "VulkanHandler.h"
 #include "Window.h"
 #include "scene/Scene.h"
 
+namespace vks_engine
+{
+    class Application
+    {
+    public:
+        Application(int windowWidth, int windowHeight, const std::string &windowTitle);
 
-class Application {
+        void run();
 
-public:
-    Application(int windowWidth, int windowHeight, const std::string& windowTitle);
+    private:
+        Window m_Window;
 
-    void run();
-private:
-    Window m_Window;
+        VulkanHandler m_VulkanHandler;
 
-    VulkanHandler m_VulkanHandler;
-
-    Scene m_Scene;
-};
+        Scene m_Scene;
+    };
+}
 
 
-
-#endif //APPLICATION_H
+#endif //VKSENGINEAPPLICATION_H

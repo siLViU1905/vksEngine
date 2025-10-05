@@ -1,36 +1,39 @@
-#ifndef APPWINDOW_H
-#define APPWINDOW_H
+#ifndef VKSENGINEAPPWINDOW_H
+#define VKSENGINEAPPWINDOW_H
 #include <string>
 
 #include <GLFW/glfw3.h>
 
-class Window
+namespace vks_engine
 {
-public:
-    Window(int width, int height, const std::string &title);
+    class Window
+    {
+    public:
+        Window(int width, int height, const std::string &title);
 
-    bool isOpen() const;
+        bool isOpen() const;
 
-    void close();
+        void close();
 
-    void pollEvents();
+        void pollEvents();
 
-    constexpr GLFWwindow* getWindow() {return m_Window;}
+        constexpr GLFWwindow *getWindow() { return m_Window; }
 
-    bool wasResized();
+        bool wasResized();
 
-    ~Window();
-private:
-    GLFWwindow *m_Window;
+        ~Window();
 
-    int m_Width;
+    private:
+        GLFWwindow *m_Window;
 
-    int m_Height;
+        int m_Width;
 
-    bool m_FramebufferResized;
+        int m_Height;
 
-    static void framebufferCallback(GLFWwindow* window, int width, int height);
-};
+        bool m_FramebufferResized;
 
+        static void framebufferCallback(GLFWwindow *window, int width, int height);
+    };
+}
 
-#endif //APPWINDOW_H
+#endif //VKSENGINEAPPWINDOW_H

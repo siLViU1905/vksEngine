@@ -1,23 +1,25 @@
-#ifndef MESHMENU_H
-#define MESHMENU_H
+#ifndef VKSENGINEMESHMENU_H
+#define VKSENGINEMESHMENU_H
 #include "Menu.h"
 #include "../Mesh.h"
 
+namespace vks_engine
+{
+    class MeshMenu : protected Menu<Mesh>
+    {
+    public:
+        MeshMenu();
 
-class MeshMenu : protected Menu<Mesh>{
-public:
-    MeshMenu();
+        MeshMenu(Mesh &mesh, const std::string &title = "");
 
-    MeshMenu(Mesh& mesh, const std::string& title = "");
+        bool render() override;
 
-    bool render() override;
-
-    using Menu::setComponent;
-    using Menu::getComponent;
-    using Menu::setTitle;
-    using Menu::getTitle;
-};
+        using Menu::setComponent;
+        using Menu::getComponent;
+        using Menu::setTitle;
+        using Menu::getTitle;
+    };
+}
 
 
-
-#endif //MESHMENU_H
+#endif //VKSENGINEMESHMENU_H

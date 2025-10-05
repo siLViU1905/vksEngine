@@ -7,7 +7,7 @@ int main()
 {
     try
     {
-        Application app(800, 600, "VulkanPP");
+        vks_engine::Application app(800, 600, "VKSEngine");
 
         app.run();
     }

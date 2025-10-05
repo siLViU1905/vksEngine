@@ -1,50 +1,53 @@
-#ifndef MENU_H
-#define MENU_H
+#ifndef VKSENGINEMENU_H
+#define VKSENGINEMENU_H
 #include <string>
 
 #include "imgui/imgui.h"
 
-template<typename Component>
-class Menu
+namespace vks_engine
 {
-public:
-    Menu():m_Component(nullptr), m_Title("NULL")
-    {}
-
-    Menu(Component& component, const std::string& title = "NULL"):m_Component(&component), m_Title(title)
-    {}
-
-    void setComponent(Component& component)
+    template<typename Component>
+    class Menu
     {
-        m_Component = &component;
-    }
+    public:
+        Menu():m_Component(nullptr), m_Title("NULL")
+        {}
 
-    Component& getComponent() {return *m_Component;}
+        Menu(Component& component, const std::string& title = "NULL"):m_Component(&component), m_Title(title)
+        {}
 
-    void setTitle(const std::string& title)
-    {
-        m_Title = title;
-    }
+        void setComponent(Component& component)
+        {
+            m_Component = &component;
+        }
 
-    constexpr const std::string& getTitle() const {return m_Title;}
+        Component& getComponent() {return *m_Component;}
 
-    virtual bool render()
-    {
-        ImGui::Begin(m_Title.c_str());
+        void setTitle(const std::string& title)
+        {
+            m_Title = title;
+        }
 
-        ImGui::Text("Render method not overloaded");
+        constexpr const std::string& getTitle() const {return m_Title;}
 
-        ImGui::End();
+        virtual bool render()
+        {
+            ImGui::Begin(m_Title.c_str());
 
-        return false;
-    }
+            ImGui::Text("Render method not overloaded");
 
-    virtual ~Menu() = default;
+            ImGui::End();
 
-protected:
-    Component* m_Component;
+            return false;
+        }
 
-    std::string m_Title;
-};
+        virtual ~Menu() = default;
 
-#endif //MENU_H
+    protected:
+        Component* m_Component;
+
+        std::string m_Title;
+    };
+}
+
+#endif //VKSENGINEMENU_H

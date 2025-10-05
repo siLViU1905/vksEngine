@@ -1,33 +1,35 @@
-#ifndef UNIFORMBUFFER_H
-#define UNIFORMBUFFER_H
+#ifndef VKSENGINEUNIFORMBUFFER_H
+#define VKSENGINEUNIFORMBUFFER_H
 #include <vulkan/vulkan_raii.hpp>
 
-
-class UniformBuffer
+namespace vks_engine
 {
-public:
-    template<typename Ty>
-    void update(const Ty &data, uint32_t frame)
+    class UniformBuffer
     {
-        memcpy(m_MappedMemories[frame], &data, sizeof(data));
-    }
+    public:
+        template<typename Ty>
+        void update(const Ty &data, uint32_t frame)
+        {
+            memcpy(m_MappedMemories[frame], &data, sizeof(data));
+        }
 
-    template<typename Ty>
-    void update(const Ty* data, uint32_t count, uint32_t frame)
-    {
-        memcpy(m_MappedMemories[frame], data, sizeof(Ty) * count);
-    }
+        template<typename Ty>
+        void update(const Ty *data, uint32_t count, uint32_t frame)
+        {
+            memcpy(m_MappedMemories[frame], data, sizeof(Ty) * count);
+        }
 
-    void cleanUp();
+        void cleanUp();
 
-    friend class VulkanHandler;
-private:
-    std::vector<vk::raii::Buffer> m_Buffers;
+        friend class VulkanHandler;
 
-    std::vector<vk::raii::DeviceMemory> m_Memories;
+    private:
+        std::vector<vk::raii::Buffer> m_Buffers;
 
-    std::vector<void *> m_MappedMemories;
-};
+        std::vector<vk::raii::DeviceMemory> m_Memories;
 
+        std::vector<void *> m_MappedMemories;
+    };
+}
 
-#endif //UNIFORMBUFFER_H
+#endif //VKSENGINEUNIFORMBUFFER_H
