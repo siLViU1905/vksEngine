@@ -4,7 +4,7 @@
 
 #include "FileExplorer.h"
 #include "SceneComponent.h"
-#include "../ImGuiHandler.h"
+#include "../handlers/ImGuiHandler.h"
 #include "../Window.h"
 #include "../objects/Mesh.h"
 #include "../objects/lights/DirectionalLight.h"

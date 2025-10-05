@@ -8,7 +8,7 @@
 #include <thread>
 #include <glm/ext/matrix_transform.hpp>
 #include "ImGuiHandler.h"
-#include "scene/ubocomponents/UBOmvp.h"
+#include "../scene/ubocomponents/UBOmvp.h"
 
 namespace vks_engine
 {

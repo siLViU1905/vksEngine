@@ -1,6 +1,6 @@
 #ifndef VKSENGINEAPPLICATION_H
 #define VKSENGINEAPPLICATION_H
-#include "VulkanHandler.h"
+#include "handlers/VulkanHandler.h"
 #include "Window.h"
 #include "scene/Scene.h"
 

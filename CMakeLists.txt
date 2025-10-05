@@ -30,7 +30,7 @@ find_package(Vulkan REQUIRED)
 add_executable(vksEngine
         main.cpp
 
-        app/VulkanHandler.cpp
+        app/handlers/VulkanHandler.cpp
 
         app/Window.cpp
 
@@ -64,7 +64,7 @@ add_executable(vksEngine
 
         ${IMGUI_INCLUDE_DIRS}/imgui/imgui_impl_vulkan.cpp
 
-        app/ImGuiHandler.cpp
+        app/handlers/ImGuiHandler.cpp
 
         app/objects/menus/PointLightMenu.cpp
 

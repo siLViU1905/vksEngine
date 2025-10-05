@@ -11,13 +11,13 @@
 #define GLFW_EXPOSE_NATIVE_WIN32
 #include <GLFW/glfw3native.h>
 
-#include "objects/Camera.h"
-#include "objects/lights/DirectionalLight.h"
-#include "objects/Mesh.h"
-#include "objects/Texture.h"
-#include "objects/Vertex.h"
-#include "objects/UniformBuffer.h"
-#include "objects/lights/PointLight.h"
+#include "../objects/Camera.h"
+#include "../objects/lights/DirectionalLight.h"
+#include "../objects/Mesh.h"
+#include "../objects/Texture.h"
+#include "../objects/Vertex.h"
+#include "../objects/UniformBuffer.h"
+#include "../objects/lights/PointLight.h"
 
 namespace vks_engine
 {
