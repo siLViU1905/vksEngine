@@ -409,8 +409,6 @@ void Scene::updateScene()
 
 void Scene::updateUBO(uint32_t frame)
 {
-    m_UBOmvp.viewPos = m_Camera.getPosition();
-
     m_UBOmvpBuffer.update(m_UBOmvp, frame);
 
     m_UBOCountersBuffer.update(m_Counters, frame);
