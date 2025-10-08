@@ -27,6 +27,8 @@ namespace vks_engine
 
         void loseFocus();
 
+        constexpr bool isFocused() const {return m_Focused;}
+
         constexpr const glm::vec3 &getPosition() const { return m_Position; }
 
         struct Aligned

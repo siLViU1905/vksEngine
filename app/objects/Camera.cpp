@@ -67,9 +67,9 @@ namespace vks_engine
 
         glfwGetCursorPos(m_Window, &newX, &newY);
 
-        float xoffset = static_cast<float>(newX - m_LastX) * 0.1f;
+        float xoffset = static_cast<float>(newX - m_LastX);
 
-        float yoffset = static_cast<float>(m_LastY - newY) * 0.1f;
+        float yoffset = static_cast<float>(m_LastY - newY);
 
         m_Yaw += xoffset * deltaTime;
 
@@ -113,11 +113,15 @@ namespace vks_engine
     void Camera::gainFocus()
     {
         m_Focused = true;
+
+        glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     }
 
     void Camera::loseFocus()
     {
         m_Focused = false;
+
+        glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
     }
 
     Camera::Aligned Camera::getAligned() const

@@ -149,7 +149,7 @@ namespace vks_engine
         void updateUBO(uint32_t frame);
 
         //======== Event handlers ========
-        void setHandlers();
+        void setInputHandlers();
 
         void handleFramebufferResize(int width, int height);
 

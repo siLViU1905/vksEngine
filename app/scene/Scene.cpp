@@ -18,7 +18,7 @@ namespace vks_engine
 
     void Scene::init()
     {
-        setHandlers();
+        setInputHandlers();
 
         m_ImGui.init(m_Vk, m_Window.getWindow());
 
@@ -415,7 +415,7 @@ namespace vks_engine
         m_UBODirectionalLightBuffer.update(m_UBOdirectionalLight.data(), m_ActiveDirectionalLights, frame);
     }
 
-    void Scene::setHandlers()
+    void Scene::setInputHandlers()
     {
         m_Window.setKeyCallback([this](int key, int scancode, int action, int mods)
         {
@@ -429,6 +429,15 @@ namespace vks_engine
         {
             this->m_InputHandler.handleMouse(button, action, mods);
         });
+
+        m_InputHandler.setButtonCallbackFunction(Button(GLFW_MOUSE_BUTTON_3, GLFW_PRESS),
+                                                 [this]()
+                                                 {
+                                                     if (this->m_Camera.isFocused())
+                                                         this->m_Camera.loseFocus();
+                                                     else
+                                                         this->m_Camera.gainFocus();
+                                                 });
     }
 
     void Scene::handleFramebufferResize(int width, int height)
