@@ -58,9 +58,23 @@ namespace vks_engine
 
         vk::Format m_DepthAttachmentFormat;
 
-        std::vector<vk::raii::CommandBuffer> m_MeshCommandBuffers;
+        //=====================================MESH RELATED=====================================
 
-        std::vector<MeshComponent> m_MeshComponents;
+        std::vector<vk::raii::CommandBuffer> m_SimpleMeshCommandBuffers;
+
+        std::vector<vk::raii::CommandBuffer> m_ComplexMeshCommandBuffers;
+
+        std::vector<MeshComponent> m_SimpleMeshComponents;
+
+        std::vector<MeshComponent> m_ComplexMeshComponents;
+
+        uint32_t m_CurrentMeshCount;
+
+        void recordMeshCommands(uint32_t currentFrame);
+
+        void recordSimpleMeshCommands(uint32_t currentFrame);
+
+        void recordComplexMeshCommands(uint32_t currentFrame);
 
         //=====================================CAMERA RELATED=====================================
 
@@ -141,8 +155,6 @@ namespace vks_engine
         void addPointLight();
 
         void addDirectionalLight();
-
-        void recordMeshCommands();
 
         void renderMenus();
 

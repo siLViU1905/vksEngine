@@ -23,7 +23,7 @@ mvp;
 
 void main()
 {
-    mat4 modelMatrix = mvp.model[0];
+    mat4 modelMatrix = mvp.model[1];
 
     mat3 normalMatrix = mat3(transpose(inverse(modelMatrix)));
 

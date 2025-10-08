@@ -12,7 +12,8 @@ namespace vks_engine
     Scene::Scene(Window &window, VulkanHandler &vkHandler): m_Vk(vkHandler),
                                                             m_Window(window),
                                                             m_Camera(window.getWindow(), glm::vec3(0.f, 0.f, 2.f), 5.f),
-                                                            m_ActiveDirectionalLights(0), m_ActivePointLights(0)
+                                                            m_ActiveDirectionalLights(0), m_ActivePointLights(0),
+                                                            m_CurrentMeshCount(0)
     {
     }
 
@@ -65,15 +66,17 @@ namespace vks_engine
 
         const auto &currentFrame = m_Vk.m_CurrentFrame;
 
-        std::thread meshCommand(&Scene::recordMeshCommands, this);
+        recordMeshCommands(currentFrame);
 
         renderMenus();
 
         m_ImGui.recordCommandBuffer(currentFrame);
 
-        meshCommand.join();
+        //meshCommand.join();
 
-        m_Vk.renderFrame(m_ImGui.getCommandBuffer(currentFrame), m_MeshCommandBuffers[currentFrame]);
+        m_Vk.renderFrame(m_ImGui.getCommandBuffer(currentFrame),
+                         m_SimpleMeshCommandBuffers[currentFrame],
+                         m_ComplexMeshCommandBuffers[currentFrame]);
     }
 
     void Scene::waitForFences()
@@ -101,7 +104,9 @@ namespace vks_engine
 
     void Scene::createCommandBuffers()
     {
-        m_Vk.CreateCommandBuffers(m_MeshCommandBuffers, vk::CommandBufferLevel::eSecondary);
+        m_Vk.CreateCommandBuffers(m_SimpleMeshCommandBuffers, vk::CommandBufferLevel::eSecondary);
+
+        m_Vk.CreateCommandBuffers(m_ComplexMeshCommandBuffers, vk::CommandBufferLevel::eSecondary);
     }
 
     void Scene::createUniformBuffers()
@@ -168,9 +173,12 @@ namespace vks_engine
 
     void Scene::addMesh(const std::string &path)
     {
-        auto &meshComponent = m_MeshComponents.emplace_back();
+        if (m_CurrentMeshCount == MAX_ALLOWED_MESH_COUNT)
+            return;
 
-        meshComponent.m_Mesh.setID(m_MeshComponents.size() - 1);
+        auto &meshComponent = m_ComplexMeshComponents.emplace_back();
+
+        meshComponent.m_Mesh.setID(m_CurrentMeshCount);
 
         meshComponent.m_Mesh.load(path);
 
@@ -185,17 +193,22 @@ namespace vks_engine
         meshComponent.m_Menu.setTitle("Mesh" + std::to_string(meshComponent.m_Mesh.getID()));
 
         m_UBOmvp.model[mesh.getID()] = mesh.getModel();
+
+        ++m_CurrentMeshCount;
     }
 
     void Scene::addSphereMesh()
     {
+        if (m_CurrentMeshCount == MAX_ALLOWED_MESH_COUNT)
+            return;
+
         Mesh sphere = Mesh::generateSphere({}, 1.f, 64, 64);
 
-        auto &meshComponent = m_MeshComponents.emplace_back();
+        auto &meshComponent = m_SimpleMeshComponents.emplace_back();
 
         meshComponent.m_Mesh = std::move(sphere);
 
-        meshComponent.m_Mesh.setID(m_MeshComponents.size() - 1);
+        meshComponent.m_Mesh.setID(m_CurrentMeshCount);
 
         auto &mesh = meshComponent.m_Mesh;
 
@@ -208,6 +221,8 @@ namespace vks_engine
         meshComponent.m_Menu.setTitle("Mesh" + std::to_string(meshComponent.m_Mesh.getID()));
 
         m_UBOmvp.model[mesh.getID()] = mesh.getModel();
+
+        ++m_CurrentMeshCount;
     }
 
     void Scene::addPointLight()
@@ -250,10 +265,23 @@ namespace vks_engine
         updateUBOcounters();
     }
 
-    void Scene::recordMeshCommands()
+    void Scene::recordMeshCommands(uint32_t currentFrame)
     {
-        const auto &currentFrame = m_Vk.m_CurrentFrame;
-        const auto &commandBuffer = m_MeshCommandBuffers[currentFrame];
+        /*std::thread simpleMeshThread(&Scene::recordSimpleMeshCommands, this, currentFrame);
+
+        std::thread complexMeshThread(&Scene::recordComplexMeshCommands, this, currentFrame);
+
+        simpleMeshThread.join();
+        complexMeshThread.join();*/
+
+        recordSimpleMeshCommands(currentFrame);
+
+        recordComplexMeshCommands(currentFrame);
+    }
+
+    void Scene::recordSimpleMeshCommands(uint32_t currentFrame)
+    {
+        const auto &commandBuffer = m_SimpleMeshCommandBuffers[currentFrame];
 
         commandBuffer.reset();
 
@@ -280,15 +308,6 @@ namespace vks_engine
 
         commandBuffer.setScissor(0, m_Vk.m_Scissor);
 
-        // commandBuffer.bindPipeline(vk::PipelineBindPoint::eGraphics, m_Vk.m_ComplexMeshGraphicsPipeline);
-        //
-        // commandBuffer.bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
-        //                                  m_Vk.m_ComplexMeshPipelineLayout,
-        //                                  0,
-        //                                  *m_Vk.m_ComplexMeshDescriptorSets[currentFrame],
-        //                                  nullptr
-        // );
-
         commandBuffer.bindPipeline(vk::PipelineBindPoint::eGraphics, m_Vk.m_SimpleMeshGraphicsPipeline);
         commandBuffer.bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
                                          m_Vk.m_SimpleMeshPipelineLayout,
@@ -297,7 +316,7 @@ namespace vks_engine
                                          nullptr
         );
 
-        for (const auto &meshComponent: m_MeshComponents)
+        for (const auto &meshComponent: m_SimpleMeshComponents)
         {
             const auto &mesh = meshComponent.m_Mesh;
 
@@ -321,11 +340,83 @@ namespace vks_engine
         commandBuffer.end();
     }
 
+    void Scene::recordComplexMeshCommands(uint32_t currentFrame)
+    {
+        const auto &commandBuffer = m_ComplexMeshCommandBuffers[currentFrame];
+
+        commandBuffer.reset();
+
+        vk::CommandBufferInheritanceRenderingInfoKHR inheritanceRenderingInfo{};
+
+        inheritanceRenderingInfo.colorAttachmentCount = 1;
+        inheritanceRenderingInfo.pColorAttachmentFormats = &m_ColorAttachmentFormat;
+        inheritanceRenderingInfo.depthAttachmentFormat = m_DepthAttachmentFormat;
+        inheritanceRenderingInfo.flags = vk::RenderingFlagBitsKHR::eContentsSecondaryCommandBuffers;
+        inheritanceRenderingInfo.rasterizationSamples = m_Vk.m_MsaaSamples;
+
+        vk::CommandBufferInheritanceInfo inheritanceInfo;
+        inheritanceInfo.pNext = &inheritanceRenderingInfo;
+        inheritanceInfo.renderPass = VK_NULL_HANDLE;
+
+        vk::CommandBufferBeginInfo beginInfo(
+            vk::CommandBufferUsageFlagBits::eRenderPassContinue | vk::CommandBufferUsageFlagBits::eOneTimeSubmit,
+            &inheritanceInfo
+        );
+
+        commandBuffer.begin(beginInfo);
+
+        commandBuffer.setViewport(0, m_Vk.m_Viewport);
+
+        commandBuffer.setScissor(0, m_Vk.m_Scissor);
+
+        commandBuffer.bindPipeline(vk::PipelineBindPoint::eGraphics, m_Vk.m_ComplexMeshGraphicsPipeline);
+
+        commandBuffer.bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
+                                         m_Vk.m_ComplexMeshPipelineLayout,
+                                         0,
+                                         *m_Vk.m_ComplexMeshDescriptorSets[currentFrame],
+                                         nullptr
+        );
+
+        commandBuffer.bindPipeline(vk::PipelineBindPoint::eGraphics, m_Vk.m_ComplexMeshGraphicsPipeline);
+        commandBuffer.bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
+                                         m_Vk.m_ComplexMeshPipelineLayout,
+                                         0,
+                                         *m_Vk.m_ComplexMeshDescriptorSets[currentFrame],
+                                         nullptr
+        );
+
+        for (const auto &meshComponent: m_ComplexMeshComponents)
+        {
+            const auto &mesh = meshComponent.m_Mesh;
+
+            vk::DeviceSize offset = 0;
+            commandBuffer.bindVertexBuffers(0, *mesh.m_VertexBuffer, offset);
+
+            commandBuffer.bindIndexBuffer(mesh.m_IndexBuffer, 0, vk::IndexType::eUint32);
+
+            commandBuffer.drawIndexed(
+                static_cast<uint32_t>(mesh.getIndices().size()),
+                mesh.getInstances(),
+                0, 0, 0);
+        }
+
+        commandBuffer.end();
+    }
+
     void Scene::renderMenus()
     {
         m_ImGui.beginFrame();
 
-        for (auto &component: m_MeshComponents)
+        for (auto &component: m_SimpleMeshComponents)
+        {
+            auto &menu = component.m_Menu;
+
+            if (menu.render())
+                updateUBOmvpModel(component.m_Mesh);
+        }
+
+        for (auto &component: m_ComplexMeshComponents)
         {
             auto &menu = component.m_Menu;
 

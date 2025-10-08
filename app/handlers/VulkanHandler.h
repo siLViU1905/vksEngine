@@ -30,7 +30,8 @@ namespace vks_engine
 
         void init(GLFWwindow *window);
 
-        void renderFrame(vk::raii::CommandBuffer &imguiCMDBuffer, vk::raii::CommandBuffer &meshCMDBuffer);
+        void renderFrame(vk::raii::CommandBuffer &imguiCMDBuffer, vk::raii::CommandBuffer &simpleMeshCMDBuffer,
+                         vk::raii::CommandBuffer &complexMeshCMDBuffer);
 
         void notifyFramebufferResized();
 
@@ -145,7 +146,8 @@ namespace vks_engine
         void copyBuffer(vk::raii::Buffer &srcBuffer, vk::raii::Buffer &dstBuffer, vk::DeviceSize size);
 
         void recordCommandBuffer(uint32_t imageIndex, vk::raii::CommandBuffer &imguiCMDBuffer,
-                                 vk::raii::CommandBuffer &meshCMDBuffer);
+                                 vk::raii::CommandBuffer &simpleMeshCMDBuffer,
+                                 vk::raii::CommandBuffer &complexMeshCMDBuffer);
 
         void transitionImageLayout(
             uint32_t imageIndex,

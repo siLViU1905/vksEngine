@@ -722,7 +722,8 @@ namespace vks_engine
     }
 
     void VulkanHandler::recordCommandBuffer(uint32_t imageIndex, vk::raii::CommandBuffer &imguiCMDBuffer,
-                                            vk::raii::CommandBuffer &meshCMDBuffer)
+                                            vk::raii::CommandBuffer &simpleMeshCMDBuffer,
+                                            vk::raii::CommandBuffer &complexMeshCMDBuffer)
     {
         m_CommandBuffers[m_CurrentFrame].begin({});
 
@@ -771,7 +772,7 @@ namespace vks_engine
 
         m_CommandBuffers[m_CurrentFrame].beginRendering(renderingInfo);
 
-        vk::CommandBuffer secCMDBuffers[] = {*meshCMDBuffer, *imguiCMDBuffer};
+        vk::CommandBuffer secCMDBuffers[] = {*simpleMeshCMDBuffer, *complexMeshCMDBuffer, *imguiCMDBuffer};
 
         m_CommandBuffers[m_CurrentFrame].executeCommands(secCMDBuffers);
 
@@ -1841,7 +1842,9 @@ namespace vks_engine
         m_GraphicsQueue.waitIdle();
     }
 
-    void VulkanHandler::renderFrame(vk::raii::CommandBuffer &imguiCMDBuffer, vk::raii::CommandBuffer &meshCMDBuffer)
+    void VulkanHandler::renderFrame(vk::raii::CommandBuffer &imguiCMDBuffer,
+                                    vk::raii::CommandBuffer &simpleMeshCMDBuffer,
+                                    vk::raii::CommandBuffer &complexMeshCMDBuffer)
     {
         m_FramebufferResized = false;
 
@@ -1862,7 +1865,7 @@ namespace vks_engine
 
         m_CommandBuffers[m_CurrentFrame].reset();
 
-        recordCommandBuffer(imageIndex, imguiCMDBuffer, meshCMDBuffer);
+        recordCommandBuffer(imageIndex, imguiCMDBuffer, simpleMeshCMDBuffer, complexMeshCMDBuffer);
 
         vk::PipelineStageFlags waitDestinationStageMask(vk::PipelineStageFlagBits::eColorAttachmentOutput);
 
