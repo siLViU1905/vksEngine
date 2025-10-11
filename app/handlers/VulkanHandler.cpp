@@ -8,7 +8,7 @@
 #include <thread>
 #include <glm/ext/matrix_transform.hpp>
 #include "ImGuiHandler.h"
-#include "../scene/ubocomponents/UBOmvp.h"
+#include "../scene/ubocomponents/UBOvp.h"
 
 namespace vks_engine
 {
@@ -535,10 +535,25 @@ namespace vks_engine
         depthStencilInfo.depthBoundsTestEnable = vk::False;
         depthStencilInfo.stencilTestEnable = vk::False;
 
+        vk::PushConstantRange modelPushConstant(
+            vk::ShaderStageFlagBits::eVertex,
+            0,
+            sizeof(glm::mat4)
+        );
+
+        vk::PushConstantRange colorPushConstant(
+            vk::ShaderStageFlagBits::eFragment,
+            sizeof(glm::mat4),
+            sizeof(glm::vec4)
+        );
+
+        vk::PushConstantRange pushConstants[] = {modelPushConstant, colorPushConstant};
+
         vk::PipelineLayoutCreateInfo pipelineLayoutInfo({},
                                                         1,
                                                         &*m_ComplexMeshDescriptorSetLayout,
-                                                        0
+                                                        2,
+                                                        pushConstants
         );
 
 
@@ -670,17 +685,25 @@ namespace vks_engine
         depthStencilInfo.depthBoundsTestEnable = vk::False;
         depthStencilInfo.stencilTestEnable = vk::False;
 
-        vk::PushConstantRange pushConstantRange(
-            vk::ShaderStageFlagBits::eFragment, // stageFlags
-            0, // offset (start at 0)
-            sizeof(glm::vec4) // size
+        vk::PushConstantRange modelPushConstant(
+            vk::ShaderStageFlagBits::eVertex,
+            0,
+            sizeof(glm::mat4)
         );
+
+        vk::PushConstantRange colorPushConstant(
+            vk::ShaderStageFlagBits::eFragment,
+            sizeof(glm::mat4),
+            sizeof(glm::vec4)
+        );
+
+        vk::PushConstantRange pushConstants[] = {modelPushConstant, colorPushConstant};
 
         vk::PipelineLayoutCreateInfo pipelineLayoutInfo({},
                                                         1,
                                                         &*m_SimpleMeshDescriptorSetLayout,
-                                                        1,
-                                                        &pushConstantRange
+                                                        2,
+                                                        pushConstants
         );
 
 
@@ -1418,7 +1441,7 @@ namespace vks_engine
         m_SimpleMeshDescriptorPool = vk::raii::DescriptorPool(m_Device, poolInfo);
     }
 
-    void VulkanHandler::createComplexMeshDescriptorSets(UniformBuffer &mvpUBO, vk::DeviceSize mvpSize,
+    void VulkanHandler::createComplexMeshDescriptorSets(UniformBuffer &mvpUBO, vk::DeviceSize vpSize,
                                                         UniformBuffer &pointLightUBO, vk::DeviceSize plSize,
                                                         UniformBuffer &directionalLightUBO, vk::DeviceSize dlSize,
                                                         UniformBuffer &countersUBO, vk::DeviceSize ctSize)
@@ -1443,7 +1466,7 @@ namespace vks_engine
             vk::DescriptorBufferInfo mvpBufferInfo(
                 mvpUBO.m_Buffers[i],
                 0,
-                mvpSize
+                vpSize
             );
 
             vk::DescriptorBufferInfo directionalLightBuffer(
@@ -1520,7 +1543,7 @@ namespace vks_engine
         }
     }
 
-    void VulkanHandler::createSimpleMeshDescriptorSets(UniformBuffer &mvpUBO, vk::DeviceSize mvpSize,
+    void VulkanHandler::createSimpleMeshDescriptorSets(UniformBuffer &mvpUBO, vk::DeviceSize vpSize,
                                                        UniformBuffer &pointLightUBO, vk::DeviceSize plSize,
                                                        UniformBuffer &directionalLightUBO, vk::DeviceSize dlSize,
                                                        UniformBuffer &countersUBO, vk::DeviceSize ctSize)
@@ -1545,7 +1568,7 @@ namespace vks_engine
             vk::DescriptorBufferInfo mvpBufferInfo(
                 mvpUBO.m_Buffers[i],
                 0,
-                mvpSize
+                vpSize
             );
 
             vk::DescriptorBufferInfo directionalLightBuffer(

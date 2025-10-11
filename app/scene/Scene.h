@@ -14,7 +14,7 @@
 #include "components/DirectionalLightComponent.h"
 #include "components/MeshComponent.h"
 #include "components/PointLightComponent.h"
-#include "ubocomponents/UBOmvp.h"
+#include "ubocomponents/UBOvp.h"
 #include "ubocomponents/UBOcounters.h"
 
 namespace vks_engine
@@ -80,13 +80,11 @@ namespace vks_engine
 
         //======== MVP UBO ========
 
-        UBOmvp<MAX_ALLOWED_MESH_COUNT> m_UBOmvp;
+        UBOvp m_UBOvp;
 
-        UniformBuffer m_UBOmvpBuffer;
+        UniformBuffer m_UBOvpBuffer;
 
-        void updateUBOmvpModel(const Mesh &mesh);
-
-        void updateUBOmvpCam();
+        void updateUBOvpCam();
 
         void updateCamera(float deltaTime);
 

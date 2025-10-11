@@ -102,12 +102,12 @@ namespace vks_engine
 
         void createSimpleMeshDescriptorPool();
 
-        void createComplexMeshDescriptorSets(UniformBuffer &mvpUBO, vk::DeviceSize mvpSize,
+        void createComplexMeshDescriptorSets(UniformBuffer &mvpUBO, vk::DeviceSize vpSize,
                                              UniformBuffer &pointLightUBO, vk::DeviceSize plSize,
                                              UniformBuffer &directionalLightUBO, vk::DeviceSize dlSize,
                                              UniformBuffer &countersUBO, vk::DeviceSize ctSize);
 
-        void createSimpleMeshDescriptorSets(UniformBuffer &mvpUBO, vk::DeviceSize mvpSize,
+        void createSimpleMeshDescriptorSets(UniformBuffer &mvpUBO, vk::DeviceSize vpSize,
                                             UniformBuffer &pointLightUBO, vk::DeviceSize plSize,
                                             UniformBuffer &directionalLightUBO, vk::DeviceSize dlSize,
                                             UniformBuffer &countersUBO, vk::DeviceSize ctSize);

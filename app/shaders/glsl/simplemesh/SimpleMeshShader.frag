@@ -59,8 +59,8 @@ layout(binding = 3) uniform Counters
 counters;
 
 layout(push_constant) uniform PushConstants {
-    vec4 color;
-} pc;
+    layout(offset = 64) vec4 color;
+} pushConst;
 
 struct LightComponent
 {
@@ -79,7 +79,7 @@ void calculateLights(vec3 normal, vec3 viewDir, out LightComponent totalPointLig
 
 void main()
 {
-    vec3 diffuseColor = pc.color.rgb;
+    vec3 diffuseColor = pushConst.color.rgb;
 
     vec3 viewDir = normalize(viewPos - fragPos);
 

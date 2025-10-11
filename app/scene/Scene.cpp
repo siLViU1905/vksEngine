@@ -33,7 +33,7 @@ namespace vks_engine
 
         createUniformBuffers();
 
-        m_Vk.createComplexMeshDescriptorSets(m_UBOmvpBuffer, sizeof(UBOmvp<MAX_ALLOWED_MESH_COUNT>),
+        m_Vk.createComplexMeshDescriptorSets(m_UBOvpBuffer, sizeof(UBOvp),
                                              m_UBOPointLightBuffer,
                                              sizeof(PointLight::Aligned) * MAX_ALLOWED_POINT_LIGHT_COUNT,
                                              m_UBODirectionalLightBuffer,
@@ -41,7 +41,7 @@ namespace vks_engine
                                              m_UBOCountersBuffer, sizeof(UBOcounters)
         );
 
-        m_Vk.createSimpleMeshDescriptorSets(m_UBOmvpBuffer, sizeof(UBOmvp<MAX_ALLOWED_MESH_COUNT>),
+        m_Vk.createSimpleMeshDescriptorSets(m_UBOvpBuffer, sizeof(UBOvp),
                                             m_UBOPointLightBuffer,
                                             sizeof(PointLight::Aligned) * MAX_ALLOWED_POINT_LIGHT_COUNT,
                                             m_UBODirectionalLightBuffer,
@@ -111,7 +111,7 @@ namespace vks_engine
 
     void Scene::createUniformBuffers()
     {
-        m_Vk.CreateUniformBuffers(m_UBOmvpBuffer, sizeof(m_UBOmvp));
+        m_Vk.CreateUniformBuffers(m_UBOvpBuffer, sizeof(m_UBOvp));
 
         m_Vk.CreateUniformBuffers(m_UBOPointLightBuffer, sizeof(PointLight::Aligned) * MAX_ALLOWED_POINT_LIGHT_COUNT);
 
@@ -123,16 +123,13 @@ namespace vks_engine
 
     void Scene::initUBOmvp()
     {
-        for (uint32_t i = 0; i < MAX_ALLOWED_MESH_COUNT; ++i)
-            m_UBOmvp.model[i] = glm::mat4(1.f);
+        m_UBOvp.view = m_Camera.m_View;
 
-        m_UBOmvp.view = m_Camera.m_View;
+        m_UBOvp.proj = m_Camera.m_Projection;
 
-        m_UBOmvp.proj = m_Camera.m_Projection;
+        m_UBOvp.proj[1][1] = -m_UBOvp.proj[1][1];
 
-        m_UBOmvp.proj[1][1] = -m_UBOmvp.proj[1][1];
-
-        m_UBOmvp.viewPos = m_Camera.getPosition();
+        m_UBOvp.viewPos = m_Camera.getPosition();
     }
 
     void Scene::initUBOPointLight()
@@ -192,8 +189,6 @@ namespace vks_engine
 
         meshComponent.m_Menu.setTitle("Mesh" + std::to_string(meshComponent.m_Mesh.getID()));
 
-        m_UBOmvp.model[mesh.getID()] = mesh.getModel();
-
         ++m_CurrentMeshCount;
     }
 
@@ -219,8 +214,6 @@ namespace vks_engine
         meshComponent.bind();
 
         meshComponent.m_Menu.setTitle("Mesh" + std::to_string(meshComponent.m_Mesh.getID()));
-
-        m_UBOmvp.model[mesh.getID()] = mesh.getModel();
 
         ++m_CurrentMeshCount;
     }
@@ -309,6 +302,7 @@ namespace vks_engine
         commandBuffer.setScissor(0, m_Vk.m_Scissor);
 
         commandBuffer.bindPipeline(vk::PipelineBindPoint::eGraphics, m_Vk.m_SimpleMeshGraphicsPipeline);
+
         commandBuffer.bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
                                          m_Vk.m_SimpleMeshPipelineLayout,
                                          0,
@@ -320,16 +314,22 @@ namespace vks_engine
         {
             const auto &mesh = meshComponent.m_Mesh;
 
+            const auto& model = mesh.getModel();
+
             auto color = glm::vec4(mesh.getColor(), 1.0);
 
-            vk::ArrayProxy<const glm::vec4> arr = color;
+            vk::ArrayProxy<const glm::mat4> modelProxy = model;
+
+            vk::ArrayProxy<const glm::vec4> colorProxy = color;
 
             vk::DeviceSize offset = 0;
             commandBuffer.bindVertexBuffers(0, *mesh.m_VertexBuffer, offset);
 
             commandBuffer.bindIndexBuffer(mesh.m_IndexBuffer, 0, vk::IndexType::eUint32);
 
-            commandBuffer.pushConstants(*m_Vk.m_SimpleMeshPipelineLayout, vk::ShaderStageFlagBits::eFragment, 0, arr);
+            commandBuffer.pushConstants(*m_Vk.m_SimpleMeshPipelineLayout, vk::ShaderStageFlagBits::eVertex, 0, modelProxy);
+
+            commandBuffer.pushConstants(*m_Vk.m_SimpleMeshPipelineLayout, vk::ShaderStageFlagBits::eFragment, sizeof(glm::mat4), colorProxy);
 
             commandBuffer.drawIndexed(
                 static_cast<uint32_t>(mesh.getIndices().size()),
@@ -378,7 +378,6 @@ namespace vks_engine
                                          nullptr
         );
 
-        commandBuffer.bindPipeline(vk::PipelineBindPoint::eGraphics, m_Vk.m_ComplexMeshGraphicsPipeline);
         commandBuffer.bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
                                          m_Vk.m_ComplexMeshPipelineLayout,
                                          0,
@@ -390,10 +389,22 @@ namespace vks_engine
         {
             const auto &mesh = meshComponent.m_Mesh;
 
+            const auto& model = mesh.getModel();
+
+            auto color = glm::vec4(mesh.getColor(), 1.0);
+
+            vk::ArrayProxy<const glm::mat4> modelProxy = model;
+
+            vk::ArrayProxy<const glm::vec4> colorProxy = color;
+
             vk::DeviceSize offset = 0;
             commandBuffer.bindVertexBuffers(0, *mesh.m_VertexBuffer, offset);
 
             commandBuffer.bindIndexBuffer(mesh.m_IndexBuffer, 0, vk::IndexType::eUint32);
+
+            commandBuffer.pushConstants(*m_Vk.m_ComplexMeshPipelineLayout, vk::ShaderStageFlagBits::eVertex, 0, modelProxy);
+
+            commandBuffer.pushConstants(*m_Vk.m_ComplexMeshPipelineLayout, vk::ShaderStageFlagBits::eFragment, sizeof(glm::mat4), colorProxy);
 
             commandBuffer.drawIndexed(
                 static_cast<uint32_t>(mesh.getIndices().size()),
@@ -412,16 +423,14 @@ namespace vks_engine
         {
             auto &menu = component.m_Menu;
 
-            if (menu.render())
-                updateUBOmvpModel(component.m_Mesh);
+            menu.render();
         }
 
         for (auto &component: m_ComplexMeshComponents)
         {
             auto &menu = component.m_Menu;
 
-            if (menu.render())
-                updateUBOmvpModel(component.m_Mesh);
+            menu.render();
         }
 
         for (uint32_t i = 0; i < m_ActivePointLights; ++i)
@@ -443,16 +452,11 @@ namespace vks_engine
         m_ImGui.endFrame();
     }
 
-    void Scene::updateUBOmvpModel(const Mesh &mesh)
+    void Scene::updateUBOvpCam()
     {
-        m_UBOmvp.model[mesh.getID()] = mesh.getModel();
-    }
+        m_UBOvp.view = m_Camera.m_View;
 
-    void Scene::updateUBOmvpCam()
-    {
-        m_UBOmvp.view = m_Camera.m_View;
-
-        m_UBOmvp.viewPos = m_Camera.getPosition();
+        m_UBOvp.viewPos = m_Camera.getPosition();
     }
 
     void Scene::updateCamera(float deltaTime)
@@ -461,7 +465,7 @@ namespace vks_engine
 
         m_Camera.updateLookAt(deltaTime);
 
-        updateUBOmvpCam();
+        updateUBOvpCam();
     }
 
     void Scene::updateUBOpointLight(const PointLight &pointLight)
@@ -497,7 +501,7 @@ namespace vks_engine
 
     void Scene::updateUBO(uint32_t frame)
     {
-        m_UBOmvpBuffer.update(m_UBOmvp, frame);
+        m_UBOvpBuffer.update(m_UBOvp, frame);
 
         m_UBOCountersBuffer.update(m_Counters, frame);
 

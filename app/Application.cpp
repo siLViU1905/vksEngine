@@ -10,7 +10,7 @@ namespace vks_engine
 
         m_Scene.init();
 
-        m_Scene.addMesh("../app/models/backpack/scene.gltf");
+        m_Scene.addMesh("../app/models/backpack/backpack.obj");
         m_Scene.addSphereMesh();
     }
 

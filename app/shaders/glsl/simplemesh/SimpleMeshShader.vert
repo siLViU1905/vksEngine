@@ -12,30 +12,31 @@ layout(location = 2) out vec2 fragTexCoords;
 layout(location = 3) out vec3 viewPos;
 layout(location = 4) out mat3 TBN;
 
-layout(binding = 0) uniform MVP
+layout(binding = 0) uniform VP
 {
-    mat4 model[2];
     mat4 view;
     mat4 projection;
     vec3 viewpos;
 }
-mvp;
+vp;
+
+layout(push_constant) uniform PushConstants {
+    mat4 model;
+} pushConst;
 
 void main()
 {
-    mat4 modelMatrix = mvp.model[1];
+   mat3 normalMatrix = mat3(transpose(inverse(pushConst.model)));
 
-    mat3 normalMatrix = mat3(transpose(inverse(modelMatrix)));
-
-    fragPos = vec3(modelMatrix * vec4(aPos, 1.0));
+    fragPos = vec3(pushConst.model * vec4(aPos, 1.0));
 
     fragTexCoords = aTexCoords;
 
-    viewPos = mvp.viewpos;
+    viewPos = vp.viewpos;
 
-    vec3 T = normalize(vec3(modelMatrix * vec4(aTangent, 0.0)));
+    vec3 T = normalize(vec3(pushConst.model * vec4(aTangent, 0.0)));
 
-    vec3 B = normalize(vec3(modelMatrix * vec4(aBitangent, 0.0)));
+    vec3 B = normalize(vec3(pushConst.model * vec4(aBitangent, 0.0)));
 
     vec3 N = normalize(normalMatrix * aNormal);
 
@@ -43,5 +44,5 @@ void main()
 
     fragNormal = N;
 
-    gl_Position = mvp.projection * mvp.view * vec4(fragPos, 1.0);
+    gl_Position = vp.projection * vp.view * vec4(fragPos, 1.0);
 }
