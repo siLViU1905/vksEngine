@@ -109,3 +109,7 @@ app/models/map70/textures/TOOLSTOOLSSKYBOX_9_baseColor.png
 app/models/map70/textures/TOOLSTOOLSSKYBOX_baseColor.png
 app/models/viking-room/vikingRoom.obj
 app/models/viking-room/vikingRoomTex.png
+external/GLFW/
+external/glm/
+external/imgui/
+external/assimp/
