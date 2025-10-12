@@ -155,8 +155,6 @@ namespace vks_engine
 
         void initSceneComponentPropertiesMenu();
 
-        void renderComponentMenus();
-
         void renderMenus();
 
         //======== FUNCTIONS ========

@@ -505,39 +505,6 @@ namespace vks_engine
         });
     }
 
-    void Scene::renderComponentMenus()
-    {
-        for (auto &component: m_SimpleMeshComponents)
-        {
-            auto &menu = component.m_Menu;
-
-            menu.render();
-        }
-
-        for (auto &component: m_ComplexMeshComponents)
-        {
-            auto &menu = component.m_Menu;
-
-            menu.render();
-        }
-
-        for (uint32_t i = 0; i < m_ActivePointLights; ++i)
-        {
-            auto &menu = m_PointLightComponents[i].m_Menu;
-
-            if (menu.render())
-                updateUBOpointLight(m_PointLightComponents[i].m_Light);
-        }
-
-        for (uint32_t i = 0; i < m_ActiveDirectionalLights; ++i)
-        {
-            auto &menu = m_DirectionalLightComponents[i].m_Menu;
-
-            if (menu.render())
-                updateUBOdirectionalLight(m_DirectionalLightComponents[i].m_Light);
-        }
-    }
-
     void Scene::renderMenus()
     {
         m_ImGui.beginFrame();

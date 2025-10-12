@@ -55,14 +55,6 @@ namespace vks_engine
 
                     ImGui::PopStyleColor(3);
 
-                    /*if (entry.name == m_SelectedComponent)
-                    {
-                        ImGui::GetWindowDrawList()->AddRect(
-                            ImGui::GetItemRectMin(), ImGui::GetItemRectMax(),
-                            IM_COL32(255, 255, 255, 255), 3.0f, 0, 2.0f
-                        );
-                    }*/
-
                     ImGui::Spacing();
                 }
             }
