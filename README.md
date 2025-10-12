@@ -142,6 +142,8 @@ vksengine
 │           └───simplemesh
 │                   SimpleMeshShader.frag
 │                   SimpleMeshShader.vert
+|
+
 ```
 ## 🛠️ Technical Implementation
 
