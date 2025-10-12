@@ -3,6 +3,7 @@ project(vksEngine)
 
 set(CMAKE_CXX_STANDARD 23)
 
+#if your vulkan version is different specify it here
 set(VULKAN_SDK "C:/VulkanSDK/1.4.328.1")
 
 set(Vulkan_ROOT "${VULKAN_SDK}")
@@ -18,14 +19,6 @@ set(IMGUI_DIR "${CMAKE_SOURCE_DIR}/external/imgui")
 set(STB_IMAGE_DIR "${CMAKE_SOURCE_DIR}/external/stbimage")
 
 set(ASSIMP_DIR "${CMAKE_SOURCE_DIR}/external/assimp")
-
-if (MSVC)
-    set(GLFW_LIBRARIES "C:/GLFW/lib/glfw3.lib")
-elseif (MINGW OR CMAKE_COMPILER_IS_GNUCXX)
-    set(GLFW_LIBRARIES "C:/GLFW/lib/libglfw3.a")
-endif ()
-
-set(ASSIMP_LIBRARIES "C:/assimp/lib/assimp-vc143-mtd.lib")
 
 find_package(Vulkan REQUIRED)
 
@@ -138,4 +131,11 @@ add_custom_command(TARGET vksEngine POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         $<TARGET_FILE:assimp>
         $<TARGET_FILE_DIR:vksEngine>
+)
+
+add_custom_command(TARGET vksEngine POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_SOURCE_DIR}/app/shaders/compiled
+        $<TARGET_FILE_DIR:vksEngine>/shaders
+        COMMENT "Copying shaders to build directory"
 )

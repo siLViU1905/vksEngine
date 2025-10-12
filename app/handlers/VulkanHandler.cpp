@@ -439,8 +439,8 @@ namespace vks_engine
 
     void VulkanHandler::createComplexMeshGraphicsPipeline()
     {
-        auto vertexShaderCode = readFile("../app/shaders/compiled/complexmesh/ComplexMeshShaderVert.spv");
-        auto fragmentShaderCode = readFile("../app/shaders/compiled/complexmesh/ComplexMeshShaderFrag.spv");
+        auto vertexShaderCode = readFile("shaders/complexmesh/ComplexMeshShaderVert.spv");
+        auto fragmentShaderCode = readFile("shaders/complexmesh/ComplexMeshShaderFrag.spv");
 
         auto vertexShaderModule = createShaderModule(vertexShaderCode, m_Device);
         auto fragmentShaderModule = createShaderModule(fragmentShaderCode, m_Device);
@@ -589,8 +589,8 @@ namespace vks_engine
 
     void VulkanHandler::createSimpleMeshGraphicsPipeline()
     {
-        auto vertexShaderCode = readFile("../app/shaders/compiled/simplemesh/SimpleMeshShaderVert.spv");
-        auto fragmentShaderCode = readFile("../app/shaders/compiled/simplemesh/SimpleMeshShaderFrag.spv");
+        auto vertexShaderCode = readFile("shaders/simplemesh/SimpleMeshShaderVert.spv");
+        auto fragmentShaderCode = readFile("shaders/simplemesh/SimpleMeshShaderFrag.spv");
 
         auto vertexShaderModule = createShaderModule(vertexShaderCode, m_Device);
         auto fragmentShaderModule = createShaderModule(fragmentShaderCode, m_Device);

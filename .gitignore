@@ -1,9 +1,6 @@
 app/images/texture.jpg
 app/models/backpack/ao.jpg
-app/models/backpack/backpack.obj
-app/models/backpack/diffuse.jpg
 app/models/backpack/license.txt
-app/models/backpack/normal.png
 app/models/backpack/roughness.jpg
 app/models/backpack/scene.bin
 app/models/backpack/scene.gltf
