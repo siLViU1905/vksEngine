@@ -1,4 +1,4 @@
-﻿# VKSEngine
+# VKSEngine
 
 Simple 3D graphics engine with a scene and components(meshes, lights).  
 
@@ -151,6 +151,7 @@ vksengine
 - **C++23**
 - **Vulkan** for custom graphics rendering
 - **ImGui** for UI
+- **Assimp** for model loading
 
 ```
 ## 🛠️ Technical Implementation
