@@ -3,21 +3,21 @@ project(vksEngine)
 
 set(CMAKE_CXX_STANDARD 23)
 
-set(VULKAN_SDK "C:/VulkanSDK/1.4.321.1")
+set(VULKAN_SDK "C:/VulkanSDK/1.4.328.1")
 
 set(Vulkan_ROOT "${VULKAN_SDK}")
 
-set(GLFW_INCLUDE_DIRS "C:/GLFW/include")
+set(Vulkan_INCLUDE_DIR "${VULKAN_SDK}/Include")
 
-set(GLM_INCLUDE_DIRS "C:/glm/include")
+set(GLFW_DIR "${CMAKE_SOURCE_DIR}/external/GLFW")
 
-set(STB_IMAGE_INCLUDE_DIRS "C:/stbimage/include")
+set(GLM_DIR "${CMAKE_SOURCE_DIR}/external/glm")
 
-set(ASSIMP_INCLUDE_DIRS "C:/assimp/include")
+set(IMGUI_DIR "${CMAKE_SOURCE_DIR}/external/imgui")
 
-set(ASSIMP_LIBRARIES "C:/assimp/lib/assimp-vc143-mtd.lib")
+set(STB_IMAGE_DIR "${CMAKE_SOURCE_DIR}/external/stbimage")
 
-set(IMGUI_INCLUDE_DIRS "C:/imgui/docking")
+set(ASSIMP_DIR "${CMAKE_SOURCE_DIR}/external/assimp")
 
 if (MSVC)
     set(GLFW_LIBRARIES "C:/GLFW/lib/glfw3.lib")
@@ -25,7 +25,28 @@ elseif (MINGW OR CMAKE_COMPILER_IS_GNUCXX)
     set(GLFW_LIBRARIES "C:/GLFW/lib/libglfw3.a")
 endif ()
 
+set(ASSIMP_LIBRARIES "C:/assimp/lib/assimp-vc143-mtd.lib")
+
 find_package(Vulkan REQUIRED)
+
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+add_subdirectory(${GLFW_DIR})
+
+set(ASSIMP_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(ASSIMP_BUILD_ASSIMP_TOOLS OFF CACHE BOOL "" FORCE)
+set(ASSIMP_INSTALL OFF CACHE BOOL "" FORCE)
+add_subdirectory(${ASSIMP_DIR})
+
+set(IMGUI_SOURCES
+        ${IMGUI_DIR}/imgui.cpp
+        ${IMGUI_DIR}/imgui_draw.cpp
+        ${IMGUI_DIR}/imgui_widgets.cpp
+        ${IMGUI_DIR}/imgui_tables.cpp
+        ${IMGUI_DIR}/backends/imgui_impl_glfw.cpp
+        ${IMGUI_DIR}/backends/imgui_impl_vulkan.cpp
+)
 
 add_executable(vksEngine
         main.cpp
@@ -52,17 +73,7 @@ add_executable(vksEngine
 
         app/objects/lights/PointLight.cpp
 
-        ${IMGUI_INCLUDE_DIRS}/imgui/imgui.cpp
-
-        ${IMGUI_INCLUDE_DIRS}/imgui/imgui_draw.cpp
-
-        ${IMGUI_INCLUDE_DIRS}/imgui/imgui_widgets.cpp
-
-        ${IMGUI_INCLUDE_DIRS}/imgui/imgui_tables.cpp
-
-        ${IMGUI_INCLUDE_DIRS}/imgui/imgui_impl_glfw.cpp
-
-        ${IMGUI_INCLUDE_DIRS}/imgui/imgui_impl_vulkan.cpp
+        ${IMGUI_SOURCES}
 
         app/handlers/ImGuiHandler.cpp
 
@@ -103,15 +114,28 @@ add_executable(vksEngine
 
 
 target_include_directories(vksEngine PRIVATE
-        ${GLFW_INCLUDE_DIRS}
-        ${GLM_INCLUDE_DIRS}
-        ${STB_IMAGE_INCLUDE_DIRS}
-        ${ASSIMP_INCLUDE_DIRS}
-        ${IMGUI_INCLUDE_DIRS}
+        ${Vulkan_INCLUDE_DIR}
+        ${GLFW_DIR}
+        ${GLM_DIR}
+        ${IMGUI_DIR}
+        ${IMGUI_DIR}/backends
+        ${STB_IMAGE_DIR}
 )
 
 target_link_libraries(vksEngine
         Vulkan::Vulkan
-        ${GLFW_LIBRARIES}
-        ${ASSIMP_LIBRARIES}
+        glfw
+        assimp
+)
+
+add_custom_command(TARGET vksEngine POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        $<TARGET_FILE:glfw>
+        $<TARGET_FILE_DIR:vksEngine>
+)
+
+add_custom_command(TARGET vksEngine POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        $<TARGET_FILE:assimp>
+        $<TARGET_FILE_DIR:vksEngine>
 )

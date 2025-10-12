@@ -2,7 +2,7 @@
 #define VKSENGINECOMPONENTMENU_H
 
 #include "Menu.h"
-#include "imgui/imgui.h"
+#include <imgui.h>
 
 namespace vks_engine
 {
