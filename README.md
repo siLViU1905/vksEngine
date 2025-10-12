@@ -1,4 +1,4 @@
-﻿# Poor Man's Go
+﻿# VKSEngine
 
 Simple 3D graphics engine with a scene and components(meshes, lights).  
 
