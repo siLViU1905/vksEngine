@@ -51,8 +51,6 @@ I took an OOP aproach.
 │   │           └───simplemesh
 
 ```
-
-```
 ## 🛠️ Technical Implementation
 
 ### Core Technologies
@@ -60,4 +58,3 @@ I took an OOP aproach.
 - **Vulkan 1.4** for custom graphics rendering
 - **ImGui** for UI
 - **Assimp** for model loading
-```
