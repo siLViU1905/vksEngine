@@ -1,7 +1,7 @@
 #ifndef VKSENGINEMENU_H
 #define VKSENGINEMENU_H
 #include <string>
-#include "imgui/imgui.h"
+#include <imgui.h>
 
 namespace vks_engine
 {

@@ -21,7 +21,6 @@ namespace vks_engine
 
         io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
         io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
-        //io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
         ImGui_ImplGlfw_InitForVulkan(window, true);
 
@@ -35,23 +34,23 @@ namespace vks_engine
         initInfo.DescriptorPool = *m_DescriptorPool;
         initInfo.MinImageCount = vkHandler.m_SwapChainImages.size();
         initInfo.ImageCount = vkHandler.m_SwapChainImages.size();
-        initInfo.MSAASamples = static_cast<VkSampleCountFlagBits>(vkHandler.m_MsaaSamples);
+        //initInfo.MSAASamples = static_cast<VkSampleCountFlagBits>(vkHandler.m_MsaaSamples);
         initInfo.Allocator = nullptr;
         initInfo.CheckVkResultFn = nullptr;
 
         initInfo.UseDynamicRendering = true;
-        initInfo.RenderPass = VK_NULL_HANDLE;
+        initInfo.PipelineInfoMain.RenderPass = VK_NULL_HANDLE;
 
-        initInfo.PipelineRenderingCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO_KHR;
-        initInfo.PipelineRenderingCreateInfo.colorAttachmentCount = 1;
-        initInfo.PipelineRenderingCreateInfo.pColorAttachmentFormats = reinterpret_cast<const VkFormat *>(&vkHandler.
+        initInfo.PipelineInfoMain.PipelineRenderingCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO_KHR;
+        initInfo.PipelineInfoMain.PipelineRenderingCreateInfo.colorAttachmentCount = 1;
+        initInfo.PipelineInfoMain.PipelineRenderingCreateInfo.pColorAttachmentFormats = reinterpret_cast<const VkFormat *>(&vkHandler.
             m_SwapChainImageFormat);
 
         vk::Format depthFormat = vkHandler.findDepthFormat();
 
         const auto *pDepthFormat = reinterpret_cast<const VkFormat *>(&depthFormat);
 
-        initInfo.PipelineRenderingCreateInfo.depthAttachmentFormat = *pDepthFormat;
+        initInfo.PipelineInfoMain.PipelineRenderingCreateInfo.depthAttachmentFormat = *pDepthFormat;
 
         if (!ImGui_ImplVulkan_Init(&initInfo))
             throw std::runtime_error("Failed to initialize ImGui for Vulkan");
@@ -161,23 +160,23 @@ namespace vks_engine
         initInfo.DescriptorPool = *m_DescriptorPool;
         initInfo.MinImageCount = vkHandler.m_SwapChainImages.size();
         initInfo.ImageCount = vkHandler.m_SwapChainImages.size();
-        initInfo.MSAASamples = static_cast<VkSampleCountFlagBits>(vkHandler.m_MsaaSamples);
+        initInfo.PipelineInfoMain.MSAASamples = static_cast<VkSampleCountFlagBits>(vkHandler.m_MsaaSamples);
         initInfo.Allocator = nullptr;
         initInfo.CheckVkResultFn = nullptr;
 
         initInfo.UseDynamicRendering = true;
-        initInfo.RenderPass = VK_NULL_HANDLE;
+        initInfo.PipelineInfoMain.RenderPass = VK_NULL_HANDLE;
 
-        initInfo.PipelineRenderingCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO_KHR;
-        initInfo.PipelineRenderingCreateInfo.colorAttachmentCount = 1;
-        initInfo.PipelineRenderingCreateInfo.pColorAttachmentFormats = reinterpret_cast<const VkFormat *>(&vkHandler.
+        initInfo.PipelineInfoMain.PipelineRenderingCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO_KHR;
+        initInfo.PipelineInfoMain.PipelineRenderingCreateInfo.colorAttachmentCount = 1;
+        initInfo.PipelineInfoMain.PipelineRenderingCreateInfo.pColorAttachmentFormats = reinterpret_cast<const VkFormat *>(&vkHandler.
             m_SwapChainImageFormat);
 
         vk::Format depthFormat = vkHandler.findDepthFormat();
 
         const auto *pDepthFormat = reinterpret_cast<const VkFormat *>(&depthFormat);
 
-        initInfo.PipelineRenderingCreateInfo.depthAttachmentFormat = *pDepthFormat;
+        initInfo.PipelineInfoMain.PipelineRenderingCreateInfo.depthAttachmentFormat = *pDepthFormat;
 
         if (!ImGui_ImplVulkan_Init(&initInfo))
             throw std::runtime_error("Failed to update ImGui swapchian");
