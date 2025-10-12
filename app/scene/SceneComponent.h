@@ -1,6 +1,6 @@
 #ifndef VKSENGINESCENECOMPONENT_H
 #define VKSENGINESCENECOMPONENT_H
-#include "../objects/menus/Menu.h"
+#include "../objects/menus/ComponentMenu.h"
 
 namespace vks_engine
 {
@@ -10,7 +10,7 @@ namespace vks_engine
     public:
         Component m_Mesh;
 
-        Menu<Component> m_Menu;
+        ComponentMenu<Component> m_Menu;
 
         void bind()
         {

@@ -1,11 +1,11 @@
 #ifndef VKSENGINEMESHMENU_H
 #define VKSENGINEMESHMENU_H
-#include "Menu.h"
+#include "ComponentMenu.h"
 #include "../Mesh.h"
 
 namespace vks_engine
 {
-    class MeshMenu : protected Menu<Mesh>
+    class MeshMenu : protected ComponentMenu<Mesh>
     {
     public:
         MeshMenu();
@@ -14,10 +14,10 @@ namespace vks_engine
 
         bool render() override;
 
-        using Menu::setComponent;
-        using Menu::getComponent;
-        using Menu::setTitle;
-        using Menu::getTitle;
+        using ComponentMenu::setComponent;
+        using ComponentMenu::getComponent;
+        using ComponentMenu::setTitle;
+        using ComponentMenu::getTitle;
     };
 }
 

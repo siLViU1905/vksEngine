@@ -89,6 +89,16 @@ add_executable(vksEngine
         app/handlers/InputHandler.cpp
 
         app/objects/input/Button.cpp
+
+        app/objects/menus/Menu.cpp
+
+        app/scene/menus/SceneFunctionsMenu.cpp
+
+        app/scene/menus/SceneComponentsMenu.cpp
+
+        app/scene/menus/SceneComponentPropertiesMenu.cpp
+
+        app/scene/components/ComponentType.cpp
 )
 
 

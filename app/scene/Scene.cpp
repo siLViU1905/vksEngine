@@ -21,6 +21,8 @@ namespace vks_engine
     {
         setInputHandlers();
 
+        initMenus();
+
         m_ImGui.init(m_Vk, m_Window.getWindow());
 
         m_ColorAttachmentFormat = m_ImGui.m_ColorAttachmentFormat;
@@ -47,8 +49,6 @@ namespace vks_engine
                                             m_UBODirectionalLightBuffer,
                                             sizeof(DirectionalLight::Aligned) * MAX_ALLOWED_DIRECTIONAL_LIGHT_COUNT,
                                             m_UBOCountersBuffer, sizeof(UBOcounters));
-
-        addPointLight();
     }
 
     void Scene::run()
@@ -173,23 +173,25 @@ namespace vks_engine
         if (m_CurrentMeshCount == MAX_ALLOWED_MESH_COUNT)
             return;
 
-        auto &meshComponent = m_ComplexMeshComponents.emplace_back();
+        auto &component = m_ComplexMeshComponents.emplace_back();
 
-        meshComponent.m_Mesh.setID(m_CurrentMeshCount);
+        component.m_Mesh.setID(m_CurrentMeshCount);
 
-        meshComponent.m_Mesh.load(path);
+        component.m_Mesh.load(path);
 
-        auto &mesh = meshComponent.m_Mesh;
+        auto &mesh = component.m_Mesh;
 
         m_Vk.CreateVertexBuffer(mesh.getVertices(), mesh.m_VertexBuffer, mesh.m_VertexBufferMemory);
 
         m_Vk.CreateIndexBuffer(mesh.getIndices(), mesh.m_IndexBuffer, mesh.m_IndexBufferMemory);
 
-        meshComponent.bind();
+        component.bind();
 
-        meshComponent.m_Menu.setTitle("Mesh" + std::to_string(meshComponent.m_Mesh.getID()));
+        component.m_Menu.setTitle("Mesh" + std::to_string(component.m_Mesh.getID()));
 
         ++m_CurrentMeshCount;
+
+        m_SceneComponentsMenu.addComponent(ComponentType::MESH, component);
     }
 
     void Scene::addSphereMesh()
@@ -199,23 +201,25 @@ namespace vks_engine
 
         Mesh sphere = Mesh::generateSphere({}, 1.f, 64, 64);
 
-        auto &meshComponent = m_SimpleMeshComponents.emplace_back();
+        auto &component = m_SimpleMeshComponents.emplace_back();
 
-        meshComponent.m_Mesh = std::move(sphere);
+        component.m_Mesh = std::move(sphere);
 
-        meshComponent.m_Mesh.setID(m_CurrentMeshCount);
+        component.m_Mesh.setID(m_CurrentMeshCount);
 
-        auto &mesh = meshComponent.m_Mesh;
+        auto &mesh = component.m_Mesh;
 
         m_Vk.CreateVertexBuffer(mesh.getVertices(), mesh.m_VertexBuffer, mesh.m_VertexBufferMemory);
 
         m_Vk.CreateIndexBuffer(mesh.getIndices(), mesh.m_IndexBuffer, mesh.m_IndexBufferMemory);
 
-        meshComponent.bind();
+        component.bind();
 
-        meshComponent.m_Menu.setTitle("Mesh" + std::to_string(meshComponent.m_Mesh.getID()));
+        component.m_Menu.setTitle("Mesh" + std::to_string(component.m_Mesh.getID()));
 
         ++m_CurrentMeshCount;
+
+        m_SceneComponentsMenu.addComponent(ComponentType::MESH, component);
     }
 
     void Scene::addPointLight()
@@ -236,6 +240,8 @@ namespace vks_engine
         ++m_ActivePointLights;
 
         updateUBOcounters();
+
+        m_SceneComponentsMenu.addComponent(ComponentType::POINT_LIGHT, component);
     }
 
     void Scene::addDirectionalLight()
@@ -256,6 +262,8 @@ namespace vks_engine
         ++m_ActiveDirectionalLights;
 
         updateUBOcounters();
+
+        m_SceneComponentsMenu.addComponent(ComponentType::DIRECTIONAL_LIGHT, component);
     }
 
     void Scene::recordMeshCommands(uint32_t currentFrame)
@@ -314,7 +322,7 @@ namespace vks_engine
         {
             const auto &mesh = meshComponent.m_Mesh;
 
-            const auto& model = mesh.getModel();
+            const auto &model = mesh.getModel();
 
             auto color = glm::vec4(mesh.getColor(), 1.0);
 
@@ -327,9 +335,11 @@ namespace vks_engine
 
             commandBuffer.bindIndexBuffer(mesh.m_IndexBuffer, 0, vk::IndexType::eUint32);
 
-            commandBuffer.pushConstants(*m_Vk.m_SimpleMeshPipelineLayout, vk::ShaderStageFlagBits::eVertex, 0, modelProxy);
+            commandBuffer.pushConstants(*m_Vk.m_SimpleMeshPipelineLayout, vk::ShaderStageFlagBits::eVertex, 0,
+                                        modelProxy);
 
-            commandBuffer.pushConstants(*m_Vk.m_SimpleMeshPipelineLayout, vk::ShaderStageFlagBits::eFragment, sizeof(glm::mat4), colorProxy);
+            commandBuffer.pushConstants(*m_Vk.m_SimpleMeshPipelineLayout, vk::ShaderStageFlagBits::eFragment,
+                                        sizeof(glm::mat4), colorProxy);
 
             commandBuffer.drawIndexed(
                 static_cast<uint32_t>(mesh.getIndices().size()),
@@ -389,7 +399,7 @@ namespace vks_engine
         {
             const auto &mesh = meshComponent.m_Mesh;
 
-            const auto& model = mesh.getModel();
+            const auto &model = mesh.getModel();
 
             auto color = glm::vec4(mesh.getColor(), 1.0);
 
@@ -402,9 +412,11 @@ namespace vks_engine
 
             commandBuffer.bindIndexBuffer(mesh.m_IndexBuffer, 0, vk::IndexType::eUint32);
 
-            commandBuffer.pushConstants(*m_Vk.m_ComplexMeshPipelineLayout, vk::ShaderStageFlagBits::eVertex, 0, modelProxy);
+            commandBuffer.pushConstants(*m_Vk.m_ComplexMeshPipelineLayout, vk::ShaderStageFlagBits::eVertex, 0,
+                                        modelProxy);
 
-            commandBuffer.pushConstants(*m_Vk.m_ComplexMeshPipelineLayout, vk::ShaderStageFlagBits::eFragment, sizeof(glm::mat4), colorProxy);
+            commandBuffer.pushConstants(*m_Vk.m_ComplexMeshPipelineLayout, vk::ShaderStageFlagBits::eFragment,
+                                        sizeof(glm::mat4), colorProxy);
 
             commandBuffer.drawIndexed(
                 static_cast<uint32_t>(mesh.getIndices().size()),
@@ -413,43 +425,6 @@ namespace vks_engine
         }
 
         commandBuffer.end();
-    }
-
-    void Scene::renderMenus()
-    {
-        m_ImGui.beginFrame();
-
-        for (auto &component: m_SimpleMeshComponents)
-        {
-            auto &menu = component.m_Menu;
-
-            menu.render();
-        }
-
-        for (auto &component: m_ComplexMeshComponents)
-        {
-            auto &menu = component.m_Menu;
-
-            menu.render();
-        }
-
-        for (uint32_t i = 0; i < m_ActivePointLights; ++i)
-        {
-            auto &menu = m_PointLightComponents[i].m_Menu;
-
-            if (menu.render())
-                updateUBOpointLight(m_PointLightComponents[i].m_Light);
-        }
-
-        for (uint32_t i = 0; i < m_ActiveDirectionalLights; ++i)
-        {
-            auto &menu = m_DirectionalLightComponents[i].m_Menu;
-
-            if (menu.render())
-                updateUBOdirectionalLight(m_DirectionalLightComponents[i].m_Light);
-        }
-
-        m_ImGui.endFrame();
     }
 
     void Scene::updateUBOvpCam()
@@ -483,6 +458,99 @@ namespace vks_engine
         m_Counters.directionalLightCount = static_cast<int>(m_ActiveDirectionalLights);
 
         m_Counters.pointLightCount = static_cast<int>(m_ActivePointLights);
+    }
+
+    void Scene::initMenus()
+    {
+        initSceneFunctionsMenu();
+
+        initSceneComponentsMenu();
+
+        initSceneComponentPropertiesMenu();
+    }
+
+    void Scene::initSceneFunctionsMenu()
+    {
+        m_SceneFunctionsMenu.setTitle("Functions");
+
+        m_SceneFunctionsMenu.onAddMeshBtnClick([this]() { this->addSphereMesh(); });
+
+        m_SceneFunctionsMenu.onAddPointLightBtnClick([this]() { this->addPointLight(); });
+
+        m_SceneFunctionsMenu.onAddDirectionalLightBtnClick([this]() { this->addDirectionalLight(); });
+    }
+
+    void Scene::initSceneComponentsMenu()
+    {
+        m_SceneComponentsMenu.setTitle("Scene Components");
+
+        m_SceneComponentsMenu.setOnComponentSelected([this](ComponentEntry &entry)
+        {
+            this->m_SceneComponentPropertiesMenu.setActiveComponent(entry);
+        });
+    }
+
+    void Scene::initSceneComponentPropertiesMenu()
+    {
+        m_SceneComponentPropertiesMenu.setTitle("Component Properties");
+
+        m_SceneComponentPropertiesMenu.setOnPointLightPropertiesChange([this](const PointLight &pl)
+        {
+            this->updateUBOpointLight(pl);
+        });
+
+        m_SceneComponentPropertiesMenu.setOnDirectionalLightPropertiesChange([this](const DirectionalLight &dl)
+        {
+            this->updateUBOdirectionalLight(dl);
+        });
+    }
+
+    void Scene::renderComponentMenus()
+    {
+        for (auto &component: m_SimpleMeshComponents)
+        {
+            auto &menu = component.m_Menu;
+
+            menu.render();
+        }
+
+        for (auto &component: m_ComplexMeshComponents)
+        {
+            auto &menu = component.m_Menu;
+
+            menu.render();
+        }
+
+        for (uint32_t i = 0; i < m_ActivePointLights; ++i)
+        {
+            auto &menu = m_PointLightComponents[i].m_Menu;
+
+            if (menu.render())
+                updateUBOpointLight(m_PointLightComponents[i].m_Light);
+        }
+
+        for (uint32_t i = 0; i < m_ActiveDirectionalLights; ++i)
+        {
+            auto &menu = m_DirectionalLightComponents[i].m_Menu;
+
+            if (menu.render())
+                updateUBOdirectionalLight(m_DirectionalLightComponents[i].m_Light);
+        }
+    }
+
+    void Scene::renderMenus()
+    {
+        m_ImGui.beginFrame();
+
+        //renderComponentMenus();
+
+        m_SceneFunctionsMenu.render();
+
+        m_SceneComponentsMenu.render();
+
+        m_SceneComponentPropertiesMenu.render();
+
+        m_ImGui.endFrame();
     }
 
     void Scene::updateScene()

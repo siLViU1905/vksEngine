@@ -1,11 +1,11 @@
 #ifndef VKSENGINEPOINTLIGHTMENU_H
 #define VKSENGINEPOINTLIGHTMENU_H
-#include "Menu.h"
+#include "ComponentMenu.h"
 #include "../lights/PointLight.h"
 
 namespace vks_engine
 {
-    class PointLightMenu : protected Menu<PointLight>
+    class PointLightMenu : protected ComponentMenu<PointLight>
     {
     public:
         PointLightMenu();
@@ -14,10 +14,10 @@ namespace vks_engine
 
         bool render() override;
 
-        using Menu::setComponent;
-        using Menu::getComponent;
-        using Menu::setTitle;
-        using Menu::getTitle;
+        using ComponentMenu::setComponent;
+        using ComponentMenu::getComponent;
+        using ComponentMenu::setTitle;
+        using ComponentMenu::getTitle;
     };
 }
 

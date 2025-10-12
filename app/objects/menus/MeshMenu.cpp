@@ -8,14 +8,12 @@ namespace vks_engine
     {
     }
 
-    MeshMenu::MeshMenu(Mesh &mesh, const std::string &title): Menu(mesh, title)
+    MeshMenu::MeshMenu(Mesh &mesh, const std::string &title): ComponentMenu(mesh, title)
     {
     }
 
     bool MeshMenu::render()
     {
-        ImGui::Begin(m_Title.c_str());
-
         bool modified = false;
 
         auto position = m_Component->getPosition();
@@ -49,8 +47,6 @@ namespace vks_engine
             m_Component->setColor(color);
             modified = true;
         }
-
-        ImGui::End();
 
         return modified;
     }

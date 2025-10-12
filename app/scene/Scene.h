@@ -14,6 +14,9 @@
 #include "components/DirectionalLightComponent.h"
 #include "components/MeshComponent.h"
 #include "components/PointLightComponent.h"
+#include "menus/SceneComponentPropertiesMenu.h"
+#include "menus/SceneComponentsMenu.h"
+#include "menus/SceneFunctionsMenu.h"
 #include "ubocomponents/UBOvp.h"
 #include "ubocomponents/UBOcounters.h"
 
@@ -22,7 +25,7 @@ namespace vks_engine
     class Scene
     {
     private:
-        static constexpr uint32_t MAX_ALLOWED_MESH_COUNT = 2;
+        static constexpr uint32_t MAX_ALLOWED_MESH_COUNT = 10;
 
         static constexpr uint32_t MAX_ALLOWED_POINT_LIGHT_COUNT = 10;
 
@@ -76,6 +79,10 @@ namespace vks_engine
 
         void recordComplexMeshCommands(uint32_t currentFrame);
 
+        void addMesh(const std::string &path);
+
+        void addSphereMesh();
+
         //=====================================CAMERA RELATED=====================================
 
         //======== MVP UBO ========
@@ -104,6 +111,8 @@ namespace vks_engine
 
         void updateUBOpointLight(const PointLight &pointLight);
 
+        void addPointLight();
+
         //======== DirectionalLight UBO ========
 
         uint32_t m_ActiveDirectionalLights;
@@ -118,6 +127,8 @@ namespace vks_engine
 
         void updateUBOdirectionalLight(const DirectionalLight &directionalLight);
 
+        void addDirectionalLight();
+
         //======== COUNTERS UBO ========
 
         UBOcounters m_Counters;
@@ -127,6 +138,26 @@ namespace vks_engine
         void initUBOCounters();
 
         void updateUBOcounters();
+
+        //=====================================MENU RELATED=====================================
+
+        SceneFunctionsMenu m_SceneFunctionsMenu;
+
+        SceneComponentsMenu m_SceneComponentsMenu;
+
+        SceneComponentPropertiesMenu m_SceneComponentPropertiesMenu;
+
+        void initMenus();
+
+        void initSceneFunctionsMenu();
+
+        void initSceneComponentsMenu();
+
+        void initSceneComponentPropertiesMenu();
+
+        void renderComponentMenus();
+
+        void renderMenus();
 
         //======== FUNCTIONS ========
 
@@ -145,16 +176,6 @@ namespace vks_engine
         void initUBOmvp();
 
         void initUBO();
-
-        void addMesh(const std::string &path);
-
-        void addSphereMesh();
-
-        void addPointLight();
-
-        void addDirectionalLight();
-
-        void renderMenus();
 
         void updateUBO(uint32_t frame);
 

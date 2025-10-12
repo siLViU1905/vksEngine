@@ -8,15 +8,13 @@ namespace vks_engine
     {
     }
 
-    DirectionalLightMenu::DirectionalLightMenu(DirectionalLight &directionalLight, const std::string &title): Menu(
+    DirectionalLightMenu::DirectionalLightMenu(DirectionalLight &directionalLight, const std::string &title): ComponentMenu(
         directionalLight, title)
     {
     }
 
     bool DirectionalLightMenu::render()
     {
-        ImGui::Begin(m_Title.c_str());
-
         bool modified = false;
 
         auto direction = m_Component->getNonNormalizedDirection();
@@ -58,8 +56,6 @@ namespace vks_engine
             m_Component->setIntensity(intensity);
             modified = true;
         }
-
-        ImGui::End();
 
         return modified;
     }

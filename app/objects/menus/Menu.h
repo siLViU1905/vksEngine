@@ -1,52 +1,43 @@
 #ifndef VKSENGINEMENU_H
 #define VKSENGINEMENU_H
 #include <string>
-
 #include "imgui/imgui.h"
 
 namespace vks_engine
 {
-    template<typename Component>
     class Menu
     {
     public:
-        Menu():m_Component(nullptr), m_Title("NULL")
-        {}
+        Menu();
 
-        Menu(Component& component, const std::string& title = "NULL"):m_Component(&component), m_Title(title)
-        {}
+        Menu(const std::string &title);
 
-        void setComponent(Component& component)
-        {
-            m_Component = &component;
-        }
+        void setTitle(const std::string &title);
 
-        Component& getComponent() {return *m_Component;}
+        void setPosition(const ImVec2 &position);
 
-        void setTitle(const std::string& title)
-        {
-            m_Title = title;
-        }
+        void setSize(const ImVec2 &size);
 
-        constexpr const std::string& getTitle() const {return m_Title;}
+        void move(const ImVec2 &offset);
 
-        virtual bool render()
-        {
-            ImGui::Begin(m_Title.c_str());
+        void size(const ImVec2 &offset);
 
-            ImGui::Text("Render method not overloaded");
+        constexpr const std::string &getTitle() const { return m_Title; }
 
-            ImGui::End();
+        constexpr const ImVec2 &getPosition() const { return m_Position; }
 
-            return false;
-        }
+        constexpr const ImVec2 &getSize() const { return m_Size; }
+
+        virtual bool render();
 
         virtual ~Menu() = default;
 
     protected:
-        Component* m_Component;
-
         std::string m_Title;
+
+        ImVec2 m_Position;
+
+        ImVec2 m_Size;
     };
 }
 

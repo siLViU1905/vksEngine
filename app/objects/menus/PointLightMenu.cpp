@@ -9,14 +9,12 @@ namespace vks_engine
     {
     }
 
-    PointLightMenu::PointLightMenu(PointLight &pointLight, const std::string &title): Menu(pointLight, title)
+    PointLightMenu::PointLightMenu(PointLight &pointLight, const std::string &title): ComponentMenu(pointLight, title)
     {
     }
 
     bool PointLightMenu::render()
     {
-        ImGui::Begin(m_Title.c_str());
-
         bool modified = false;
 
         auto position = m_Component->getPosition();
@@ -82,9 +80,6 @@ namespace vks_engine
             m_Component->setQuadratic(quadratic);
             modified = true;
         }
-
-        ImGui::End();
-
         return modified;
     }
 }

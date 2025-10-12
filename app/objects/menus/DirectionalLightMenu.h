@@ -1,11 +1,11 @@
 #ifndef VKSENGINEDIRECTIONALLIGHTMENU_H
 #define VKSENGINEDIRECTIONALLIGHTMENU_H
-#include "Menu.h"
+#include "ComponentMenu.h"
 #include "../lights/DirectionalLight.h"
 
 namespace vks_engine
 {
-    class DirectionalLightMenu : protected Menu<DirectionalLight>
+    class DirectionalLightMenu : protected ComponentMenu<DirectionalLight>
     {
     public:
         DirectionalLightMenu();
@@ -14,10 +14,10 @@ namespace vks_engine
 
         bool render() override;
 
-        using Menu::setComponent;
-        using Menu::getComponent;
-        using Menu::setTitle;
-        using Menu::getTitle;
+        using ComponentMenu::setComponent;
+        using ComponentMenu::getComponent;
+        using ComponentMenu::setTitle;
+        using ComponentMenu::getTitle;
     };
 }
 
