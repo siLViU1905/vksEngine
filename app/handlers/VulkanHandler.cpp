@@ -38,9 +38,9 @@ namespace vks_engine
 
         stbi_set_flip_vertically_on_load(true);
 
-        m_BackpackDiffuseTexture.setPath("../app/models/backpack/diffuse.jpg");
+        m_BackpackDiffuseTexture.setPath("../../app/models/backpack/diffuse.jpg");
 
-        m_BackpackNormalTexture.setPath("../app/models/backpack/normal.png");
+        m_BackpackNormalTexture.setPath("../../app/models/backpack/normal.png");
 
         createInstance();
 
