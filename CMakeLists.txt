@@ -3,6 +3,24 @@ project(vksEngine)
 
 set(CMAKE_CXX_STANDARD 23)
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/Debug)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/Release)
+
+if(NOT CMAKE_BUILD_TYPE)
+set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "Choose the type of build (Debug or Release)" FORCE)
+endif()
+
+set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "" FORCE)
+
+if(MSVC)
+set(CMAKE_CXX_FLAGS_DEBUG "/MDd /Zi /Ob0 /Od /RTC1")
+set(CMAKE_CXX_FLAGS_RELEASE "/MD /O2 /Ob2 /DNDEBUG")
+elseif(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+set(CMAKE_CXX_FLAGS_DEBUG "-g -O0")
+set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DNDEBUG")
+endif()
+
 #if your vulkan version is different specify it here
 set(VULKAN_SDK "C:/VulkanSDK/1.4.328.1")
 
@@ -121,6 +139,10 @@ target_link_libraries(vksEngine
         assimp
 )
 
+set_target_properties(vksEngine PROPERTIES
+VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+)
+
 add_custom_command(TARGET vksEngine POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         $<TARGET_FILE:glfw>
@@ -139,3 +161,7 @@ add_custom_command(TARGET vksEngine POST_BUILD
         $<TARGET_FILE_DIR:vksEngine>/shaders
         COMMENT "Copying shaders to build directory"
 )
+
+message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
+message(STATUS "C++ Compiler: ${CMAKE_CXX_COMPILER_ID}")
+message(STATUS "Vulkan SDK: ${VULKAN_SDK}")
