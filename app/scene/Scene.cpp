@@ -21,6 +21,8 @@ namespace vks_engine
     {
         setInputHandlers();
 
+        initFileExplorer();
+
         initMenus();
 
         m_ImGui.init(m_Vk, m_Window.getWindow());
@@ -49,6 +51,9 @@ namespace vks_engine
                                             m_UBODirectionalLightBuffer,
                                             sizeof(DirectionalLight::Aligned) * MAX_ALLOWED_DIRECTIONAL_LIGHT_COUNT,
                                             m_UBOCountersBuffer, sizeof(UBOcounters));
+
+        m_SimpleMeshComponents.reserve(MAX_ALLOWED_MESH_COUNT);
+        m_ComplexMeshComponents.reserve(MAX_ALLOWED_MESH_COUNT);
     }
 
     void Scene::run()
@@ -237,12 +242,34 @@ namespace vks_engine
 
             case MeshType::MODEL:
                 m_FileExplorer.open();
-
-                const auto &path = m_FileExplorer.getPath();
-
-                addModel(path);
                 break;
         }
+    }
+
+    void Scene::handleFileSelected(const std::string &path)
+    {
+        std::lock_guard<std::mutex> lock(m_PendingModelsMutex);
+
+        m_PendingModelPaths.push_back(path);
+    }
+
+    void Scene::procesPendingActions()
+    {
+        std::lock_guard<std::mutex> lock(m_PendingModelsMutex);
+
+        while (!m_PendingModelPaths.empty())
+        {
+            auto path = m_PendingModelPaths.front();
+
+            m_PendingModelPaths.pop_front();
+
+            addModel(path);
+        }
+    }
+
+    void Scene::initFileExplorer()
+    {
+        m_FileExplorer.onFileSelected([this](const auto &path) { this->handleFileSelected(path); });
     }
 
     void Scene::addPointLight()
@@ -547,6 +574,8 @@ namespace vks_engine
 
     void Scene::updateScene()
     {
+        procesPendingActions();
+
         const auto &currentFrame = m_Vk.m_CurrentFrame;
 
         std::thread uboUpdate(&Scene::updateUBO, this, currentFrame);

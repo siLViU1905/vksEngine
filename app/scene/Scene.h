@@ -1,5 +1,7 @@
 #ifndef VKSENGINESCENE_H
 #define VKSENGINESCENE_H
+#include <deque>
+#include <mutex>
 #include <vector>
 
 #include "FileExplorer.h"
@@ -84,6 +86,18 @@ namespace vks_engine
         void addSphereMesh();
 
         void addMesh(MeshType type);
+
+        //=====================================MODEL LOADING RELATED=====================================
+
+        std::mutex m_PendingModelsMutex;
+
+        std::deque<std::string> m_PendingModelPaths;
+
+        void handleFileSelected(const std::string& path);
+
+        void procesPendingActions();
+
+        void initFileExplorer();
 
         //=====================================CAMERA RELATED=====================================
 

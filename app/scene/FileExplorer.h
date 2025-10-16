@@ -1,5 +1,6 @@
 #ifndef VKSENGINEFILEEXPLORER_H
 #define VKSENGINEFILEEXPLORER_H
+#include <functional>
 #include <string>
 
 namespace vks_engine
@@ -9,12 +10,12 @@ namespace vks_engine
     public:
         FileExplorer();
 
+        void onFileSelected(std::function<void(const std::string&)> function);
+
         void open();
 
-        constexpr const std::string &getPath() const { return m_Path; }
-
     private:
-        std::string m_Path;
+        std::function<void(const std::string&)> m_FileSelectedCallback;
     };
 }
 
