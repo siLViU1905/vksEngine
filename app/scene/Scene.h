@@ -85,6 +85,8 @@ namespace vks_engine
 
         void addSphereMesh();
 
+        void addCubeMesh();
+
         void addMesh(MeshType type);
 
         //=====================================MODEL LOADING RELATED=====================================

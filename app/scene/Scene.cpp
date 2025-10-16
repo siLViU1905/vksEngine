@@ -229,11 +229,40 @@ namespace vks_engine
         m_SceneComponentsMenu.addComponent(ComponentType::MESH, component);
     }
 
+    void Scene::addCubeMesh()
+    {
+        if (m_CurrentMeshCount == MAX_ALLOWED_MESH_COUNT)
+            return;
+
+        Mesh cube = Mesh::generateCube({}, 1.f);
+
+        auto &component = m_SimpleMeshComponents.emplace_back();
+
+        component.m_Mesh = std::move(cube);
+
+        component.m_Mesh.setID(m_CurrentMeshCount);
+
+        auto &mesh = component.m_Mesh;
+
+        m_Vk.CreateVertexBuffer(mesh.getVertices(), mesh.m_VertexBuffer, mesh.m_VertexBufferMemory);
+
+        m_Vk.CreateIndexBuffer(mesh.getIndices(), mesh.m_IndexBuffer, mesh.m_IndexBufferMemory);
+
+        component.bind();
+
+        component.m_Menu.setTitle("Mesh" + std::to_string(component.m_Mesh.getID()));
+
+        ++m_CurrentMeshCount;
+
+        m_SceneComponentsMenu.addComponent(ComponentType::MESH, component);
+    }
+
     void Scene::addMesh(MeshType type)
     {
         switch (type)
         {
             case MeshType::CUBE:
+                addCubeMesh();
                 break;
 
             case MeshType::SPHERE:

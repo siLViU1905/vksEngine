@@ -415,4 +415,90 @@ namespace vks_engine
 
         return sphere;
     }
+
+    Mesh Mesh::generateCube(const glm::vec3 &position, float size)
+    {
+        Mesh cube(position, {}, {size, size, size}, 1, MeshType::CUBE);
+
+        auto &vertices = cube.m_Vertices;
+
+        auto &indices = cube.m_Indices;
+
+        float half = size / 2.f;
+
+        vertices.push_back(Vertex(glm::vec3(-half, -half, half), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(0.0f, 0.0f),
+                                  glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+        vertices.push_back(Vertex(glm::vec3(half, -half, half), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(1.0f, 0.0f),
+                                  glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+        vertices.push_back(Vertex(glm::vec3(half, half, half), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(1.0f, 1.0f),
+                                  glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+        vertices.push_back(Vertex(glm::vec3(-half, half, half), glm::vec3(0.0f, 0.0f, 1.0f), glm::vec2(0.0f, 1.0f),
+                                  glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+
+
+        vertices.push_back(Vertex(glm::vec3(half, -half, -half), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec2(0.0f, 0.0f),
+                                  glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+        vertices.push_back(Vertex(glm::vec3(-half, -half, -half), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec2(1.0f, 0.0f),
+                                  glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+        vertices.push_back(Vertex(glm::vec3(-half, half, -half), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec2(1.0f, 1.0f),
+                                  glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+        vertices.push_back(Vertex(glm::vec3(half, half, -half), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec2(0.0f, 1.0f),
+                                  glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+
+
+        vertices.push_back(Vertex(glm::vec3(-half, -half, -half), glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec2(0.0f, 0.0f),
+                                  glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+        vertices.push_back(Vertex(glm::vec3(-half, -half, half), glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec2(1.0f, 0.0f),
+                                  glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+        vertices.push_back(Vertex(glm::vec3(-half, half, half), glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec2(1.0f, 1.0f),
+                                  glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+        vertices.push_back(Vertex(glm::vec3(-half, half, -half), glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec2(0.0f, 1.0f),
+                                  glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+
+
+        vertices.push_back(Vertex(glm::vec3(half, -half, half), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec2(0.0f, 0.0f),
+                                  glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+        vertices.push_back(Vertex(glm::vec3(half, -half, -half), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec2(1.0f, 0.0f),
+                                  glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+        vertices.push_back(Vertex(glm::vec3(half, half, -half), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec2(1.0f, 1.0f),
+                                  glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+        vertices.push_back(Vertex(glm::vec3(half, half, half), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec2(0.0f, 1.0f),
+                                  glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+
+
+        vertices.push_back(Vertex(glm::vec3(-half, -half, -half), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec2(0.0f, 0.0f),
+                                  glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
+        vertices.push_back(Vertex(glm::vec3(half, -half, -half), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec2(1.0f, 0.0f),
+                                  glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
+        vertices.push_back(Vertex(glm::vec3(half, -half, half), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec2(1.0f, 1.0f),
+                                  glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
+        vertices.push_back(Vertex(glm::vec3(-half, -half, half), glm::vec3(0.0f, -1.0f, 0.0f), glm::vec2(0.0f, 1.0f),
+                                  glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
+
+
+        vertices.push_back(Vertex(glm::vec3(-half, half, half), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 0.0f),
+                                  glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f)));
+        vertices.push_back(Vertex(glm::vec3(half, half, half), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(1.0f, 0.0f),
+                                  glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f)));
+        vertices.push_back(Vertex(glm::vec3(half, half, -half), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(1.0f, 1.0f),
+                                  glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f)));
+        vertices.push_back(Vertex(glm::vec3(-half, half, -half), glm::vec3(0.0f, 1.0f, 0.0f), glm::vec2(0.0f, 1.0f),
+                                  glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f)));
+
+
+        uint32_t faceIndices[] = {
+            0, 1, 2, 2, 3, 0
+        };
+
+        for (int i = 0; i < 6; i++)
+        {
+            uint32_t offset = i * 4;
+            for (int j = 0; j < 6; j++)
+            {
+                indices.push_back(offset + faceIndices[j]);
+            }
+        }
+
+        return cube;
+    }
 }

@@ -162,6 +162,8 @@ namespace vks_engine
 
     public:
         static Mesh generateSphere(const glm::vec3 &position, float radius, int slices = 32, int stacks = 16);
+
+        static Mesh generateCube(const glm::vec3 &position, float size);
     };
 }
 #endif //VKSENGINEMESH_H
