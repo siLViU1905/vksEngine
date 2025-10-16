@@ -74,7 +74,7 @@ add_executable(vksEngine
 
         app/objects/Texture.cpp
 
-        app/objects/Mesh.cpp
+        app/objects/mesh/Mesh.cpp
 
         app/objects/UniformBuffer.cpp
 
