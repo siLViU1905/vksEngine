@@ -53,7 +53,6 @@ git submodule update --init --recursive
 
 **CMake can't find Vulkan SDK:**
 - Windows: Set environment variable `VULKAN_SDK` to your installation path
-- Linux/macOS: Install vulkan-headers and vulkan-loader packages
 
 **Missing DLLs on Windows:**
 - The build process automatically copies required DLLs (Assimp, GLFW)
