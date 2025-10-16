@@ -33,6 +33,42 @@ namespace vks_engine
                 changed = true;
             }
 
+            std::string_view popup_name = "AddMeshPopup";
+
+            if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayShort))
+            {
+                ImGui::OpenPopup(popup_name.data());
+            }
+
+
+            if (ImGui::BeginPopup(popup_name.data()))
+            {
+
+                ImGui::Text("Mesh Type:");
+                ImGui::Separator();
+
+                if (ImGui::MenuItem("Cube"))
+                {
+
+                    changed = true;
+                    ImGui::CloseCurrentPopup();
+                }
+                if (ImGui::MenuItem("Sphere"))
+                {
+
+                    changed = true;
+                    ImGui::CloseCurrentPopup();
+                }
+                if (ImGui::MenuItem("Custom Model..."))
+                {
+
+                    changed = true;
+                    ImGui::CloseCurrentPopup();
+                }
+
+                ImGui::EndPopup();
+            }
+
             ImGui::Spacing();
 
 
@@ -72,5 +108,10 @@ namespace vks_engine
     void SceneFunctionsMenu::onAddDirectionalLightBtnClick(std::function<void()> function)
     {
         m_BtnAddDirectionalLightCallback = std::move(function);
+    }
+
+    void SceneFunctionsMenu::onMeshTypeSelection(std::function<void()> function)
+    {
+
     }
 }

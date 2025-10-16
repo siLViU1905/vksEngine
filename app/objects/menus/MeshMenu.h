@@ -1,7 +1,7 @@
 #ifndef VKSENGINEMESHMENU_H
 #define VKSENGINEMESHMENU_H
 #include "ComponentMenu.h"
-#include "../Mesh.h"
+#include "../mesh/Mesh.h"
 
 namespace vks_engine
 {

@@ -7,7 +7,7 @@
 #include "../handlers/ImGuiHandler.h"
 #include "../Window.h"
 #include "../handlers/InputHandler.h"
-#include "../objects/Mesh.h"
+#include "../objects/mesh/Mesh.h"
 #include "../objects/lights/DirectionalLight.h"
 #include "../objects/lights/PointLight.h"
 #include "../objects/timer/Clock.h"

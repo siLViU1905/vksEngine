@@ -17,12 +17,16 @@ namespace vks_engine
 
         void onAddDirectionalLightBtnClick(std::function<void()> function);
 
+        void onMeshTypeSelection(std::function<void()> function);
+
     private:
         std::function<void()> m_BtnAddMeshCallback;
 
         std::function<void()> m_BtnAddPointLightCallback;
 
         std::function<void()> m_BtnAddDirectionalLightCallback;
+
+        std::function<void()> m_MeshTypeSelectionCallback;
     };
 }
 

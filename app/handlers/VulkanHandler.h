@@ -13,7 +13,7 @@
 
 #include "../objects/Camera.h"
 #include "../objects/lights/DirectionalLight.h"
-#include "../objects/Mesh.h"
+#include "../objects/mesh/Mesh.h"
 #include "../objects/Texture.h"
 #include "../objects/Vertex.h"
 #include "../objects/UniformBuffer.h"

@@ -1,13 +1,14 @@
 #ifndef VKSENGINEMESH_H
 #define VKSENGINEMESH_H
 
-#include "Vertex.h"
+#include "../Vertex.h"
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 #include <vulkan/vulkan_raii.hpp>
 
-#include "Texture.h"
+#include "MeshType.h"
+#include "../Texture.h"
 
 namespace vks_engine
 {
@@ -42,7 +43,7 @@ namespace vks_engine
     public:
         Mesh();
 
-        Mesh(const glm::vec3 &position, const glm::vec3 &rotation, const glm::vec3 &scale, uint32_t instances);
+        Mesh(const glm::vec3 &position, const glm::vec3 &rotation, const glm::vec3 &scale, uint32_t instances, MeshType type);
 
         Mesh(Mesh &&mesh) noexcept;
 
@@ -102,6 +103,10 @@ namespace vks_engine
 
         void setID(uint32_t id);
 
+        constexpr MeshType getType() const {return m_Type;}
+
+        void setType(MeshType type);
+
         friend class VulkanHandler;
 
         friend class Scene;
@@ -134,6 +139,8 @@ namespace vks_engine
         vk::raii::DeviceMemory m_IndexBufferMemory;
 
         uint32_t m_ID;
+
+        MeshType m_Type;
 
         void updateModel();
 

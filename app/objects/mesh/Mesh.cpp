@@ -11,11 +11,13 @@ namespace vks_engine
                   m_VertexBuffer(nullptr), m_IndexBuffer(nullptr),
                   m_VertexBufferMemory(nullptr), m_IndexBufferMemory(nullptr),
                   m_ID(std::numeric_limits<uint32_t>::max()),
-                  m_Color(0.7f)
+                  m_Color(0.7f),
+                  m_Type(MeshType::NaN)
     {
     }
 
-    Mesh::Mesh(const glm::vec3 &position, const glm::vec3 &rotation, const glm::vec3 &scale, uint32_t instances)
+    Mesh::Mesh(const glm::vec3 &position, const glm::vec3 &rotation, const glm::vec3 &scale, uint32_t instances,
+               MeshType type)
         : m_Position(position),
           m_Rotation(rotation),
           m_Scale(scale),
@@ -24,7 +26,8 @@ namespace vks_engine
           m_VertexBuffer(nullptr), m_IndexBuffer(nullptr),
           m_VertexBufferMemory(nullptr), m_IndexBufferMemory(nullptr),
           m_ID(std::numeric_limits<uint32_t>::max()),
-          m_Color(0.7f)
+          m_Color(0.7f),
+          m_Type(type)
     {
         updateModel();
     }
@@ -48,7 +51,8 @@ namespace vks_engine
           m_ID(other.m_ID),
           m_TexturePaths(std::move(other.m_TexturePaths)),
           m_Textures(std::move(other.m_Textures)),
-          m_HasTangentsAndBitangents(other.m_HasTangentsAndBitangents)
+          m_HasTangentsAndBitangents(other.m_HasTangentsAndBitangents),
+          m_Type(other.m_Type)
     {
         other.m_ID = std::numeric_limits<uint32_t>::max();
         other.m_Instances = 0;
@@ -78,6 +82,7 @@ namespace vks_engine
             m_IndexBuffer = std::move(other.m_IndexBuffer);
             m_IndexBufferMemory = std::move(other.m_IndexBufferMemory);
 
+            m_Type = other.m_Type;
 
             other.m_ID = std::numeric_limits<uint32_t>::max();
             other.m_Instances = 0;
@@ -175,6 +180,11 @@ namespace vks_engine
     void Mesh::setID(uint32_t id)
     {
         m_ID = id;
+    }
+
+    void Mesh::setType(MeshType type)
+    {
+        m_Type = type;
     }
 
     void Mesh::processNode(aiNode *node, const aiScene *scene)
