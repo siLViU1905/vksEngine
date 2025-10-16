@@ -181,6 +181,8 @@ namespace vks_engine
 
         auto &mesh = component.m_Mesh;
 
+        mesh.setType(MeshType::MODEL);
+
         m_Vk.CreateVertexBuffer(mesh.getVertices(), mesh.m_VertexBuffer, mesh.m_VertexBufferMemory);
 
         m_Vk.CreateIndexBuffer(mesh.getIndices(), mesh.m_IndexBuffer, mesh.m_IndexBufferMemory);

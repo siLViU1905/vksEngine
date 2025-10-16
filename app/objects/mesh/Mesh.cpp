@@ -356,7 +356,7 @@ namespace vks_engine
 
     Mesh Mesh::generateSphere(const glm::vec3 &position, float radius, int slices, int stacks)
     {
-        Mesh sphere(position, {}, {radius, radius, radius}, 1);
+        Mesh sphere(position, {}, {radius, radius, radius}, 1, MeshType::SPHERE);
 
         auto &vertices = sphere.m_Vertices;
 
