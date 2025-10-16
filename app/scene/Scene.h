@@ -79,9 +79,11 @@ namespace vks_engine
 
         void recordComplexMeshCommands(uint32_t currentFrame);
 
-        void addMesh(const std::string &path);
+        void addModel(const std::string &path);
 
         void addSphereMesh();
+
+        void addMesh(MeshType type);
 
         //=====================================CAMERA RELATED=====================================
 

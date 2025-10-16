@@ -43,27 +43,26 @@ namespace vks_engine
 
             if (ImGui::BeginPopup(popup_name.data()))
             {
-
                 ImGui::Text("Mesh Type:");
                 ImGui::Separator();
 
                 if (ImGui::MenuItem("Cube"))
                 {
-
                     changed = true;
                     ImGui::CloseCurrentPopup();
+                    m_MeshTypeSelectionCallback(MeshType::CUBE);
                 }
                 if (ImGui::MenuItem("Sphere"))
                 {
-
                     changed = true;
                     ImGui::CloseCurrentPopup();
+                    m_MeshTypeSelectionCallback(MeshType::SPHERE);
                 }
                 if (ImGui::MenuItem("Custom Model..."))
                 {
-
                     changed = true;
                     ImGui::CloseCurrentPopup();
+                    m_MeshTypeSelectionCallback(MeshType::MODEL);
                 }
 
                 ImGui::EndPopup();
@@ -110,8 +109,8 @@ namespace vks_engine
         m_BtnAddDirectionalLightCallback = std::move(function);
     }
 
-    void SceneFunctionsMenu::onMeshTypeSelection(std::function<void()> function)
+    void SceneFunctionsMenu::onMeshTypeSelection(std::function<void(MeshType)> function)
     {
-
+        m_MeshTypeSelectionCallback = std::move(function);
     }
 }

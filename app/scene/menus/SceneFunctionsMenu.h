@@ -3,6 +3,7 @@
 #include <functional>
 
 #include "../../objects/menus/Menu.h"
+#include "../../objects/mesh/MeshType.h"
 
 namespace vks_engine
 {
@@ -17,7 +18,7 @@ namespace vks_engine
 
         void onAddDirectionalLightBtnClick(std::function<void()> function);
 
-        void onMeshTypeSelection(std::function<void()> function);
+        void onMeshTypeSelection(std::function<void(MeshType)> function);
 
     private:
         std::function<void()> m_BtnAddMeshCallback;
@@ -26,7 +27,7 @@ namespace vks_engine
 
         std::function<void()> m_BtnAddDirectionalLightCallback;
 
-        std::function<void()> m_MeshTypeSelectionCallback;
+        std::function<void(MeshType)> m_MeshTypeSelectionCallback;
     };
 }
 

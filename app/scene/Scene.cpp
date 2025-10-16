@@ -168,7 +168,7 @@ namespace vks_engine
         initUBOCounters();
     }
 
-    void Scene::addMesh(const std::string &path)
+    void Scene::addModel(const std::string &path)
     {
         if (m_CurrentMeshCount == MAX_ALLOWED_MESH_COUNT)
             return;
@@ -222,6 +222,27 @@ namespace vks_engine
         ++m_CurrentMeshCount;
 
         m_SceneComponentsMenu.addComponent(ComponentType::MESH, component);
+    }
+
+    void Scene::addMesh(MeshType type)
+    {
+        switch (type)
+        {
+            case MeshType::CUBE:
+                break;
+
+            case MeshType::SPHERE:
+                addSphereMesh();
+                break;
+
+            case MeshType::MODEL:
+                m_FileExplorer.open();
+
+                const auto &path = m_FileExplorer.getPath();
+
+                addModel(path);
+                break;
+        }
     }
 
     void Scene::addPointLight()
@@ -475,11 +496,13 @@ namespace vks_engine
     {
         m_SceneFunctionsMenu.setTitle("Functions");
 
-        m_SceneFunctionsMenu.onAddMeshBtnClick([this]() { this->addSphereMesh(); });
+        //m_SceneFunctionsMenu.onAddMeshBtnClick([this]() { this->addSphereMesh(); });
 
         m_SceneFunctionsMenu.onAddPointLightBtnClick([this]() { this->addPointLight(); });
 
         m_SceneFunctionsMenu.onAddDirectionalLightBtnClick([this]() { this->addDirectionalLight(); });
+
+        m_SceneFunctionsMenu.onMeshTypeSelection([this](MeshType type) { this->addMesh(type); });
     }
 
     void Scene::initSceneComponentsMenu()
@@ -533,6 +556,7 @@ namespace vks_engine
         m_Clock.restart();
 
         uboUpdate.join();
+
         cameraUpdate.join();
     }
 

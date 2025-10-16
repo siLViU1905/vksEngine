@@ -112,7 +112,7 @@ namespace vks_engine
 
         m_UniqueVertices.clear();
 
-        std::print("===============Mesh has {} textures============\n", m_Textures.size());
+        //std::print("===============Mesh has {} textures============\n", m_Textures.size());
     }
 
     void Mesh::move(const glm::vec3 &offset)
