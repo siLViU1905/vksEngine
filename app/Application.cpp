@@ -10,7 +10,6 @@ namespace vks_engine
 
         m_Scene.init();
 
-        //m_Scene.addModel("../../app/models/backpack/backpack.obj");
         m_Scene.addPointLight();
     }
 

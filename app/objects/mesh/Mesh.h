@@ -1,6 +1,7 @@
 #ifndef VKSENGINEMESH_H
 #define VKSENGINEMESH_H
 
+#include "../../VKSEngine.h"
 #include "../Vertex.h"
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
@@ -15,14 +16,15 @@ namespace vks_engine
     class Mesh
     {
     private:
-        static constexpr std::array<aiTextureType, 22> ALL_AI_TEXTURE_TYPES = {
+
+        static constexpr std::array<aiTextureType, vksEngine::SUPPORTED_TEXTURE_TYPES_COUNT> SUPPORTED_AI_TEXTURE_TYPES = {
             aiTextureType_DIFFUSE,
             aiTextureType_SPECULAR,
-            aiTextureType_AMBIENT,
-            aiTextureType_EMISSIVE,
-            aiTextureType_HEIGHT,
+            //aiTextureType_AMBIENT,
+            //aiTextureType_EMISSIVE,
+            //aiTextureType_HEIGHT,
             aiTextureType_NORMALS,
-            aiTextureType_SHININESS,
+            /*aiTextureType_SHININESS,
             aiTextureType_OPACITY,
             aiTextureType_DISPLACEMENT,
             aiTextureType_LIGHTMAP,
@@ -37,7 +39,7 @@ namespace vks_engine
             aiTextureType_CLEARCOAT,
             aiTextureType_TRANSMISSION,
             aiTextureType_UNKNOWN,
-            aiTextureType_NONE
+            aiTextureType_NONE*/
         };
 
     public:
@@ -136,6 +138,8 @@ namespace vks_engine
 
         vk::raii::DeviceMemory m_IndexBufferMemory;
 
+        std::vector<vk::raii::DescriptorSet> m_DescriptorSets;
+
         uint32_t m_ID;
 
         MeshType m_Type;
@@ -154,7 +158,7 @@ namespace vks_engine
 
         void processMesh(aiMesh *mesh, const aiScene *scene);
 
-        void processMaterial(aiMaterial *material, const aiScene *scene);
+        void processMaterial(const aiMaterial *material, const aiScene *scene);
 
         void loadTextures();
 

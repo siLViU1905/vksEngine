@@ -11,6 +11,15 @@ namespace vks_engine
 
         Texture(const std::string &path);
 
+        Texture(Texture&& other) noexcept;
+
+        Texture& operator=(Texture&& other) noexcept;
+
+        constexpr bool operator==(const Texture & other) const
+        {
+            return m_Path == other.m_Path;
+        }
+
         vk::raii::Image m_Image;
 
         vk::DeviceSize m_ImageSize;

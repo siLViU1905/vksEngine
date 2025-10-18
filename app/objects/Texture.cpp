@@ -22,6 +22,35 @@ namespace vks_engine
     {
     }
 
+    Texture::Texture(Texture &&other) noexcept: m_Image(std::move(other.m_Image)),
+                                                m_Memory(std::move(other.m_Memory)),
+                                                m_ImageView(std::move(other.m_ImageView)),
+                                                m_Sampler(std::move(other.m_Sampler)),
+                                                m_ImageSize(other.m_ImageSize),
+                                                m_Width(other.m_Width), m_Height(other.m_Height),
+                                                m_MipLevels(other.m_MipLevels),
+                                                m_Path(std::move(other.m_Path))
+    {
+    }
+
+    Texture &Texture::operator=(Texture &&other) noexcept
+    {
+        if (this != &other)
+        {
+            m_Image = std::move(other.m_Image);
+            m_Memory = std::move(other.m_Memory);
+            m_ImageView = std::move(other.m_ImageView);
+            m_Sampler = std::move(other.m_Sampler);
+            m_ImageSize = other.m_ImageSize;
+            m_Width = other.m_Width;
+            m_Height = other.m_Height;
+            m_MipLevels = other.m_MipLevels;
+            m_Path = std::move(other.m_Path);
+        }
+
+        return *this;
+    }
+
     void Texture::setPath(const std::string &path)
     {
         m_Path = path;

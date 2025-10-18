@@ -1,9 +1,9 @@
-#ifndef VKSENGINESCENE_H
-#define VKSENGINESCENE_H
+#ifndef vksEngineSCENE_H
+#define vksEngineSCENE_H
+
 #include <deque>
 #include <mutex>
 #include <vector>
-
 #include "FileExplorer.h"
 #include "SceneComponent.h"
 #include "../handlers/ImGuiHandler.h"
@@ -26,13 +26,6 @@ namespace vks_engine
 {
     class Scene
     {
-    private:
-        static constexpr uint32_t MAX_ALLOWED_MESH_COUNT = 10;
-
-        static constexpr uint32_t MAX_ALLOWED_POINT_LIGHT_COUNT = 10;
-
-        static constexpr uint32_t MAX_ALLOWED_DIRECTIONAL_LIGHT_COUNT = 10;
-
     public:
         Scene(Window &window, VulkanHandler &vkHandler);
 
@@ -101,9 +94,9 @@ namespace vks_engine
 
         std::deque<MeshComponent> m_LoadedMeshQueue;
 
-        void handleFileSelected(const std::string& path);
+        void handleFileSelected(const std::string &path);
 
-        void handleLoadedModel(MeshComponent& component);
+        void handleLoadedModel(MeshComponent &component);
 
         void procesPendingActions();
 
@@ -129,11 +122,11 @@ namespace vks_engine
 
         uint32_t m_ActivePointLights;
 
-        std::array<PointLightComponent, MAX_ALLOWED_POINT_LIGHT_COUNT> m_PointLightComponents;
+        std::array<PointLightComponent, vksEngine::SCENE_MAX_ALLOWED_POINT_LIGHT_COUNT> m_PointLightComponents;
 
         UniformBuffer m_UBOPointLightBuffer;
 
-        std::array<PointLight::Aligned, MAX_ALLOWED_POINT_LIGHT_COUNT> m_UBOpointLight;
+        std::array<PointLight::Aligned, vksEngine::SCENE_MAX_ALLOWED_POINT_LIGHT_COUNT> m_UBOpointLight;
 
         void initUBOPointLight();
 
@@ -145,11 +138,13 @@ namespace vks_engine
 
         uint32_t m_ActiveDirectionalLights;
 
-        std::array<DirectionalLightComponent, MAX_ALLOWED_DIRECTIONAL_LIGHT_COUNT> m_DirectionalLightComponents;
+        std::array<DirectionalLightComponent, vksEngine::SCENE_MAX_ALLOWED_DIRECTIONAL_LIGHT_COUNT>
+        m_DirectionalLightComponents;
 
         UniformBuffer m_UBODirectionalLightBuffer;
 
-        std::array<DirectionalLight::Aligned, MAX_ALLOWED_DIRECTIONAL_LIGHT_COUNT> m_UBOdirectionalLight;
+        std::array<DirectionalLight::Aligned, vksEngine::SCENE_MAX_ALLOWED_DIRECTIONAL_LIGHT_COUNT>
+        m_UBOdirectionalLight;
 
         void initUBODirectionalLight();
 
@@ -218,4 +213,4 @@ namespace vks_engine
     };
 }
 
-#endif //VKSENGINESCENE_H
+#endif //vksEngineSCENE_H

@@ -70,7 +70,11 @@ namespace vks_engine
 
         createDepthResources();
 
-        createTextureImage(m_BackpackDiffuseTexture);
+        CreateTexture(m_BackpackDiffuseTexture, m_BackpackDiffuseTexture.load());
+
+        CreateTexture(m_BackpackNormalTexture, m_BackpackNormalTexture.load());
+
+        /*createTextureImage(m_BackpackDiffuseTexture);
 
         createTextureImageView(m_BackpackDiffuseTexture);
 
@@ -80,7 +84,7 @@ namespace vks_engine
 
         createTextureImageView(m_BackpackNormalTexture);
 
-        createTextureSampler(m_BackpackNormalTexture);
+        createTextureSampler(m_BackpackNormalTexture);*/
 
         createComplexMeshDescriptorPool();
 
@@ -96,7 +100,7 @@ namespace vks_engine
         constexpr vk::ApplicationInfo appInfo(
             "VulkanPP",
             VK_MAKE_VERSION(1, 0, 0),
-            "No Engine",
+            "vksEngine",
             VK_MAKE_VERSION(1, 0, 0),
             VK_API_VERSION_1_4
         );
@@ -1211,13 +1215,21 @@ namespace vks_engine
         endSingleTimeCommands(*commandBuffer);
     }
 
-    void VulkanHandler::CreateTexture(Texture &texture)
+    void VulkanHandler::CreateTexture(Texture &texture, uint8_t *pixels)
     {
-        createTextureImage(texture);
+        createTextureImage(texture, pixels);
 
         createTextureImageView(texture);
 
         createTextureSampler(texture);
+    }
+
+    void VulkanHandler::CreateMeshDescriptorSets(Mesh &mesh,
+                                                 UniformBuffer &mvpUBO, vk::DeviceSize vpSize,
+                                                 UniformBuffer &pointLightUBO, vk::DeviceSize plSize,
+                                                 UniformBuffer &directionalLightUBO, vk::DeviceSize dlSize,
+                                                 UniformBuffer &countersUBO, vk::DeviceSize ctSize)
+    {
     }
 
     void VulkanHandler::waitIdle() const
@@ -1411,7 +1423,8 @@ namespace vks_engine
             vk::DescriptorPoolSize(vk::DescriptorType::eUniformBuffer, MAX_FRAMES_IN_FLIGHT),
             vk::DescriptorPoolSize(vk::DescriptorType::eUniformBuffer, MAX_FRAMES_IN_FLIGHT),
             vk::DescriptorPoolSize(vk::DescriptorType::eUniformBuffer, MAX_FRAMES_IN_FLIGHT),
-            vk::DescriptorPoolSize(vk::DescriptorType::eCombinedImageSampler, MAX_FRAMES_IN_FLIGHT * 2)
+            vk::DescriptorPoolSize(vk::DescriptorType::eCombinedImageSampler,
+                                   MAX_FRAMES_IN_FLIGHT * vksEngine::SUPPORTED_TEXTURE_TYPES_COUNT)
         };
 
         vk::DescriptorPoolCreateInfo poolInfo(
@@ -1487,7 +1500,14 @@ namespace vks_engine
                 ctSize
             );
 
+
             vk::DescriptorImageInfo diffuseImageInfo(
+                m_BackpackDiffuseTexture.m_Sampler,
+                m_BackpackDiffuseTexture.m_ImageView,
+                vk::ImageLayout::eShaderReadOnlyOptimal
+            );
+
+            vk::DescriptorImageInfo specularImageInfo(
                 m_BackpackDiffuseTexture.m_Sampler,
                 m_BackpackDiffuseTexture.m_ImageView,
                 vk::ImageLayout::eShaderReadOnlyOptimal
@@ -1624,10 +1644,8 @@ namespace vks_engine
         }
     }
 
-    void VulkanHandler::createTextureImage(Texture &texture)
+    void VulkanHandler::createTextureImage(Texture &texture, uint8_t *pixels)
     {
-        uint8_t *pixels = texture.load();
-
         vk::raii::Buffer stagingBuffer({});
 
         vk::raii::DeviceMemory stagingBufferMemory({});

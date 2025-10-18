@@ -4,6 +4,7 @@
 #define NOMINMAX
 
 #include <vulkan/vulkan_raii.hpp>
+#include "../VKSEngine.h"
 
 #define VK_USE_PLATFORM_WIN32_KHR
 #define GLFW_INCLUDE_VULKAN
@@ -47,7 +48,19 @@ namespace vks_engine
 
         void GenerateMipMaps(Texture &texture, vk::Format imageFormat);
 
-        void CreateTexture(Texture &texture);
+        void CreateTexture(Texture &texture, uint8_t *pixels);
+
+        void CreateMeshDescriptorSets(
+            Mesh &mesh,
+            UniformBuffer &mvpUBO,
+            vk::DeviceSize vpSize,
+            UniformBuffer &pointLightUBO,
+            vk::DeviceSize plSize,
+            UniformBuffer &directionalLightUBO,
+            vk::DeviceSize dlSize,
+            UniformBuffer &countersUBO,
+            vk::DeviceSize ctSize
+        );
 
         void waitIdle() const;
 
@@ -112,7 +125,7 @@ namespace vks_engine
                                             UniformBuffer &directionalLightUBO, vk::DeviceSize dlSize,
                                             UniformBuffer &countersUBO, vk::DeviceSize ctSize);
 
-        void createTextureImage(Texture &texture);
+        void createTextureImage(Texture &texture, uint8_t *pixels);
 
         void createTextureImageView(Texture &texture);
 
@@ -286,56 +299,6 @@ namespace vks_engine
         vk::SampleCountFlagBits m_MsaaSamples;
 
         static constexpr int MAX_FRAMES_IN_FLIGHT = 2;
-
-        const std::vector<Vertex> vertices = {
-            {{-0.5f, -0.5f, 0.5f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
-            {{0.5f, -0.5f, 0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 0.0f}},
-            {{0.5f, 0.5f, 0.5f}, {1.0f, 0.0f, 0.0f}, {1.0f, 1.0f}},
-            {{-0.5f, 0.5f, 0.5f}, {1.0f, 0.0f, 0.0f}, {0.0f, 1.0f}},
-
-            {{-0.5f, -0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
-            {{-0.5f, 0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {1.0f, 1.0f}},
-            {{0.5f, 0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 1.0f}},
-            {{0.5f, -0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
-
-            {{-0.5f, -0.5f, -0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f}},
-            {{-0.5f, -0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}, {1.0f, 0.0f}},
-            {{-0.5f, 0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
-            {{-0.5f, 0.5f, -0.5f}, {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f}},
-
-
-            {{0.5f, -0.5f, 0.5f}, {1.0f, 1.0f, 0.0f}, {0.0f, 0.0f}},
-            {{0.5f, -0.5f, -0.5f}, {1.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
-            {{0.5f, 0.5f, -0.5f}, {1.0f, 1.0f, 0.0f}, {1.0f, 1.0f}},
-            {{0.5f, 0.5f, 0.5f}, {1.0f, 1.0f, 0.0f}, {0.0f, 1.0f}},
-
-
-            {{-0.5f, -0.5f, -0.5f}, {0.0f, 1.0f, 1.0f}, {0.0f, 0.0f}},
-            {{0.5f, -0.5f, -0.5f}, {0.0f, 1.0f, 1.0f}, {1.0f, 0.0f}},
-            {{0.5f, -0.5f, 0.5f}, {0.0f, 1.0f, 1.0f}, {1.0f, 1.0f}},
-            {{-0.5f, -0.5f, 0.5f}, {0.0f, 1.0f, 1.0f}, {0.0f, 1.0f}},
-
-
-            {{-0.5f, 0.5f, 0.5f}, {1.0f, 0.0f, 1.0f}, {0.0f, 0.0f}},
-            {{0.5f, 0.5f, 0.5f}, {1.0f, 0.0f, 1.0f}, {1.0f, 0.0f}},
-            {{0.5f, 0.5f, -0.5f}, {1.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
-            {{-0.5f, 0.5f, -0.5f}, {1.0f, 0.0f, 1.0f}, {0.0f, 1.0f}}
-        };
-
-        const std::vector<uint32_t> indices = {
-            0, 1, 2, 2, 3, 0,
-
-            4, 5, 6, 6, 7, 4,
-
-            8, 9, 10, 10, 11, 8,
-
-            12, 13, 14, 14, 15, 12,
-
-            16, 17, 18, 18, 19, 16,
-
-            20, 21, 22, 22, 23, 20
-
-        };
 
         const std::vector<const char *> validationLayers = {
             "VK_LAYER_KHRONOS_validation"

@@ -255,9 +255,9 @@ namespace vks_engine
         }
     }
 
-    void Mesh::processMaterial(aiMaterial *material, const aiScene *scene)
+    void Mesh::processMaterial(const aiMaterial *material, const aiScene *scene)
     {
-        for (const auto &textureType: ALL_AI_TEXTURE_TYPES)
+        for (const auto &textureType: SUPPORTED_AI_TEXTURE_TYPES)
         {
             uint32_t textureCount = material->GetTextureCount(textureType);
 
