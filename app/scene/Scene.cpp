@@ -174,32 +174,30 @@ namespace vks_engine
         initUBOCounters();
     }
 
-    void Scene::addModel(const std::string &path)
+    void Scene::loadModelWorker(std::string_view path)
     {
-        if (m_CurrentMeshCount == MAX_ALLOWED_MESH_COUNT)
-            return;
+        MeshComponent component;
+        uint32_t newID;
 
-        auto &component = m_ComplexMeshComponents.emplace_back();
+        {
+            std::lock_guard<std::mutex> lock(m_MeshCountMutex);
+            if (m_CurrentMeshCount == MAX_ALLOWED_MESH_COUNT)
+                return;
 
-        component.m_Mesh.setID(m_CurrentMeshCount);
+            newID = m_CurrentMeshCount;
+            ++m_CurrentMeshCount;
+        }
 
-        component.m_Mesh.load(path);
-
-        auto &mesh = component.m_Mesh;
-
-        mesh.setType(MeshType::MODEL);
-
-        m_Vk.CreateVertexBuffer(mesh.getVertices(), mesh.m_VertexBuffer, mesh.m_VertexBufferMemory);
-
-        m_Vk.CreateIndexBuffer(mesh.getIndices(), mesh.m_IndexBuffer, mesh.m_IndexBufferMemory);
-
+        component.m_Mesh.setID(newID);
+        component.m_Mesh.load(path.data());
+        component.m_Mesh.setType(MeshType::MODEL);
         component.bind();
-
         component.m_Menu.setTitle("Mesh" + std::to_string(component.m_Mesh.getID()));
 
-        ++m_CurrentMeshCount;
-
-        m_SceneComponentsMenu.addComponent(ComponentType::MESH, component);
+        {
+            std::lock_guard<std::mutex> lock(m_LoadedMeshMutex);
+            m_LoadedMeshQueue.push_back(std::move(component));
+        }
     }
 
     void Scene::addSphereMesh()
@@ -283,6 +281,21 @@ namespace vks_engine
         m_PendingModelPaths.push_back(path);
     }
 
+    void Scene::handleLoadedModel(MeshComponent& component)
+    {
+        m_ComplexMeshComponents.push_back(std::move(component));
+
+        auto& addedComponent = m_ComplexMeshComponents.back();
+
+        addedComponent.bind();
+
+        auto& mesh = addedComponent.m_Mesh;
+
+        m_Vk.CreateVertexBuffer(mesh.getVertices(), mesh.m_VertexBuffer, mesh.m_VertexBufferMemory);
+
+        m_Vk.CreateIndexBuffer(mesh.getIndices(), mesh.m_IndexBuffer, mesh.m_IndexBufferMemory);
+    }
+
     void Scene::procesPendingActions()
     {
         std::lock_guard<std::mutex> lock(m_PendingModelsMutex);
@@ -293,7 +306,23 @@ namespace vks_engine
 
             m_PendingModelPaths.pop_front();
 
-            addModel(path);
+            std::thread(&Scene::loadModelWorker, this, path).detach();
+        }
+    }
+
+    void Scene::processLoadedModels()
+    {
+        std::lock_guard<std::mutex> lock(m_LoadedMeshMutex);
+
+        while (!m_LoadedMeshQueue.empty())
+        {
+            MeshComponent& componentToProcess = m_LoadedMeshQueue.front();
+
+            handleLoadedModel(componentToProcess);
+
+            m_SceneComponentsMenu.addComponent(ComponentType::MESH, m_ComplexMeshComponents.back());
+
+            m_LoadedMeshQueue.pop_front();
         }
     }
 
@@ -591,8 +620,6 @@ namespace vks_engine
     {
         m_ImGui.beginFrame();
 
-        //renderComponentMenus();
-
         m_SceneFunctionsMenu.render();
 
         m_SceneComponentsMenu.render();
@@ -605,6 +632,8 @@ namespace vks_engine
     void Scene::updateScene()
     {
         procesPendingActions();
+
+        processLoadedModels();
 
         const auto &currentFrame = m_Vk.m_CurrentFrame;
 

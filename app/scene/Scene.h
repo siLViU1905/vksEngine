@@ -73,6 +73,8 @@ namespace vks_engine
 
         std::vector<MeshComponent> m_ComplexMeshComponents;
 
+        std::mutex m_MeshCountMutex;
+
         uint32_t m_CurrentMeshCount;
 
         void recordMeshCommands(uint32_t currentFrame);
@@ -81,7 +83,7 @@ namespace vks_engine
 
         void recordComplexMeshCommands(uint32_t currentFrame);
 
-        void addModel(const std::string &path);
+        void loadModelWorker(std::string_view path);
 
         void addSphereMesh();
 
@@ -95,9 +97,17 @@ namespace vks_engine
 
         std::deque<std::string> m_PendingModelPaths;
 
+        std::mutex m_LoadedMeshMutex;
+
+        std::deque<MeshComponent> m_LoadedMeshQueue;
+
         void handleFileSelected(const std::string& path);
 
+        void handleLoadedModel(MeshComponent& component);
+
         void procesPendingActions();
+
+        void processLoadedModels();
 
         void initFileExplorer();
 
