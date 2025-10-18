@@ -303,6 +303,9 @@ namespace vks_engine
 
         m_Vk.CreateIndexBuffer(mesh.getIndices(), mesh.m_IndexBuffer, mesh.m_IndexBufferMemory);
 
+        for (auto &texture: mesh.m_Textures | std::views::values)
+            m_Vk.CreateTexture(texture);
+
         m_Vk.CreateMeshDescriptorSets(mesh,
                                       m_UBOvpBuffer, sizeof(UBOvp),
                                       m_UBOPointLightBuffer,
@@ -311,9 +314,6 @@ namespace vks_engine
                                       sizeof(DirectionalLight::Aligned) * SCENE_MAX_ALLOWED_DIRECTIONAL_LIGHT_COUNT,
                                       m_UBOCountersBuffer, sizeof(UBOcounters)
         );
-
-        for (auto &texture: mesh.m_Textures | std::views::values)
-            m_Vk.CreateTexture(texture);
     }
 
     void Scene::procesPendingActions()

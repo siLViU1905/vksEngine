@@ -1324,18 +1324,15 @@ namespace vks_engine
                 ctSize
             );
 
-            std::vector<vk::DescriptorImageInfo> imageInfos;
+            std::array<vk::DescriptorImageInfo, SUPPORTED_TEXTURE_TYPES_COUNT> imageInfos;
 
-            imageInfos.reserve(SUPPORTED_TEXTURE_TYPES_COUNT);
-
-            for (const auto &type: Mesh::SUPPORTED_TEXTURE_TYPES)
+            for (uint32_t i = 0; i < SUPPORTED_TEXTURE_TYPES_COUNT; ++i)
             {
-                const auto &texture = getTextureOrDefault(mesh, type);
-                imageInfos.emplace_back(
-                    texture.m_Sampler,
-                    texture.m_ImageView,
-                    vk::ImageLayout::eShaderReadOnlyOptimal
-                );
+                TextureType type = Mesh::SUPPORTED_TEXTURE_TYPES[i];
+                const Texture &tex = getTextureOrDefault(mesh, type);
+                imageInfos[i].sampler = *tex.m_Sampler;
+                imageInfos[i].imageView = *tex.m_ImageView;
+                imageInfos[i].imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
             }
 
             std::array<vk::WriteDescriptorSet, USED_UNIFORM_BUFFERS + 1> descriptorWrites{};
@@ -1372,7 +1369,7 @@ namespace vks_engine
             descriptorWrites[4].dstBinding = 4;
             descriptorWrites[4].dstArrayElement = 0;
             descriptorWrites[4].descriptorType = vk::DescriptorType::eCombinedImageSampler;
-            descriptorWrites[4].descriptorCount = imageInfos.size();
+            descriptorWrites[4].descriptorCount = SUPPORTED_TEXTURE_TYPES_COUNT;
             descriptorWrites[4].pImageInfo = imageInfos.data();
 
             m_Device.updateDescriptorSets(descriptorWrites, {});
@@ -1507,7 +1504,7 @@ namespace vks_engine
             vk::DescriptorSetLayoutBinding(
                 4,
                 vk::DescriptorType::eCombinedImageSampler,
-                SCENE_MAX_ALLOWED_MESH_COUNT * SUPPORTED_TEXTURE_TYPES_COUNT,
+                SUPPORTED_TEXTURE_TYPES_COUNT,
                 vk::ShaderStageFlagBits::eFragment
             )
         };
@@ -1565,19 +1562,23 @@ namespace vks_engine
 
     void VulkanHandler::createComplexMeshDescriptorPool()
     {
-        std::array<vk::DescriptorPoolSize, USED_UNIFORM_BUFFERS + 1> poolSize = {
-            vk::DescriptorPoolSize(vk::DescriptorType::eUniformBuffer, MAX_FRAMES_IN_FLIGHT),
-            vk::DescriptorPoolSize(vk::DescriptorType::eUniformBuffer, MAX_FRAMES_IN_FLIGHT),
-            vk::DescriptorPoolSize(vk::DescriptorType::eUniformBuffer, MAX_FRAMES_IN_FLIGHT),
-            vk::DescriptorPoolSize(vk::DescriptorType::eUniformBuffer, MAX_FRAMES_IN_FLIGHT),
-            vk::DescriptorPoolSize(vk::DescriptorType::eCombinedImageSampler,
-                                   MAX_FRAMES_IN_FLIGHT * SCENE_MAX_ALLOWED_MESH_COUNT * SUPPORTED_TEXTURE_TYPES_COUNT)
+        constexpr uint32_t totalSets = MAX_FRAMES_IN_FLIGHT * SCENE_MAX_ALLOWED_MESH_COUNT;
+
+        std::array<vk::DescriptorPoolSize, 2> poolSizes = {
+            vk::DescriptorPoolSize(
+                vk::DescriptorType::eUniformBuffer,
+                totalSets * USED_UNIFORM_BUFFERS
+            ),
+            vk::DescriptorPoolSize(
+                vk::DescriptorType::eCombinedImageSampler,
+                totalSets * SUPPORTED_TEXTURE_TYPES_COUNT
+            )
         };
 
         vk::DescriptorPoolCreateInfo poolInfo(
             vk::DescriptorPoolCreateFlagBits::eFreeDescriptorSet,
-            MAX_FRAMES_IN_FLIGHT,
-            poolSize
+            totalSets,
+            poolSizes
         );
 
         m_ComplexMeshDescriptorPool = vk::raii::DescriptorPool(m_Device, poolInfo);
@@ -1806,7 +1807,7 @@ namespace vks_engine
 
         void *data = stagingBufferMemory.mapMemory(0, texture.m_ImageSize);
 
-        auto* pixels = texture.m_Pixels;
+        auto *pixels = texture.m_Pixels;
 
         memcpy(data, pixels, texture.m_ImageSize);
 

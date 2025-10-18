@@ -58,7 +58,9 @@ layout(binding = 3) uniform Counters
 }
 counters;
 
-layout(binding = 4) uniform sampler2D texSampler[3];
+#define SUPPORTED_TEXTURE_TYPES_COUNT 3
+
+layout(binding = 4) uniform sampler2D texSampler[SUPPORTED_TEXTURE_TYPES_COUNT];
 
 struct LightComponent
 {
@@ -70,7 +72,8 @@ struct LightComponent
 };
 
 layout(push_constant) uniform PushConstants {
-    layout(offset = 64) vec4 color;
+    layout(offset = 64) 
+    vec4 color;
 } pushConst;
 
 void calculateDirectionalLight(int index, vec3 normal, vec3 viewDir, out vec3 ambient, out vec3 diffuse, out vec3 specular);
@@ -82,6 +85,8 @@ void calculateLights(vec3 normal, vec3 viewDir, out LightComponent totalPointLig
 void main()
 {
     vec3 diffuseColor = texture(texSampler[0], fragTexCoords).rgb;
+
+    vec3 specularMap = texture(texSampler[1], fragTexCoords).rgb;
 
     vec3 tangentNormal = texture(texSampler[2], fragTexCoords).rgb;
 
@@ -101,7 +106,7 @@ void main()
     vec3 totalDiffuse = totalPointLight.diffuse + totalDirectionalLight.diffuse;
     vec3 totalSpecular = totalPointLight.specular + totalDirectionalLight.specular;
 
-    vec3 finalColor = (totalAmbient + totalDiffuse) * diffuseColor + totalSpecular;
+    vec3 finalColor = (totalAmbient + totalDiffuse) * diffuseColor + totalSpecular * specularMap;
 
     outColor = vec4(finalColor, 1.0);
 }
