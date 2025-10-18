@@ -2,7 +2,7 @@
 #define VKSENGINE_H
 #include <cstdint>
 
-namespace vksEngine
+namespace vks_engine
 {
         static constexpr uint32_t SCENE_MAX_ALLOWED_MESH_COUNT = 10;
 
@@ -10,7 +10,9 @@ namespace vksEngine
 
         static constexpr uint32_t SCENE_MAX_ALLOWED_DIRECTIONAL_LIGHT_COUNT = 10;
 
-        static constexpr uint32_t SUPPORTED_TEXTURE_TYPES_COUNT = 3;;
+        static constexpr uint32_t SUPPORTED_TEXTURE_TYPES_COUNT = 3;
+
+        static constexpr uint32_t USED_UNIFORM_BUFFERS = 4;
 }
 
 #endif //VKSENGINE_H

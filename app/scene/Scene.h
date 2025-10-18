@@ -1,5 +1,5 @@
-#ifndef vksEngineSCENE_H
-#define vksEngineSCENE_H
+#ifndef vks_engineSCENE_H
+#define vks_engineSCENE_H
 
 #include <deque>
 #include <mutex>
@@ -122,11 +122,11 @@ namespace vks_engine
 
         uint32_t m_ActivePointLights;
 
-        std::array<PointLightComponent, vksEngine::SCENE_MAX_ALLOWED_POINT_LIGHT_COUNT> m_PointLightComponents;
+        std::array<PointLightComponent, SCENE_MAX_ALLOWED_POINT_LIGHT_COUNT> m_PointLightComponents;
 
         UniformBuffer m_UBOPointLightBuffer;
 
-        std::array<PointLight::Aligned, vksEngine::SCENE_MAX_ALLOWED_POINT_LIGHT_COUNT> m_UBOpointLight;
+        std::array<PointLight::Aligned, SCENE_MAX_ALLOWED_POINT_LIGHT_COUNT> m_UBOpointLight;
 
         void initUBOPointLight();
 
@@ -138,12 +138,12 @@ namespace vks_engine
 
         uint32_t m_ActiveDirectionalLights;
 
-        std::array<DirectionalLightComponent, vksEngine::SCENE_MAX_ALLOWED_DIRECTIONAL_LIGHT_COUNT>
+        std::array<DirectionalLightComponent, SCENE_MAX_ALLOWED_DIRECTIONAL_LIGHT_COUNT>
         m_DirectionalLightComponents;
 
         UniformBuffer m_UBODirectionalLightBuffer;
 
-        std::array<DirectionalLight::Aligned, vksEngine::SCENE_MAX_ALLOWED_DIRECTIONAL_LIGHT_COUNT>
+        std::array<DirectionalLight::Aligned, SCENE_MAX_ALLOWED_DIRECTIONAL_LIGHT_COUNT>
         m_UBOdirectionalLight;
 
         void initUBODirectionalLight();
@@ -213,4 +213,4 @@ namespace vks_engine
     };
 }
 
-#endif //vksEngineSCENE_H
+#endif //vks_engineSCENE_H

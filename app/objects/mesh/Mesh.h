@@ -17,7 +17,7 @@ namespace vks_engine
     {
     private:
 
-        static constexpr std::array<aiTextureType, vksEngine::SUPPORTED_TEXTURE_TYPES_COUNT> SUPPORTED_AI_TEXTURE_TYPES = {
+        static constexpr std::array<aiTextureType, SUPPORTED_TEXTURE_TYPES_COUNT> SUPPORTED_AI_TEXTURE_TYPES = {
             aiTextureType_DIFFUSE,
             aiTextureType_SPECULAR,
             //aiTextureType_AMBIENT,

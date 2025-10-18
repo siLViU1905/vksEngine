@@ -40,21 +40,21 @@ namespace vks_engine
 
         m_Vk.createComplexMeshDescriptorSets(m_UBOvpBuffer, sizeof(UBOvp),
                                              m_UBOPointLightBuffer,
-                                             sizeof(PointLight::Aligned) * vksEngine::SCENE_MAX_ALLOWED_POINT_LIGHT_COUNT,
+                                             sizeof(PointLight::Aligned) * SCENE_MAX_ALLOWED_POINT_LIGHT_COUNT,
                                              m_UBODirectionalLightBuffer,
-                                             sizeof(DirectionalLight::Aligned) * vksEngine::SCENE_MAX_ALLOWED_DIRECTIONAL_LIGHT_COUNT,
+                                             sizeof(DirectionalLight::Aligned) * SCENE_MAX_ALLOWED_DIRECTIONAL_LIGHT_COUNT,
                                              m_UBOCountersBuffer, sizeof(UBOcounters)
         );
 
         m_Vk.createSimpleMeshDescriptorSets(m_UBOvpBuffer, sizeof(UBOvp),
                                             m_UBOPointLightBuffer,
-                                            sizeof(PointLight::Aligned) * vksEngine::SCENE_MAX_ALLOWED_POINT_LIGHT_COUNT,
+                                            sizeof(PointLight::Aligned) * SCENE_MAX_ALLOWED_POINT_LIGHT_COUNT,
                                             m_UBODirectionalLightBuffer,
-                                            sizeof(DirectionalLight::Aligned) * vksEngine::SCENE_MAX_ALLOWED_DIRECTIONAL_LIGHT_COUNT,
+                                            sizeof(DirectionalLight::Aligned) * SCENE_MAX_ALLOWED_DIRECTIONAL_LIGHT_COUNT,
                                             m_UBOCountersBuffer, sizeof(UBOcounters));
 
-        m_SimpleMeshComponents.reserve(vksEngine::SCENE_MAX_ALLOWED_MESH_COUNT);
-        m_ComplexMeshComponents.reserve(vksEngine::SCENE_MAX_ALLOWED_MESH_COUNT);
+        m_SimpleMeshComponents.reserve(SCENE_MAX_ALLOWED_MESH_COUNT);
+        m_ComplexMeshComponents.reserve(SCENE_MAX_ALLOWED_MESH_COUNT);
     }
 
     void Scene::run()
@@ -119,10 +119,10 @@ namespace vks_engine
     {
         m_Vk.CreateUniformBuffers(m_UBOvpBuffer, sizeof(m_UBOvp));
 
-        m_Vk.CreateUniformBuffers(m_UBOPointLightBuffer, sizeof(PointLight::Aligned) * vksEngine::SCENE_MAX_ALLOWED_POINT_LIGHT_COUNT);
+        m_Vk.CreateUniformBuffers(m_UBOPointLightBuffer, sizeof(PointLight::Aligned) * SCENE_MAX_ALLOWED_POINT_LIGHT_COUNT);
 
         m_Vk.CreateUniformBuffers(m_UBODirectionalLightBuffer,
-                                  sizeof(DirectionalLight::Aligned) * vksEngine::SCENE_MAX_ALLOWED_DIRECTIONAL_LIGHT_COUNT);
+                                  sizeof(DirectionalLight::Aligned) * SCENE_MAX_ALLOWED_DIRECTIONAL_LIGHT_COUNT);
 
         m_Vk.CreateUniformBuffers(m_UBOCountersBuffer, sizeof(m_Counters));
     }
@@ -140,7 +140,7 @@ namespace vks_engine
 
     void Scene::initUBOPointLight()
     {
-        for (int i = 0; i < vksEngine::SCENE_MAX_ALLOWED_POINT_LIGHT_COUNT; ++i)
+        for (int i = 0; i < SCENE_MAX_ALLOWED_POINT_LIGHT_COUNT; ++i)
         {
             m_PointLightComponents[i].bind();
             m_UBOpointLight[i] = m_PointLightComponents[i].m_Light.getAligned();
@@ -149,7 +149,7 @@ namespace vks_engine
 
     void Scene::initUBODirectionalLight()
     {
-        for (int i = 0; i < vksEngine::SCENE_MAX_ALLOWED_DIRECTIONAL_LIGHT_COUNT; ++i)
+        for (int i = 0; i < SCENE_MAX_ALLOWED_DIRECTIONAL_LIGHT_COUNT; ++i)
         {
             m_DirectionalLightComponents[i].bind();
             m_UBOdirectionalLight[i] = m_DirectionalLightComponents[i].m_Light.getAligned();
@@ -179,7 +179,7 @@ namespace vks_engine
         MeshComponent component;
         uint32_t newID; {
             std::lock_guard<std::mutex> lock(m_MeshCountMutex);
-            if (m_CurrentMeshCount == vksEngine::SCENE_MAX_ALLOWED_MESH_COUNT)
+            if (m_CurrentMeshCount == SCENE_MAX_ALLOWED_MESH_COUNT)
                 return;
 
             newID = m_CurrentMeshCount;
@@ -198,7 +198,7 @@ namespace vks_engine
 
     void Scene::addSphereMesh()
     {
-        if (m_CurrentMeshCount == vksEngine::SCENE_MAX_ALLOWED_MESH_COUNT)
+        if (m_CurrentMeshCount == SCENE_MAX_ALLOWED_MESH_COUNT)
             return;
 
         Mesh sphere = Mesh::generateSphere({}, 1.f, 64, 64);
@@ -226,7 +226,7 @@ namespace vks_engine
 
     void Scene::addCubeMesh()
     {
-        if (m_CurrentMeshCount == vksEngine::SCENE_MAX_ALLOWED_MESH_COUNT)
+        if (m_CurrentMeshCount == SCENE_MAX_ALLOWED_MESH_COUNT)
             return;
 
         Mesh cube = Mesh::generateCube({}, 1.f);
@@ -329,7 +329,7 @@ namespace vks_engine
 
     void Scene::addPointLight()
     {
-        if (m_ActivePointLights == vksEngine::SCENE_MAX_ALLOWED_POINT_LIGHT_COUNT)
+        if (m_ActivePointLights == SCENE_MAX_ALLOWED_POINT_LIGHT_COUNT)
             return;
 
         auto &component = m_PointLightComponents[m_ActivePointLights];
@@ -351,7 +351,7 @@ namespace vks_engine
 
     void Scene::addDirectionalLight()
     {
-        if (m_ActiveDirectionalLights == vksEngine::SCENE_MAX_ALLOWED_DIRECTIONAL_LIGHT_COUNT)
+        if (m_ActiveDirectionalLights == SCENE_MAX_ALLOWED_DIRECTIONAL_LIGHT_COUNT)
             return;
 
         auto &component = m_DirectionalLightComponents[m_ActiveDirectionalLights];

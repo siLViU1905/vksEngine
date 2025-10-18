@@ -1328,7 +1328,7 @@ namespace vks_engine
 
     void VulkanHandler::createComplexMeshDescriptorSetLayout()
     {
-        std::array<vk::DescriptorSetLayoutBinding, 5> bindings = {
+        std::array<vk::DescriptorSetLayoutBinding, USED_UNIFORM_BUFFERS + 1> bindings = {
             vk::DescriptorSetLayoutBinding(
                 0,
                 vk::DescriptorType::eUniformBuffer,
@@ -1360,7 +1360,7 @@ namespace vks_engine
             vk::DescriptorSetLayoutBinding(
                 4,
                 vk::DescriptorType::eCombinedImageSampler,
-                2,
+                SCENE_MAX_ALLOWED_MESH_COUNT * SUPPORTED_TEXTURE_TYPES_COUNT,
                 vk::ShaderStageFlagBits::eFragment
             )
         };
@@ -1418,13 +1418,13 @@ namespace vks_engine
 
     void VulkanHandler::createComplexMeshDescriptorPool()
     {
-        std::array<vk::DescriptorPoolSize, 5> poolSize = {
+        std::array<vk::DescriptorPoolSize, USED_UNIFORM_BUFFERS + 1> poolSize = {
             vk::DescriptorPoolSize(vk::DescriptorType::eUniformBuffer, MAX_FRAMES_IN_FLIGHT),
             vk::DescriptorPoolSize(vk::DescriptorType::eUniformBuffer, MAX_FRAMES_IN_FLIGHT),
             vk::DescriptorPoolSize(vk::DescriptorType::eUniformBuffer, MAX_FRAMES_IN_FLIGHT),
             vk::DescriptorPoolSize(vk::DescriptorType::eUniformBuffer, MAX_FRAMES_IN_FLIGHT),
             vk::DescriptorPoolSize(vk::DescriptorType::eCombinedImageSampler,
-                                   MAX_FRAMES_IN_FLIGHT * vksEngine::SUPPORTED_TEXTURE_TYPES_COUNT)
+                                   MAX_FRAMES_IN_FLIGHT * SCENE_MAX_ALLOWED_MESH_COUNT * SUPPORTED_TEXTURE_TYPES_COUNT)
         };
 
         vk::DescriptorPoolCreateInfo poolInfo(
