@@ -208,6 +208,10 @@ namespace vks_engine
         //======== Event handlers ========
         void setInputHandlers();
 
+        void setupKeyHandlers();
+
+        void setupButtonHandlers();
+
         void handleFramebufferResize(int width, int height);
 
         void handleEvents();

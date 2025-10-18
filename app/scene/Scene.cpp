@@ -658,6 +658,13 @@ namespace vks_engine
 
     void Scene::setInputHandlers()
     {
+        setupKeyHandlers();
+
+        setupButtonHandlers();
+    }
+
+    void Scene::setupKeyHandlers()
+    {
         m_Window.setKeyCallback([this](int key, int scancode, int action, int mods)
         {
             this->m_InputHandler.handleKeyboard(key, scancode, action, mods);
@@ -668,20 +675,24 @@ namespace vks_engine
 
         m_InputHandler.setKeyCallbackFunction(Key(Key::KEY_ENTER, Key::KEY_ACTION_PRESS, Key::KEY_MOD_ALT),
                                               [this] { this->m_Window.maximize(); });
+    }
 
+    void Scene::setupButtonHandlers()
+    {
         m_Window.setButtonCallback([this](int button, int action, int mods)
         {
             this->m_InputHandler.handleMouse(button, action, mods);
         });
 
-        m_InputHandler.setButtonCallbackFunction(Button(Button::BUTTON_MIDDLE, Button::BUTTON_ACTION_PRESS, Button::BUTTON_MOD_NONE),
-                                                 [this]()
-                                                 {
-                                                     if (this->m_Camera.isFocused())
-                                                         this->m_Camera.loseFocus();
-                                                     else
-                                                         this->m_Camera.gainFocus();
-                                                 });
+        m_InputHandler.setButtonCallbackFunction(
+            Button(Button::BUTTON_MIDDLE, Button::BUTTON_ACTION_PRESS, Button::BUTTON_MOD_NONE),
+            [this]()
+            {
+                if (this->m_Camera.isFocused())
+                    this->m_Camera.loseFocus();
+                else
+                    this->m_Camera.gainFocus();
+            });
     }
 
     void Scene::handleFramebufferResize(int width, int height)
