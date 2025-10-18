@@ -1,5 +1,6 @@
 #include "Scene.h"
 
+#include <future>
 #include <iostream>
 #include <thread>
 #include <glm/gtc/type_ptr.inl>
@@ -607,15 +608,15 @@ namespace vks_engine
 
         const auto &currentFrame = m_Vk.m_CurrentFrame;
 
-        std::thread uboUpdate(&Scene::updateUBO, this, currentFrame);
+        auto uboFuture = std::async(std::launch::async, &Scene::updateUBO, this, currentFrame);
 
-        std::thread cameraUpdate(&Scene::updateCamera, this, m_Clock.getElapsedTime<float, TimeType::Seconds>());
+        auto cameraFuture = std::async(std::launch::async, &Scene::updateCamera, this, m_Clock.getElapsedTime<float, TimeType::Seconds>());
 
         m_Clock.restart();
 
-        uboUpdate.join();
+        uboFuture.wait();
 
-        cameraUpdate.join();
+        cameraFuture.wait();
     }
 
     void Scene::updateUBO(uint32_t frame)
