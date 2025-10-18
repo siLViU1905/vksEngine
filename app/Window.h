@@ -22,6 +22,8 @@ namespace vks_engine
 
         bool wasResized();
 
+        void maximize();
+
         void setFramebufferResizeCallback(std::function<void(int,int)> function);
 
         void setKeyCallback(std::function<void(int,int,int,int)> function);

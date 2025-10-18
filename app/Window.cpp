@@ -50,6 +50,11 @@ namespace vks_engine
         return temp;
     }
 
+    void Window::maximize()
+    {
+        glfwMaximizeWindow(m_Window);
+    }
+
     void Window::setFramebufferResizeCallback(std::function<void(int, int)> function)
     {
         m_FramebufferResizeCallbackFunction = std::move(function);

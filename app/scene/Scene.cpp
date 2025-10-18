@@ -177,9 +177,7 @@ namespace vks_engine
     void Scene::loadModelWorker(std::string_view path)
     {
         MeshComponent component;
-        uint32_t newID;
-
-        {
+        uint32_t newID; {
             std::lock_guard<std::mutex> lock(m_MeshCountMutex);
             if (m_CurrentMeshCount == MAX_ALLOWED_MESH_COUNT)
                 return;
@@ -192,9 +190,7 @@ namespace vks_engine
         component.m_Mesh.load(path.data());
         component.m_Mesh.setType(MeshType::MODEL);
         component.bind();
-        component.m_Menu.setTitle("Mesh" + std::to_string(component.m_Mesh.getID()));
-
-        {
+        component.m_Menu.setTitle("Mesh" + std::to_string(component.m_Mesh.getID())); {
             std::lock_guard<std::mutex> lock(m_LoadedMeshMutex);
             m_LoadedMeshQueue.push_back(std::move(component));
         }
@@ -281,15 +277,15 @@ namespace vks_engine
         m_PendingModelPaths.push_back(path);
     }
 
-    void Scene::handleLoadedModel(MeshComponent& component)
+    void Scene::handleLoadedModel(MeshComponent &component)
     {
         m_ComplexMeshComponents.push_back(std::move(component));
 
-        auto& addedComponent = m_ComplexMeshComponents.back();
+        auto &addedComponent = m_ComplexMeshComponents.back();
 
         addedComponent.bind();
 
-        auto& mesh = addedComponent.m_Mesh;
+        auto &mesh = addedComponent.m_Mesh;
 
         m_Vk.CreateVertexBuffer(mesh.getVertices(), mesh.m_VertexBuffer, mesh.m_VertexBufferMemory);
 
@@ -316,7 +312,7 @@ namespace vks_engine
 
         while (!m_LoadedMeshQueue.empty())
         {
-            MeshComponent& componentToProcess = m_LoadedMeshQueue.front();
+            MeshComponent &componentToProcess = m_LoadedMeshQueue.front();
 
             handleLoadedModel(componentToProcess);
 
@@ -639,7 +635,8 @@ namespace vks_engine
 
         auto uboFuture = std::async(std::launch::async, &Scene::updateUBO, this, currentFrame);
 
-        auto cameraFuture = std::async(std::launch::async, &Scene::updateCamera, this, m_Clock.getElapsedTime<float, TimeType::Seconds>());
+        auto cameraFuture = std::async(std::launch::async, &Scene::updateCamera, this,
+                                       m_Clock.getElapsedTime<float, TimeType::Seconds>());
 
         m_Clock.restart();
 
@@ -666,15 +663,18 @@ namespace vks_engine
             this->m_InputHandler.handleKeyboard(key, scancode, action, mods);
         });
 
-        m_InputHandler.setKeyCallbackFunction(Key(GLFW_KEY_ESCAPE,GLFW_PRESS),
+        m_InputHandler.setKeyCallbackFunction(Key(Key::KEY_ESCAPE, Key::KEY_ACTION_PRESS, Key::KEY_MOD_NONE),
                                               [this] { this->m_Window.close(); });
+
+        m_InputHandler.setKeyCallbackFunction(Key(Key::KEY_ENTER, Key::KEY_ACTION_PRESS, Key::KEY_MOD_ALT),
+                                              [this] { this->m_Window.maximize(); });
 
         m_Window.setButtonCallback([this](int button, int action, int mods)
         {
             this->m_InputHandler.handleMouse(button, action, mods);
         });
 
-        m_InputHandler.setButtonCallbackFunction(Button(GLFW_MOUSE_BUTTON_3, GLFW_PRESS),
+        m_InputHandler.setButtonCallbackFunction(Button(Button::BUTTON_MIDDLE, Button::BUTTON_ACTION_PRESS, Button::BUTTON_MOD_NONE),
                                                  [this]()
                                                  {
                                                      if (this->m_Camera.isFocused())

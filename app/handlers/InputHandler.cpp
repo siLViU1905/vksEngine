@@ -4,7 +4,7 @@ namespace vks_engine
 {
     void InputHandler::handleKeyboard(int key, int scancode, int action, int mods)
     {
-        Key _key(key, action);
+        Key _key(key, action, mods);
 
         if (auto it = m_KeyFunctionCallbacks.find(_key); it != m_KeyFunctionCallbacks.end())
             it->second();
@@ -12,7 +12,7 @@ namespace vks_engine
 
     void InputHandler::handleMouse(int button, int action, int mods)
     {
-        Button btn(button, action);
+        Button btn(button, action, mods);
 
         if (auto it = m_ButtonFunctionCallbacks.find(btn); it != m_ButtonFunctionCallbacks.end())
             it->second();
