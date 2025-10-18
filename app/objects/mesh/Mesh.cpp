@@ -1,6 +1,8 @@
 #include "Mesh.h"
 
+#include <filesystem>
 #include <print>
+#include <ranges>
 
 namespace vks_engine
 {
@@ -46,9 +48,10 @@ namespace vks_engine
           m_VertexBufferMemory(std::move(other.m_VertexBufferMemory)),
           m_IndexBuffer(std::move(other.m_IndexBuffer)),
           m_IndexBufferMemory(std::move(other.m_IndexBufferMemory)),
+          m_DescriptorSets(std::move(other.m_DescriptorSets)),
 
           m_ID(other.m_ID),
-          m_TexturePaths(std::move(other.m_TexturePaths)),
+          texturePaths(std::move(other.texturePaths)),
           m_Textures(std::move(other.m_Textures)),
           m_HasTangentsAndBitangents(other.m_HasTangentsAndBitangents),
           m_Type(other.m_Type)
@@ -72,13 +75,14 @@ namespace vks_engine
 
             m_Vertices = std::move(other.m_Vertices);
             m_Indices = std::move(other.m_Indices);
-            m_TexturePaths = std::move(other.m_TexturePaths);
+            texturePaths = std::move(other.texturePaths);
             m_Textures = std::move(other.m_Textures);
 
             m_VertexBuffer = std::move(other.m_VertexBuffer);
             m_VertexBufferMemory = std::move(other.m_VertexBufferMemory);
             m_IndexBuffer = std::move(other.m_IndexBuffer);
             m_IndexBufferMemory = std::move(other.m_IndexBufferMemory);
+            m_DescriptorSets = std::move(other.m_DescriptorSets);
 
             m_Type = other.m_Type;
 
@@ -91,6 +95,8 @@ namespace vks_engine
 
     void Mesh::load(std::string_view path)
     {
+        findDirectory(path);
+
         Assimp::Importer import;
 
         const aiScene *scene = import.ReadFile(
@@ -104,6 +110,8 @@ namespace vks_engine
             throw std::runtime_error("Failed to load model");
 
         processNode(scene->mRootNode, scene);
+
+        uniqueVertices.clear();
 
         if (!m_HasTangentsAndBitangents)
             calculateTangentsAndBitangents();
@@ -183,6 +191,11 @@ namespace vks_engine
         m_Type = type;
     }
 
+    Texture &Mesh::getTexture(TextureType type)
+    {
+        return m_Textures[type];
+    }
+
     void Mesh::processNode(aiNode *node, const aiScene *scene)
     {
         for (uint32_t i = 0; i < node->mNumMeshes; ++i)
@@ -198,8 +211,6 @@ namespace vks_engine
 
     void Mesh::processMesh(aiMesh *mesh, const aiScene *scene)
     {
-        std::unordered_map<Vertex, uint32_t> uniqueVertices;
-
         for (uint32_t i = 0; i < mesh->mNumFaces; ++i)
         {
             const aiFace &face = mesh->mFaces[i];
@@ -257,9 +268,11 @@ namespace vks_engine
 
     void Mesh::processMaterial(const aiMaterial *material, const aiScene *scene)
     {
-        for (const auto &textureType: SUPPORTED_AI_TEXTURE_TYPES)
+        for (const auto &textureType: SUPPORTED_TEXTURE_TYPES)
         {
-            uint32_t textureCount = material->GetTextureCount(textureType);
+            auto aiTextureType = vks_engine_TextureType_to_aiTextureType(textureType);
+
+            uint32_t textureCount = material->GetTextureCount(aiTextureType);
 
             if (textureCount)
                 std::print("has {} of {} texture\n", textureCount, static_cast<int>(textureType));
@@ -268,15 +281,25 @@ namespace vks_engine
             {
                 aiString texturePath;
 
-                if (material->GetTexture(textureType, i, &texturePath) == aiReturn_SUCCESS)
+                if (material->GetTexture(aiTextureType, i, &texturePath) == aiReturn_SUCCESS)
                 {
-                    std::string fullPath(texturePath.C_Str());
-                    std::string filename = fullPath.substr(fullPath.find_last_of("/\\") + 1);
+                    std::string relativePath(texturePath.C_Str());
 
-                    m_TexturePaths.emplace(fullPath);
+                    auto fullPath = m_Directory + '/' + relativePath;
+
+                    texturePaths.emplace(textureType, fullPath);
                 }
             }
         }
+    }
+
+    void Mesh::findDirectory(std::string_view fullPath)
+    {
+        std::filesystem::path p(fullPath);
+
+        m_Directory = p.parent_path().string();
+
+        std::ranges::replace(m_Directory, '\\','/');
     }
 
     void Mesh::updateModel()
@@ -347,8 +370,19 @@ namespace vks_engine
 
     void Mesh::loadTextures()
     {
-        for (const auto &path: m_TexturePaths)
-            m_Textures.emplace_back(path);
+        for (const auto &[type, path]: texturePaths)
+        {
+            if (auto [it, emplaced] = m_Textures.emplace(type, path); emplaced)
+            {
+                auto &texture = it->second;
+
+                texture.m_Type = type;
+
+                texture.load(path);
+            }
+        }
+
+        texturePaths.clear();
     }
 
     Mesh Mesh::generateSphere(const glm::vec3 &position, float radius, int slices, int stacks)

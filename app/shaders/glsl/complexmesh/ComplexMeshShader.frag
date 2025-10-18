@@ -58,7 +58,7 @@ layout(binding = 3) uniform Counters
 }
 counters;
 
-layout(binding = 4) uniform sampler2D texSampler[2];
+layout(binding = 4) uniform sampler2D texSampler[3];
 
 struct LightComponent
 {
@@ -83,7 +83,7 @@ void main()
 {
     vec3 diffuseColor = texture(texSampler[0], fragTexCoords).rgb;
 
-    vec3 tangentNormal = texture(texSampler[1], fragTexCoords).rgb;
+    vec3 tangentNormal = texture(texSampler[2], fragTexCoords).rgb;
 
     tangentNormal = normalize(tangentNormal * 2.0 - 1.0);
 

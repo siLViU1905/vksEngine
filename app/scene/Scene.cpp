@@ -7,6 +7,7 @@
 
 #include "../objects/menus/MeshMenu.h"
 #include <print>
+#include <ranges>
 
 namespace vks_engine
 {
@@ -38,19 +39,20 @@ namespace vks_engine
 
         createUniformBuffers();
 
-        m_Vk.createComplexMeshDescriptorSets(m_UBOvpBuffer, sizeof(UBOvp),
+        /*m_Vk.createComplexMeshDescriptorSets(m_UBOvpBuffer, sizeof(UBOvp),
                                              m_UBOPointLightBuffer,
                                              sizeof(PointLight::Aligned) * SCENE_MAX_ALLOWED_POINT_LIGHT_COUNT,
                                              m_UBODirectionalLightBuffer,
                                              sizeof(DirectionalLight::Aligned) * SCENE_MAX_ALLOWED_DIRECTIONAL_LIGHT_COUNT,
                                              m_UBOCountersBuffer, sizeof(UBOcounters)
-        );
+        );*/
 
         m_Vk.createSimpleMeshDescriptorSets(m_UBOvpBuffer, sizeof(UBOvp),
                                             m_UBOPointLightBuffer,
                                             sizeof(PointLight::Aligned) * SCENE_MAX_ALLOWED_POINT_LIGHT_COUNT,
                                             m_UBODirectionalLightBuffer,
-                                            sizeof(DirectionalLight::Aligned) * SCENE_MAX_ALLOWED_DIRECTIONAL_LIGHT_COUNT,
+                                            sizeof(DirectionalLight::Aligned) *
+                                            SCENE_MAX_ALLOWED_DIRECTIONAL_LIGHT_COUNT,
                                             m_UBOCountersBuffer, sizeof(UBOcounters));
 
         m_SimpleMeshComponents.reserve(SCENE_MAX_ALLOWED_MESH_COUNT);
@@ -119,7 +121,8 @@ namespace vks_engine
     {
         m_Vk.CreateUniformBuffers(m_UBOvpBuffer, sizeof(m_UBOvp));
 
-        m_Vk.CreateUniformBuffers(m_UBOPointLightBuffer, sizeof(PointLight::Aligned) * SCENE_MAX_ALLOWED_POINT_LIGHT_COUNT);
+        m_Vk.CreateUniformBuffers(m_UBOPointLightBuffer,
+                                  sizeof(PointLight::Aligned) * SCENE_MAX_ALLOWED_POINT_LIGHT_COUNT);
 
         m_Vk.CreateUniformBuffers(m_UBODirectionalLightBuffer,
                                   sizeof(DirectionalLight::Aligned) * SCENE_MAX_ALLOWED_DIRECTIONAL_LIGHT_COUNT);
@@ -177,6 +180,7 @@ namespace vks_engine
     void Scene::loadModelWorker(std::string_view path)
     {
         MeshComponent component;
+
         uint32_t newID; {
             std::lock_guard<std::mutex> lock(m_MeshCountMutex);
             if (m_CurrentMeshCount == SCENE_MAX_ALLOWED_MESH_COUNT)
@@ -186,10 +190,18 @@ namespace vks_engine
             ++m_CurrentMeshCount;
         }
 
-        component.m_Mesh.setID(newID);
-        component.m_Mesh.load(path.data());
-        component.m_Mesh.setType(MeshType::MODEL);
+        auto &mesh = component.m_Mesh;
+
+        mesh.setID(newID);
+
+        mesh.load(path.data());
+
+        mesh.loadTextures();
+
+        mesh.setType(MeshType::MODEL);
+
         component.bind();
+
         component.m_Menu.setTitle("Mesh" + std::to_string(component.m_Mesh.getID())); {
             std::lock_guard<std::mutex> lock(m_LoadedMeshMutex);
             m_LoadedMeshQueue.push_back(std::move(component));
@@ -290,6 +302,18 @@ namespace vks_engine
         m_Vk.CreateVertexBuffer(mesh.getVertices(), mesh.m_VertexBuffer, mesh.m_VertexBufferMemory);
 
         m_Vk.CreateIndexBuffer(mesh.getIndices(), mesh.m_IndexBuffer, mesh.m_IndexBufferMemory);
+
+        m_Vk.CreateMeshDescriptorSets(mesh,
+                                      m_UBOvpBuffer, sizeof(UBOvp),
+                                      m_UBOPointLightBuffer,
+                                      sizeof(PointLight::Aligned) * SCENE_MAX_ALLOWED_POINT_LIGHT_COUNT,
+                                      m_UBODirectionalLightBuffer,
+                                      sizeof(DirectionalLight::Aligned) * SCENE_MAX_ALLOWED_DIRECTIONAL_LIGHT_COUNT,
+                                      m_UBOCountersBuffer, sizeof(UBOcounters)
+        );
+
+        for (auto &texture: mesh.m_Textures | std::views::values)
+            m_Vk.CreateTexture(texture);
     }
 
     void Scene::procesPendingActions()
@@ -486,23 +510,16 @@ namespace vks_engine
 
         commandBuffer.bindPipeline(vk::PipelineBindPoint::eGraphics, m_Vk.m_ComplexMeshGraphicsPipeline);
 
-        commandBuffer.bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
-                                         m_Vk.m_ComplexMeshPipelineLayout,
-                                         0,
-                                         *m_Vk.m_ComplexMeshDescriptorSets[currentFrame],
-                                         nullptr
-        );
-
-        commandBuffer.bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
-                                         m_Vk.m_ComplexMeshPipelineLayout,
-                                         0,
-                                         *m_Vk.m_ComplexMeshDescriptorSets[currentFrame],
-                                         nullptr
-        );
-
         for (const auto &meshComponent: m_ComplexMeshComponents)
         {
             const auto &mesh = meshComponent.m_Mesh;
+
+            commandBuffer.bindDescriptorSets(vk::PipelineBindPoint::eGraphics,
+                                             m_Vk.m_ComplexMeshPipelineLayout,
+                                             0,
+                                             *mesh.m_DescriptorSets[currentFrame],
+                                             nullptr
+            );
 
             const auto &model = mesh.getModel();
 

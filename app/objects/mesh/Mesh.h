@@ -9,43 +9,24 @@
 #include <vulkan/vulkan_raii.hpp>
 
 #include "MeshType.h"
-#include "../Texture.h"
+#include "../texture/Texture.h"
 
 namespace vks_engine
 {
     class Mesh
     {
     private:
-
-        static constexpr std::array<aiTextureType, SUPPORTED_TEXTURE_TYPES_COUNT> SUPPORTED_AI_TEXTURE_TYPES = {
-            aiTextureType_DIFFUSE,
-            aiTextureType_SPECULAR,
-            //aiTextureType_AMBIENT,
-            //aiTextureType_EMISSIVE,
-            //aiTextureType_HEIGHT,
-            aiTextureType_NORMALS,
-            /*aiTextureType_SHININESS,
-            aiTextureType_OPACITY,
-            aiTextureType_DISPLACEMENT,
-            aiTextureType_LIGHTMAP,
-            aiTextureType_REFLECTION,
-            aiTextureType_BASE_COLOR,
-            aiTextureType_NORMAL_CAMERA,
-            aiTextureType_EMISSION_COLOR,
-            aiTextureType_METALNESS,
-            aiTextureType_DIFFUSE_ROUGHNESS,
-            aiTextureType_AMBIENT_OCCLUSION,
-            aiTextureType_SHEEN,
-            aiTextureType_CLEARCOAT,
-            aiTextureType_TRANSMISSION,
-            aiTextureType_UNKNOWN,
-            aiTextureType_NONE*/
+        static constexpr std::array<TextureType, SUPPORTED_TEXTURE_TYPES_COUNT> SUPPORTED_TEXTURE_TYPES = {
+            TextureType::DIFFUSE,
+            TextureType::SPECULAR,
+            TextureType::NORMALS,
         };
 
     public:
         Mesh();
 
-        Mesh(const glm::vec3 &position, const glm::vec3 &rotation, const glm::vec3 &scale, uint32_t instances, MeshType type);
+        Mesh(const glm::vec3 &position, const glm::vec3 &rotation, const glm::vec3 &scale, uint32_t instances,
+             MeshType type);
 
         Mesh(Mesh &&mesh) noexcept;
 
@@ -105,9 +86,11 @@ namespace vks_engine
 
         void setID(uint32_t id);
 
-        constexpr MeshType getType() const {return m_Type;}
+        constexpr MeshType getType() const { return m_Type; }
 
         void setType(MeshType type);
+
+        Texture& getTexture(TextureType type);
 
         friend class VulkanHandler;
 
@@ -148,17 +131,26 @@ namespace vks_engine
 
         void calculateTangentsAndBitangents();
 
-        std::unordered_set<std::string> m_TexturePaths;
-
-        std::vector<Texture> m_Textures;
+        std::unordered_map<TextureType, Texture> m_Textures;
 
         bool m_HasTangentsAndBitangents;
+
+        std::string m_Directory;
+
+        //================= TEMP VARS =================
+        std::unordered_map<Vertex, uint32_t> uniqueVertices;
+
+        std::unordered_map<TextureType, std::string> texturePaths;
+
+        //================= =================
 
         void processNode(aiNode *node, const aiScene *scene);
 
         void processMesh(aiMesh *mesh, const aiScene *scene);
 
         void processMaterial(const aiMaterial *material, const aiScene *scene);
+
+        void findDirectory(std::string_view fullPath);
 
         void loadTextures();
 

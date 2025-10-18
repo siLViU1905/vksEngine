@@ -72,7 +72,7 @@ add_executable(vksEngine
 
         app/objects/Camera.cpp
 
-        app/objects/Texture.cpp
+        app/objects/texture/Texture.cpp
 
         app/objects/mesh/Mesh.cpp
 
@@ -121,6 +121,8 @@ add_executable(vksEngine
         app/scene/menus/SceneComponentPropertiesMenu.cpp
 
         app/scene/components/ComponentType.cpp
+
+        app/objects/texture/TextureType.cpp
 )
 
 

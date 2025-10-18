@@ -3,6 +3,8 @@
 #include <print>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "../../VKSEngine.h"
+
 namespace vks_engine
 {
     PointLightMenu::PointLightMenu()
@@ -19,7 +21,7 @@ namespace vks_engine
 
         auto position = m_Component->getPosition();
 
-        if (ImGui::SliderFloat3("Position", glm::value_ptr(position), -5.f, 5.f))
+        if (ImGui::SliderFloat3("Position", glm::value_ptr(position), SCENE_LIGHT_POSITION_LOWER_BOUND, SCENE_LIGHT_POSITION_UPPER_BOUND))
         {
             m_Component->setPosition(position);
             modified = true;

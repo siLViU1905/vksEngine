@@ -15,7 +15,7 @@
 #include "../objects/Camera.h"
 #include "../objects/lights/DirectionalLight.h"
 #include "../objects/mesh/Mesh.h"
-#include "../objects/Texture.h"
+#include "../objects/texture/Texture.h"
 #include "../objects/Vertex.h"
 #include "../objects/UniformBuffer.h"
 #include "../objects/lights/PointLight.h"
@@ -48,7 +48,7 @@ namespace vks_engine
 
         void GenerateMipMaps(Texture &texture, vk::Format imageFormat);
 
-        void CreateTexture(Texture &texture, uint8_t *pixels);
+        void CreateTexture(Texture &texture);
 
         void CreateMeshDescriptorSets(
             Mesh &mesh,
@@ -125,7 +125,7 @@ namespace vks_engine
                                             UniformBuffer &directionalLightUBO, vk::DeviceSize dlSize,
                                             UniformBuffer &countersUBO, vk::DeviceSize ctSize);
 
-        void createTextureImage(Texture &texture, uint8_t *pixels);
+        void createTextureImage(Texture &texture);
 
         void createTextureImageView(Texture &texture);
 
@@ -189,6 +189,10 @@ namespace vks_engine
         void cleanupSwapChain();
 
         void rebuildSwapChain();
+
+        void createDefaultTextures();
+
+        const Texture& getTextureOrDefault(const Mesh& mesh, TextureType type) const;
 
         vk::SampleCountFlagBits getMaxUsableSampleCount();
 
@@ -283,6 +287,12 @@ namespace vks_engine
         Texture m_BackpackDiffuseTexture;
 
         Texture m_BackpackNormalTexture;
+
+        Texture m_DefaultDiffuseTexture;
+
+        Texture m_DefaultSpecularTexture;
+
+        Texture m_DefaultNormalTexture;
 
         vk::raii::Image m_DepthImage;
 

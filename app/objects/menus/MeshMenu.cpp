@@ -18,7 +18,7 @@ namespace vks_engine
 
         auto position = m_Component->getPosition();
 
-        if (ImGui::SliderFloat3("Position", glm::value_ptr(position), -5.f, 5.f))
+        if (ImGui::SliderFloat3("Position", glm::value_ptr(position), SCENE_MESH_POSITION_LOWER_BOUND, SCENE_MESH_POSITION_UPPER_BOUND))
         {
             m_Component->setPosition(position);
             modified = true;
@@ -26,7 +26,7 @@ namespace vks_engine
 
         auto scale = m_Component->getScale();
 
-        if (ImGui::SliderFloat3("Scale", glm::value_ptr(scale), 0.1f, 5.f))
+        if (ImGui::SliderFloat3("Scale", glm::value_ptr(scale), SCENE_MESH_SCALE_LOWER_BOUND, SCENE_MESH_SCALE_UPPER_BOUND))
         {
             m_Component->setScale(scale);
             modified = true;
