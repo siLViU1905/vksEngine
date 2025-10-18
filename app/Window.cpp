@@ -55,6 +55,16 @@ namespace vks_engine
         glfwMaximizeWindow(m_Window);
     }
 
+    bool Window::isMaximized() const
+    {
+        return static_cast<bool>(glfwGetWindowAttrib(m_Window, GLFW_MAXIMIZED));
+    }
+
+    void Window::restore()
+    {
+        glfwRestoreWindow(m_Window);
+    }
+
     void Window::setFramebufferResizeCallback(std::function<void(int, int)> function)
     {
         m_FramebufferResizeCallbackFunction = std::move(function);

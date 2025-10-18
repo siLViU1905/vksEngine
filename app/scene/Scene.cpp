@@ -674,7 +674,13 @@ namespace vks_engine
                                               [this] { this->m_Window.close(); });
 
         m_InputHandler.setKeyCallbackFunction(Key(Key::KEY_ENTER, Key::KEY_ACTION_PRESS, Key::KEY_MOD_ALT),
-                                              [this] { this->m_Window.maximize(); });
+                                              [this]
+                                              {
+                                                  if (!this->m_Window.isMaximized())
+                                                      this->m_Window.maximize();
+                                                  else
+                                                      this->m_Window.restore();
+                                              });
     }
 
     void Scene::setupButtonHandlers()

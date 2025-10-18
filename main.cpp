@@ -13,7 +13,7 @@ int main()
     }
     catch (const std::exception &e)
     {
-        std::print("==============  ERROR: {}  ==============", e.what());
+        std::print("==============  ERROR: {}  ==============\n", e.what());
 
         return 1;
     }
