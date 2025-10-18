@@ -49,7 +49,7 @@ namespace vks_engine
 
         Mesh &operator=(Mesh &&mesh) noexcept;
 
-        void load(const std::string &path);
+        void load(std::string_view path);
 
         constexpr const auto &getVertices() const { return m_Vertices; }
 
@@ -125,8 +125,6 @@ namespace vks_engine
         std::vector<Vertex> m_Vertices;
 
         std::vector<uint32_t> m_Indices;
-
-        std::unordered_map<Vertex, uint32_t> m_UniqueVertices;
 
         uint32_t m_Instances;
 

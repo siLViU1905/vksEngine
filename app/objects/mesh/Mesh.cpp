@@ -40,7 +40,6 @@ namespace vks_engine
           m_Model(other.m_Model),
           m_Vertices(std::move(other.m_Vertices)),
           m_Indices(std::move(other.m_Indices)),
-          m_UniqueVertices(std::move(other.m_UniqueVertices)),
           m_Instances(other.m_Instances),
 
           m_VertexBuffer(std::move(other.m_VertexBuffer)),
@@ -73,7 +72,6 @@ namespace vks_engine
 
             m_Vertices = std::move(other.m_Vertices);
             m_Indices = std::move(other.m_Indices);
-            m_UniqueVertices = std::move(other.m_UniqueVertices);
             m_TexturePaths = std::move(other.m_TexturePaths);
             m_Textures = std::move(other.m_Textures);
 
@@ -91,12 +89,12 @@ namespace vks_engine
         return *this;
     }
 
-    void Mesh::load(const std::string &path)
+    void Mesh::load(std::string_view path)
     {
         Assimp::Importer import;
 
         const aiScene *scene = import.ReadFile(
-            path.c_str(),
+            path.data(),
             aiProcess_Triangulate |
             aiProcess_FlipUVs |
             aiProcess_CalcTangentSpace);
@@ -109,8 +107,6 @@ namespace vks_engine
 
         if (!m_HasTangentsAndBitangents)
             calculateTangentsAndBitangents();
-
-        m_UniqueVertices.clear();
 
         //std::print("===============Mesh has {} textures============\n", m_Textures.size());
     }
@@ -202,6 +198,8 @@ namespace vks_engine
 
     void Mesh::processMesh(aiMesh *mesh, const aiScene *scene)
     {
+        std::unordered_map<Vertex, uint32_t> uniqueVertices;
+
         for (uint32_t i = 0; i < mesh->mNumFaces; ++i)
         {
             const aiFace &face = mesh->mFaces[i];
@@ -239,14 +237,13 @@ namespace vks_engine
                 } else
                     m_HasTangentsAndBitangents = false;
 
-                if (!m_UniqueVertices.contains(vertex))
+                if (!uniqueVertices.contains(vertex))
                 {
-                    m_UniqueVertices[vertex] = static_cast<uint32_t>(m_Vertices.size());
+                    uniqueVertices[vertex] = static_cast<uint32_t>(m_Vertices.size());
                     m_Vertices.push_back(vertex);
                 }
 
-                m_Indices.push_back(m_UniqueVertices[vertex]);
-                // m_Indices.push_back(static_cast<uint32_t>(m_Vertices.size() - 1));
+                m_Indices.push_back(uniqueVertices[vertex]);
             }
         }
 
