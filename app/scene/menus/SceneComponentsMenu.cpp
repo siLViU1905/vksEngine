@@ -101,6 +101,7 @@ namespace vks_engine
                             }
                         }
 
+                        ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(0.8f, 0.2f, 0.2f, 1.0f));
                         if (ImGui::MenuItem("Delete"))
                         {
                             changed = true;
@@ -108,6 +109,7 @@ namespace vks_engine
                             deleteComponentNextFrame.second = it;
                             ImGui::CloseCurrentPopup();
                         }
+                        ImGui::PopStyleColor();
 
                         ImGui::EndPopup();
                     }
