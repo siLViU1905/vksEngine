@@ -123,6 +123,10 @@ add_executable(vksEngine
         app/scene/components/ComponentType.cpp
 
         app/objects/texture/TextureType.cpp
+
+        app/scene/menus/SceneInfoMenu.cpp
+
+        app/scene/menus/SceneEventsMenu.cpp
 )
 
 

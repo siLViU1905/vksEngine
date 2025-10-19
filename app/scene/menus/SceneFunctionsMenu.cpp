@@ -5,7 +5,7 @@ namespace vks_engine
     bool SceneFunctionsMenu::render()
     {
         ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Always);
-        ImGui::SetNextWindowSize(ImVec2(200, ImGui::GetIO().DisplaySize.y * 0.7f), ImGuiCond_Always);
+        ImGui::SetNextWindowSize(ImVec2(200, ImGui::GetIO().DisplaySize.y * 0.5f), ImGuiCond_Always);
 
 
         ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.2f, 0.4f, 0.8f, 1.0f));

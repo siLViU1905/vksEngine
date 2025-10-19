@@ -10,7 +10,7 @@ namespace vks_engine
     {
         float displayHeight = ImGui::GetIO().DisplaySize.y;
         ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x - 300, displayHeight * 0.4f), ImGuiCond_Always);
-        ImGui::SetNextWindowSize(ImVec2(300, displayHeight * 0.5f), ImGuiCond_Always);
+        ImGui::SetNextWindowSize(ImVec2(300, displayHeight * 0.6f), ImGuiCond_Always);
 
         bool changed = false;
 

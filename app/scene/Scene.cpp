@@ -15,7 +15,10 @@ namespace vks_engine
                                                             m_Window(window),
                                                             m_Camera(window.getWindow(), glm::vec3(0.f, 0.f, 2.f), 5.f),
                                                             m_ActiveDirectionalLights(0), m_ActivePointLights(0),
-                                                            m_CurrentComplexMeshCount(0), m_CurrentSimpleMeshCount(0)
+                                                            m_CurrentComplexMeshCount(0), m_CurrentSimpleMeshCount(0),
+                                                            m_SceneInfoMenu(
+                                                                m_CurrentSimpleMeshCount, m_CurrentComplexMeshCount,
+                                                                m_ActivePointLights, m_ActiveDirectionalLights)
     {
     }
 
@@ -590,6 +593,10 @@ namespace vks_engine
         initSceneComponentsMenu();
 
         initSceneComponentPropertiesMenu();
+
+        initSceneInfoMenu();
+
+        initSceneEventsMenu();
     }
 
     void Scene::initSceneFunctionsMenu()
@@ -639,6 +646,16 @@ namespace vks_engine
         });
     }
 
+    void Scene::initSceneInfoMenu()
+    {
+        m_SceneInfoMenu.setTitle("Scene info");
+    }
+
+    void Scene::initSceneEventsMenu()
+    {
+        m_SceneEventsMenu.setTitle("Scene events");
+    }
+
     void Scene::renderMenus()
     {
         m_ImGui.beginFrame();
@@ -648,6 +665,10 @@ namespace vks_engine
         m_SceneComponentsMenu.render();
 
         m_SceneComponentPropertiesMenu.render();
+
+        m_SceneInfoMenu.render();
+
+        m_SceneEventsMenu.render();
 
         m_ImGui.endFrame();
     }
@@ -748,9 +769,11 @@ namespace vks_engine
 
     void Scene::deletePointLight(const PointLight &pl)
     {
-        std::move(m_UBOpointLight.begin() + pl.getID() + 1, m_UBOpointLight.end(), m_UBOpointLight.begin() + pl.getID());
+        std::move(m_UBOpointLight.begin() + pl.getID() + 1, m_UBOpointLight.end(),
+                  m_UBOpointLight.begin() + pl.getID());
 
-        std::move(m_PointLightComponents.begin() + pl.getID() + 1, m_PointLightComponents.end(), m_PointLightComponents.begin() + pl.getID());
+        std::move(m_PointLightComponents.begin() + pl.getID() + 1, m_PointLightComponents.end(),
+                  m_PointLightComponents.begin() + pl.getID());
 
         --m_ActivePointLights;
 
@@ -759,9 +782,11 @@ namespace vks_engine
 
     void Scene::deleteDirectionalLight(const DirectionalLight &dl)
     {
-        std::move(m_UBOdirectionalLight.begin() + dl.getID() + 1, m_UBOdirectionalLight.end(), m_UBOdirectionalLight.begin() + dl.getID());
+        std::move(m_UBOdirectionalLight.begin() + dl.getID() + 1, m_UBOdirectionalLight.end(),
+                  m_UBOdirectionalLight.begin() + dl.getID());
 
-        std::move(m_DirectionalLightComponents.begin() + dl.getID() + 1, m_DirectionalLightComponents.end(), m_DirectionalLightComponents.begin() + dl.getID());
+        std::move(m_DirectionalLightComponents.begin() + dl.getID() + 1, m_DirectionalLightComponents.end(),
+                  m_DirectionalLightComponents.begin() + dl.getID());
 
         --m_ActiveDirectionalLights;
 

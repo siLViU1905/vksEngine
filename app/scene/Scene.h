@@ -18,7 +18,9 @@
 #include "components/PointLightComponent.h"
 #include "menus/SceneComponentPropertiesMenu.h"
 #include "menus/SceneComponentsMenu.h"
+#include "menus/SceneEventsMenu.h"
 #include "menus/SceneFunctionsMenu.h"
+#include "menus/SceneInfoMenu.h"
 #include "ubocomponents/UBOvp.h"
 #include "ubocomponents/UBOcounters.h"
 
@@ -179,6 +181,10 @@ namespace vks_engine
 
         SceneComponentPropertiesMenu m_SceneComponentPropertiesMenu;
 
+        SceneInfoMenu m_SceneInfoMenu;
+
+        SceneEventsMenu m_SceneEventsMenu;
+
         void initMenus();
 
         void initSceneFunctionsMenu();
@@ -186,6 +192,10 @@ namespace vks_engine
         void initSceneComponentsMenu();
 
         void initSceneComponentPropertiesMenu();
+
+        void initSceneInfoMenu();
+
+        void initSceneEventsMenu();
 
         void renderMenus();
 
