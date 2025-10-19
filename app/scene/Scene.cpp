@@ -595,8 +595,6 @@ namespace vks_engine
     {
         m_SceneFunctionsMenu.setTitle("Functions");
 
-        //m_SceneFunctionsMenu.onAddMeshBtnClick([this]() { this->addSphereMesh(); });
-
         m_SceneFunctionsMenu.onAddPointLightBtnClick([this]() { this->addPointLight(); });
 
         m_SceneFunctionsMenu.onAddDirectionalLightBtnClick([this]() { this->addDirectionalLight(); });

@@ -12,8 +12,6 @@ namespace vks_engine
     public:
         bool render() override;
 
-        void onAddMeshBtnClick(std::function<void()> function);
-
         void onAddPointLightBtnClick(std::function<void()> function);
 
         void onAddDirectionalLightBtnClick(std::function<void()> function);
@@ -21,8 +19,6 @@ namespace vks_engine
         void onMeshTypeSelection(std::function<void(MeshType)> function);
 
     private:
-        std::function<void()> m_BtnAddMeshCallback;
-
         std::function<void()> m_BtnAddPointLightCallback;
 
         std::function<void()> m_BtnAddDirectionalLightCallback;
