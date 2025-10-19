@@ -110,3 +110,9 @@ external/GLFW/
 external/glm/
 external/imgui/
 external/assimp/
+/app/models/old_backpack__renewed_hope/license.txt
+/app/models/old_backpack__renewed_hope/scene.bin
+/app/models/old_backpack__renewed_hope/scene.gltf
+/app/models/old_backpack__renewed_hope/textures/TT_checker_4096x4096_UV_GRID_baseColor.png
+/app/models/old_backpack__renewed_hope/textures/TT_checker_4096x4096_UV_GRID_metallicRoughness.png
+/app/models/old_backpack__renewed_hope/textures/TT_checker_4096x4096_UV_GRID_normal.png
