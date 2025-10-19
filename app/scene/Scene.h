@@ -66,9 +66,16 @@ namespace vks_engine
 
         std::vector<MeshComponent> m_ComplexMeshComponents;
 
-        std::mutex m_MeshCountMutex;
+        uint32_t m_CurrentSimpleMeshCount;
 
-        uint32_t m_CurrentMeshCount;
+        uint32_t m_CurrentComplexMeshCount;
+
+        constexpr uint32_t getTotalMeshCount() const
+        {
+            return m_CurrentSimpleMeshCount + m_CurrentComplexMeshCount;
+        }
+
+        std::mutex m_ComplexMeshCountMutex;
 
         void recordMeshCommands(uint32_t currentFrame);
 
@@ -117,6 +124,8 @@ namespace vks_engine
         void updateCamera(float deltaTime);
 
         //=====================================LIGHTS RELATED=====================================
+
+        constexpr uint32_t getActiveLightsCount() const {return m_ActivePointLights + m_ActiveDirectionalLights;}
 
         //======== PointLight UBO ========
 
@@ -180,13 +189,21 @@ namespace vks_engine
 
         void renderMenus();
 
-        void handleComponentRename(ComponentEntry& entry, std::string_view newName);
+        void handleComponentRename(ComponentEntry &entry, std::string_view newName);
 
-        void renameMesh(const Mesh& mesh, std::string_view newName);
+        void renameMesh(const Mesh &mesh, std::string_view newName);
 
-        void renamePointLight(const PointLight& pl, std::string_view newName);
+        void renamePointLight(const PointLight &pl, std::string_view newName);
 
-        void renameDirectionalLight(const DirectionalLight& dl, std::string_view newName);
+        void renameDirectionalLight(const DirectionalLight &dl, std::string_view newName);
+
+        void handleComponentDelete(ComponentEntry &entry);
+
+        void deleteMesh(const Mesh &mesh);
+
+        void deletePointLight(const PointLight& pl);
+
+        void deleteDirectionalLight(const DirectionalLight& dl);
 
         //======== FUNCTIONS ========
 

@@ -8,7 +8,18 @@ namespace vks_engine
         ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x - 300, 0), ImGuiCond_Always);
         ImGui::SetNextWindowSize(ImVec2(300, displayHeight * 0.4f), ImGuiCond_Always);
 
+        static std::pair<bool, std::vector<ComponentEntry>::iterator> deleteComponentNextFrame = {};
+
         bool changed = false;
+
+        if (deleteComponentNextFrame.first)
+        {
+            changed = true;
+            deleteComponentNextFrame.first = false;
+            auto it = deleteComponentNextFrame.second;
+            m_OnComponentDelete(*it);
+            m_Components.erase(it);
+        }
 
         if (ImGui::Begin(m_Title.c_str(), nullptr,
                          ImGuiWindowFlags_NoResize |
@@ -23,8 +34,10 @@ namespace vks_engine
                 ImGui::Text("No components added");
             else
             {
-                for (auto &entry: m_Components)
+                for (auto it = m_Components.begin(); it != m_Components.end(); ++it)
                 {
+                    auto &entry = *it;
+
                     ImVec4 color;
                     switch (entry.m_Type)
                     {
@@ -53,9 +66,10 @@ namespace vks_engine
                         changed = true;
                     }
 
-                    auto edit_component_popup_name = "EditComponentPopup" + std::to_string(reinterpret_cast<uintptr_t>(&entry));
+                    auto edit_component_popup_name = "EditComponentPopup" + std::to_string(
+                                                         reinterpret_cast<uintptr_t>(&entry));
 
-                    static ComponentEntry* entryBeingEdited = nullptr;
+                    static ComponentEntry *entryBeingEdited = nullptr;
 
                     static char newName[32] = {};
 
@@ -90,6 +104,8 @@ namespace vks_engine
                         if (ImGui::MenuItem("Delete"))
                         {
                             changed = true;
+                            deleteComponentNextFrame.first = true;
+                            deleteComponentNextFrame.second = it;
                             ImGui::CloseCurrentPopup();
                         }
 
@@ -115,5 +131,10 @@ namespace vks_engine
     void SceneComponentsMenu::setOnComponentRename(std::function<void(ComponentEntry &, std::string_view)> function)
     {
         m_OnComponentRename = std::move(function);
+    }
+
+    void SceneComponentsMenu::setOnComponentDelete(std::function<void(ComponentEntry &)> function)
+    {
+        m_OnComponentDelete = std::move(function);
     }
 }

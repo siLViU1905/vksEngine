@@ -18,6 +18,8 @@ namespace vks_engine
 
         void setActiveComponent(ComponentEntry& component);
 
+        void handleComponentDelete(const ComponentEntry &entry);
+
         void setOnPointLightPropertiesChange(std::function<void(const PointLight &)> function);
 
         void setOnDirectionalLightPropertiesChange(std::function<void(const DirectionalLight &)> function);

@@ -65,6 +65,12 @@ namespace vks_engine
         m_ActiveComponent = component;
     }
 
+    void SceneComponentPropertiesMenu::handleComponentDelete(const ComponentEntry &entry)
+    {
+        if (m_ActiveComponent.p_Component == entry.p_Component)
+            m_ActiveComponent = {};
+    }
+
     void SceneComponentPropertiesMenu::setOnPointLightPropertiesChange(std::function<void(const PointLight &)> function)
     {
         m_OnPointLightPropertiesChange = std::move(function);

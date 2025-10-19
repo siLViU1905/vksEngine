@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include "app/Application.h"
 #include <print>
 
@@ -10,10 +8,9 @@ int main()
         vks_engine::Application app(800, 600, "VKSEngine");
 
         app.run();
-    }
-    catch (const std::exception &e)
+    } catch (const std::exception &e)
     {
-        std::print("==============  ERROR: {}  ==============\n", e.what());
+        std::println("==============  ERROR: {}  ==============", e.what());
 
         return 1;
     }
