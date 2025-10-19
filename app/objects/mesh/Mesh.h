@@ -32,7 +32,7 @@ namespace vks_engine
 
         Mesh &operator=(Mesh &&mesh) noexcept;
 
-        void load(std::string_view path);
+        std::pair<std::string, bool> load(std::string_view path);
 
         constexpr const auto &getVertices() const { return m_Vertices; }
 
@@ -152,7 +152,7 @@ namespace vks_engine
 
         void findDirectory(std::string_view fullPath);
 
-        void loadTextures();
+        std::string loadTextures();
 
     public:
         static Mesh generateSphere(const glm::vec3 &position, float radius, int slices = 32, int stacks = 16);

@@ -4,6 +4,8 @@
 #include <print>
 #include <ranges>
 
+#include "../timer/Clock.h"
+
 namespace vks_engine
 {
     Mesh::Mesh(): m_Position(0.f), m_Scale(1.f),
@@ -93,8 +95,10 @@ namespace vks_engine
         return *this;
     }
 
-    void Mesh::load(std::string_view path)
+    std::pair<std::string, bool> Mesh::load(std::string_view path)
     {
+        Clock clock;
+
         findDirectory(path);
 
         Assimp::Importer import;
@@ -107,7 +111,7 @@ namespace vks_engine
 
         if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE ||
             !scene->mRootNode)
-            throw std::runtime_error("Failed to load model");
+            return {"Failed to load model, file format not supported\n", false};
 
         processNode(scene->mRootNode, scene);
 
@@ -116,7 +120,9 @@ namespace vks_engine
         if (!m_HasTangentsAndBitangents)
             calculateTangentsAndBitangents();
 
-        //std::print("===============Mesh has {} textures============\n", m_Textures.size());
+        auto timeTook = clock.getElapsedTime<float, TimeType::Seconds>();
+
+        return {std::format("Model successfully loaded and it took {:.3f} seconds\n", timeTook), true};
     }
 
     void Mesh::move(const glm::vec3 &offset)
@@ -299,7 +305,7 @@ namespace vks_engine
 
         m_Directory = p.parent_path().string();
 
-        std::ranges::replace(m_Directory, '\\','/');
+        std::ranges::replace(m_Directory, '\\', '/');
     }
 
     void Mesh::updateModel()
@@ -368,8 +374,10 @@ namespace vks_engine
         }
     }
 
-    void Mesh::loadTextures()
+    std::string Mesh::loadTextures()
     {
+        Clock clock;
+
         for (const auto &[type, path]: texturePaths)
         {
             if (auto [it, emplaced] = m_Textures.emplace(type, path); emplaced)
@@ -383,6 +391,10 @@ namespace vks_engine
         }
 
         texturePaths.clear();
+
+        auto timeTook = clock.getElapsedTime<float, TimeType::Seconds>();
+
+        return std::format("Loaded {} textures and it took {:.3f} seconds\n", m_Textures.size(), timeTook);
     }
 
     Mesh Mesh::generateSphere(const glm::vec3 &position, float radius, int slices, int stacks)

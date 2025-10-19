@@ -83,8 +83,6 @@ namespace vks_engine
 
         m_ImGui.recordCommandBuffer(currentFrame);
 
-        //meshCommand.join();
-
         m_Vk.renderFrame(m_ImGui.getCommandBuffer(currentFrame),
                          m_SimpleMeshCommandBuffers[currentFrame],
                          m_ComplexMeshCommandBuffers[currentFrame]);
@@ -196,9 +194,14 @@ namespace vks_engine
 
         mesh.setID(newID);
 
-        mesh.load(path.data());
+        auto [result, loaded] = mesh.load(path.data());
 
-        mesh.loadTextures();
+        result += mesh.loadTextures();
+
+        m_SceneEventsMenu.log(result);
+
+        if (!loaded)
+            return;
 
         mesh.setType(MeshType::MODEL);
 

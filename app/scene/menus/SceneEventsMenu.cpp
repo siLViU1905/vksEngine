@@ -19,10 +19,22 @@ namespace vks_engine {
                          ImGuiWindowFlags_NoDocking))
         {
             windowHeight = ImGui::GetWindowHeight();
+
+            for (const auto& msg : m_Buffer)
+            {
+                ImGui::Text(msg.c_str());
+            }
         }
 
         ImGui::End();
 
         return false;
+    }
+
+    void SceneEventsMenu::log(std::string_view message)
+    {
+        std::lock_guard<std::mutex> lock(m_BufferMutex);
+
+        m_Buffer.emplace_back(message);
     }
 }
