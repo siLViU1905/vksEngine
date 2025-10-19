@@ -180,6 +180,14 @@ namespace vks_engine
 
         void renderMenus();
 
+        void handleComponentRename(ComponentEntry& entry, std::string_view newName);
+
+        void renameMesh(const Mesh& mesh, std::string_view newName);
+
+        void renamePointLight(const PointLight& pl, std::string_view newName);
+
+        void renameDirectionalLight(const DirectionalLight& dl, std::string_view newName);
+
         //======== FUNCTIONS ========
 
         void updateScene();

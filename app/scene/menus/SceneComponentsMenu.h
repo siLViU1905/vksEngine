@@ -28,10 +28,14 @@ namespace vks_engine
 
         void setOnComponentSelected(std::function<void(ComponentEntry&)> function);
 
+        void setOnComponentRename(std::function<void(ComponentEntry&, std::string_view)> function);
+
     private:
         std::vector<ComponentEntry> m_Components;
 
         std::function<void(ComponentEntry&)> m_OnComponentSelection;
+
+        std::function<void(ComponentEntry&, std::string_view)> m_OnComponentRename;
     };
 }
 

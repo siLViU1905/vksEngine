@@ -230,6 +230,9 @@ namespace vks_engine
         ImGuiStyle &style = ImGui::GetStyle();
         ImVec4 *colors = style.Colors;
 
+        ImGuiIO &io = ImGui::GetIO();
+        (void) io;
+
         // Corners
         style.WindowRounding = 8.0f;
         style.ChildRounding = 8.0f;
@@ -238,6 +241,12 @@ namespace vks_engine
         style.ScrollbarRounding = 6.0f;
         style.GrabRounding = 6.0f;
         style.TabRounding = 6.0f;
+
+        io.FontGlobalScale = 1.2f;
+        
+        style.ItemSpacing = ImVec2(8, 6);
+        style.ItemInnerSpacing = ImVec2(6, 6);
+        style.FramePadding = ImVec2(8, 6);
 
         // Colors
         colors[ImGuiCol_Text] = ImVec4(0.95f, 0.96f, 0.98f, 1.00f);

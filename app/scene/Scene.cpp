@@ -610,6 +610,11 @@ namespace vks_engine
         {
             this->m_SceneComponentPropertiesMenu.setActiveComponent(entry);
         });
+
+        m_SceneComponentsMenu.setOnComponentRename([this](ComponentEntry &entry, std::string_view newName)
+        {
+            this->handleComponentRename(entry, newName);
+        });
     }
 
     void Scene::initSceneComponentPropertiesMenu()
@@ -638,6 +643,46 @@ namespace vks_engine
         m_SceneComponentPropertiesMenu.render();
 
         m_ImGui.endFrame();
+    }
+
+    void Scene::handleComponentRename(ComponentEntry &entry, std::string_view newName)
+    {
+        auto &meshComponent = *static_cast<MeshComponent *>(entry.p_Component);
+
+        auto &plComponent = *static_cast<PointLightComponent *>(entry.p_Component);
+
+        auto &dlComponent = *static_cast<DirectionalLightComponent *>(entry.p_Component);
+
+        switch (entry.m_Type)
+        {
+            case ComponentType::MESH:
+                renameMesh(meshComponent.m_Mesh, newName);
+                break;
+            case ComponentType::POINT_LIGHT:
+                renamePointLight(plComponent.m_Light, newName);
+                break;
+            case ComponentType::DIRECTIONAL_LIGHT:
+                renameDirectionalLight(dlComponent.m_Light, newName);
+                break;
+        }
+    }
+
+    void Scene::renameMesh(const Mesh &mesh, std::string_view newName)
+    {
+        if (mesh.getType() == MeshType::MODEL)
+            m_ComplexMeshComponents[mesh.getID()].m_Menu.setTitle(newName.data());
+        else
+            m_SimpleMeshComponents[mesh.getID()].m_Menu.setTitle(newName.data());
+    }
+
+    void Scene::renamePointLight(const PointLight &pl, std::string_view newName)
+    {
+        m_PointLightComponents[pl.getID()].m_Menu.setTitle(newName.data());
+    }
+
+    void Scene::renameDirectionalLight(const DirectionalLight &dl, std::string_view newName)
+    {
+        m_DirectionalLightComponents[dl.getID()].m_Menu.setTitle(newName.data());
     }
 
     void Scene::updateScene()

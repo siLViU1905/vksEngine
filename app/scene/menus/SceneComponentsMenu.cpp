@@ -53,6 +53,49 @@ namespace vks_engine
                         changed = true;
                     }
 
+                    auto edit_component_popup_name = "EditComponentPopup" + std::to_string(reinterpret_cast<uintptr_t>(&entry));
+
+                    static ComponentEntry* entryBeingEdited = nullptr;
+
+                    static char newName[32] = {};
+
+                    if (ImGui::IsItemClicked(ImGuiMouseButton_Right))
+                    {
+                        ImGui::OpenPopup(edit_component_popup_name.c_str());
+                        entryBeingEdited = &entry;
+                        strncpy_s(newName, entry.m_Name.c_str(), sizeof(newName) - 1);
+                    }
+
+                    if (ImGui::BeginPopup(edit_component_popup_name.c_str()))
+                    {
+                        ImGui::Text("Edit component:");
+                        ImGui::Separator();
+
+                        if (entryBeingEdited == &entry)
+                        {
+                            ImGui::Separator();
+                            ImGui::Text("Rename:");
+
+                            if (ImGui::InputText("##rename", newName,IM_ARRAYSIZE(newName),
+                                                 ImGuiInputTextFlags_EnterReturnsTrue))
+                            {
+                                changed = true;
+                                m_OnComponentRename(entry, newName);
+                                entry.m_Name = newName;
+                                entryBeingEdited = nullptr;
+                                ImGui::CloseCurrentPopup();
+                            }
+                        }
+
+                        if (ImGui::MenuItem("Delete"))
+                        {
+                            changed = true;
+                            ImGui::CloseCurrentPopup();
+                        }
+
+                        ImGui::EndPopup();
+                    }
+
                     ImGui::PopStyleColor(3);
 
                     ImGui::Spacing();
@@ -67,5 +110,10 @@ namespace vks_engine
     void SceneComponentsMenu::setOnComponentSelected(std::function<void(ComponentEntry &)> function)
     {
         m_OnComponentSelection = std::move(function);
+    }
+
+    void SceneComponentsMenu::setOnComponentRename(std::function<void(ComponentEntry &, std::string_view)> function)
+    {
+        m_OnComponentRename = std::move(function);
     }
 }
