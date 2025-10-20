@@ -198,10 +198,13 @@ namespace vks_engine
 
         result += mesh.loadTextures();
 
-        m_SceneEventsMenu.log(result);
-
         if (!loaded)
+        {
+            m_SceneEventsMenu.log(result, ImVec4(1.f, 0.f, 0.f, 1.f));
             return;
+        }
+
+        m_SceneEventsMenu.log(result, ImVec4(0.f,1.f,0.f,1.f));
 
         mesh.setType(MeshType::MODEL);
 
@@ -768,6 +771,8 @@ namespace vks_engine
             m_SimpleMeshComponents.erase(erase_it);
             --m_CurrentSimpleMeshCount;
         }
+
+        m_SceneEventsMenu.log("Mesh successfully deleted\n", ImVec4(1.f,1.f,0.f,1.f));
     }
 
     void Scene::deletePointLight(const PointLight &pl)
@@ -781,6 +786,8 @@ namespace vks_engine
         --m_ActivePointLights;
 
         updateUBOcounters();
+
+        m_SceneEventsMenu.log("Point light successfully deleted\n", ImVec4(1.f,1.f,0.f,1.f));
     }
 
     void Scene::deleteDirectionalLight(const DirectionalLight &dl)
@@ -794,6 +801,8 @@ namespace vks_engine
         --m_ActiveDirectionalLights;
 
         updateUBOcounters();
+
+        m_SceneEventsMenu.log("Directional light successfully deleted\n", ImVec4(1.f,1.f,0.f,1.f));
     }
 
     void Scene::updateScene()

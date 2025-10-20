@@ -12,11 +12,13 @@ namespace vks_engine
     public:
         bool render() override;
 
-        void log(std::string_view message);
+        void log(const std::pair<std::string_view, ImVec4>& message_color);
+
+        void log(std::string_view message, const ImVec4& color = ImVec4(1.f,1.f,1.f,1.f));
     private:
         std::mutex m_BufferMutex;
 
-        std::vector<std::string> m_Buffer;
+        std::vector<std::pair<std::string, ImVec4>> m_Buffer;
     };
 }
 

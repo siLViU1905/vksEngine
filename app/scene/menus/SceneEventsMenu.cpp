@@ -1,6 +1,7 @@
 #include "SceneEventsMenu.h"
 
-namespace vks_engine {
+namespace vks_engine
+{
     bool SceneEventsMenu::render()
     {
         static float windowHeight = ImGui::GetIO().DisplaySize.y * 0.3f;
@@ -20,9 +21,12 @@ namespace vks_engine {
         {
             windowHeight = ImGui::GetWindowHeight();
 
-            for (const auto& msg : m_Buffer)
+
+            for (const auto &[msg, color]: m_Buffer)
             {
+                ImGui::PushStyleColor(ImGuiCol_Text, color);
                 ImGui::Text(msg.c_str());
+                ImGui::PopStyleColor();
             }
         }
 
@@ -31,10 +35,17 @@ namespace vks_engine {
         return false;
     }
 
-    void SceneEventsMenu::log(std::string_view message)
+    void SceneEventsMenu::log(const std::pair<std::string_view, ImVec4> &message_color)
     {
         std::lock_guard<std::mutex> lock(m_BufferMutex);
 
-        m_Buffer.emplace_back(message);
+        m_Buffer.emplace_back(message_color);
+    }
+
+    void SceneEventsMenu::log(std::string_view message, const ImVec4 &color)
+    {
+        std::lock_guard<std::mutex> lock(m_BufferMutex);
+
+        m_Buffer.emplace_back(message, color);
     }
 }
