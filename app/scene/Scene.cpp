@@ -30,6 +30,8 @@ namespace vks_engine
 
         initMenus();
 
+        fixMenus();
+
         m_ImGui.init(m_Vk, m_Window.getWindow());
 
         m_ColorAttachmentFormat = m_ImGui.m_ColorAttachmentFormat;
@@ -603,6 +605,13 @@ namespace vks_engine
         initSceneInfoMenu();
 
         initSceneEventsMenu();
+    }
+
+    void Scene::fixMenus()
+    {
+        m_Window.resize(m_Window.getHeight() - 1, m_Window.getWidth() - 1);
+
+        m_Window.resize(m_Window.getHeight() + 1, m_Window.getWidth() + 1);
     }
 
     void Scene::initSceneFunctionsMenu()

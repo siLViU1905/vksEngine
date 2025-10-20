@@ -65,6 +65,11 @@ namespace vks_engine
         glfwRestoreWindow(m_Window);
     }
 
+    void Window::resize(int width, int height)
+    {
+        glfwSetWindowSize(m_Window, width, height);
+    }
+
     void Window::setFramebufferResizeCallback(std::function<void(int, int)> function)
     {
         m_FramebufferResizeCallbackFunction = std::move(function);

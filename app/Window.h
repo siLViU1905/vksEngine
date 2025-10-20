@@ -28,6 +28,12 @@ namespace vks_engine
 
         void restore();
 
+        void resize(int width, int height);
+
+        constexpr int getHeight() const {return m_Height;}
+
+        constexpr int getWidth() const {return m_Width;}
+
         void setFramebufferResizeCallback(std::function<void(int, int)> function);
 
         void setKeyCallback(std::function<void(int, int, int, int)> function);

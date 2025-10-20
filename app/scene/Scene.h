@@ -187,6 +187,8 @@ namespace vks_engine
 
         void initMenus();
 
+        void fixMenus();
+
         void initSceneFunctionsMenu();
 
         void initSceneComponentsMenu();
