@@ -13,7 +13,7 @@ namespace vks_engine
 {
     Scene::Scene(Window &window, VulkanHandler &vkHandler): m_Vk(vkHandler),
                                                             m_Window(window),
-                                                            m_Camera(window.getWindow(), glm::vec3(0.f, 0.f, 2.f), 5.f),
+                                                            m_Camera(window.getWindow(), glm::vec3(0.f, 0.f, 2.f), 5.f, 2.f),
                                                             m_ActiveDirectionalLights(0), m_ActivePointLights(0),
                                                             m_CurrentComplexMeshCount(0), m_CurrentSimpleMeshCount(0),
                                                             m_SceneInfoMenu(

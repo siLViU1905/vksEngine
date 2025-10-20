@@ -11,7 +11,7 @@ namespace vks_engine
     {
         Camera() = default;
 
-        Camera(GLFWwindow *window, const glm::vec3 &position, float speed);
+        Camera(GLFWwindow *window, const glm::vec3 &position, float speed, float sensitivity = 1.f);
 
         glm::mat4 m_View;
 
@@ -41,6 +41,10 @@ namespace vks_engine
 
         Aligned getAligned() const;
 
+        void setSensitivity(float sensitivity);
+
+        constexpr float getSensitivity() const {return m_Sensitivity;}
+
     private:
         glm::vec3 m_Position;
 
@@ -61,6 +65,8 @@ namespace vks_engine
         double m_LastY;
 
         bool m_Focused;
+
+        float m_Sensitivity;
 
         GLFWwindow *m_Window;
     };

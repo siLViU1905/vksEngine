@@ -4,10 +4,12 @@
 
 namespace vks_engine
 {
-    Camera::Camera(GLFWwindow *window, const glm::vec3 &position, float speed): m_Window(window),
-        m_Position(position),
-        m_Speed(speed),
-        m_Focused(false)
+    Camera::Camera(GLFWwindow *window, const glm::vec3 &position, float speed,
+                   float sensitivity): m_Window(window),
+                                       m_Position(position),
+                                       m_Speed(speed),
+                                       m_Focused(false),
+                                       m_Sensitivity(sensitivity)
     {
         m_Up = glm::vec3(0.f, 1.f, 0.f);
 
@@ -71,9 +73,9 @@ namespace vks_engine
 
         float yoffset = static_cast<float>(m_LastY - newY);
 
-        m_Yaw += xoffset * deltaTime;
+        m_Yaw += xoffset * deltaTime * m_Sensitivity;
 
-        m_Pitch += yoffset * deltaTime;
+        m_Pitch += yoffset * deltaTime * m_Sensitivity;
 
         if (m_Pitch > 89.0f)
             m_Pitch = 89.0f;
@@ -135,5 +137,10 @@ namespace vks_engine
         aligned.position = m_Position;
 
         return aligned;
+    }
+
+    void Camera::setSensitivity(float sensitivity)
+    {
+        m_Sensitivity = sensitivity;
     }
 }
