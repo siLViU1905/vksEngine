@@ -10,12 +10,12 @@ namespace vks_engine
     public:
         FileExplorer();
 
-        void onFileSelected(std::function<void(const std::string&)> function);
+        void onFileSelected(std::function<void(const std::vector<std::string>&)> function);
 
         void open();
 
     private:
-        std::function<void(const std::string&)> m_FileSelectedCallback;
+        std::function<void(const std::vector<std::string>&)> m_FileSelectedCallback;
     };
 }
 

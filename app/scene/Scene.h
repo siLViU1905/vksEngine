@@ -103,7 +103,7 @@ namespace vks_engine
 
         std::deque<MeshComponent> m_LoadedMeshQueue;
 
-        void handleFileSelected(const std::string &path);
+        void handleFileSelected(const std::vector<std::string>& paths);
 
         void handleLoadedModel(MeshComponent &component);
 

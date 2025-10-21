@@ -13,7 +13,8 @@ namespace vks_engine
 {
     Scene::Scene(Window &window, VulkanHandler &vkHandler): m_Vk(vkHandler),
                                                             m_Window(window),
-                                                            m_Camera(window.getWindow(), glm::vec3(0.f, 0.f, 2.f), 5.f, 2.f),
+                                                            m_Camera(window.getWindow(), glm::vec3(0.f, 0.f, 2.f), 5.f,
+                                                                     2.f),
                                                             m_ActiveDirectionalLights(0), m_ActivePointLights(0),
                                                             m_CurrentComplexMeshCount(0), m_CurrentSimpleMeshCount(0),
                                                             m_SceneInfoMenu(
@@ -184,12 +185,16 @@ namespace vks_engine
     {
         MeshComponent component;
 
-        uint32_t newID; {
+        uint32_t newID;
+        uint32_t totalMeshCount;
+        {
             std::lock_guard<std::mutex> lock(m_ComplexMeshCountMutex);
-            if (getTotalMeshCount() == SCENE_MAX_ALLOWED_MESH_COUNT)
+            totalMeshCount = getTotalMeshCount();
+            if (totalMeshCount == SCENE_MAX_ALLOWED_MESH_COUNT)
                 return;
 
             newID = m_CurrentComplexMeshCount;
+            ++m_CurrentComplexMeshCount;
         }
 
         auto &mesh = component.m_Mesh;
@@ -206,18 +211,17 @@ namespace vks_engine
             return;
         }
 
-        m_SceneEventsMenu.log(result, ImVec4(0.f,1.f,0.f,1.f));
+        m_SceneEventsMenu.log(result, ImVec4(0.f, 1.f, 0.f, 1.f));
 
         mesh.setType(MeshType::MODEL);
 
         component.bind();
 
-        component.m_Menu.setTitle("Mesh" + std::to_string(getTotalMeshCount())); {
+        component.m_Menu.setTitle("Mesh" + std::to_string(totalMeshCount));
+        {
             std::lock_guard<std::mutex> lock(m_LoadedMeshMutex);
             m_LoadedMeshQueue.push_back(std::move(component));
         }
-
-        ++m_CurrentComplexMeshCount;
     }
 
     void Scene::addSphereMesh()
@@ -294,11 +298,12 @@ namespace vks_engine
         }
     }
 
-    void Scene::handleFileSelected(const std::string &path)
+    void Scene::handleFileSelected(const std::vector<std::string> &paths)
     {
         std::lock_guard<std::mutex> lock(m_PendingModelsMutex);
 
-        m_PendingModelPaths.push_back(path);
+        for (const auto &path: paths)
+            m_PendingModelPaths.push_back(path);
     }
 
     void Scene::handleLoadedModel(MeshComponent &component)
@@ -781,7 +786,7 @@ namespace vks_engine
             --m_CurrentSimpleMeshCount;
         }
 
-        m_SceneEventsMenu.log("Mesh successfully deleted\n", ImVec4(1.f,1.f,0.f,1.f));
+        m_SceneEventsMenu.log("Mesh successfully deleted\n", ImVec4(1.f, 1.f, 0.f, 1.f));
     }
 
     void Scene::deletePointLight(const PointLight &pl)
@@ -796,7 +801,7 @@ namespace vks_engine
 
         updateUBOcounters();
 
-        m_SceneEventsMenu.log("Point light successfully deleted\n", ImVec4(1.f,1.f,0.f,1.f));
+        m_SceneEventsMenu.log("Point light successfully deleted\n", ImVec4(1.f, 1.f, 0.f, 1.f));
     }
 
     void Scene::deleteDirectionalLight(const DirectionalLight &dl)
@@ -811,7 +816,7 @@ namespace vks_engine
 
         updateUBOcounters();
 
-        m_SceneEventsMenu.log("Directional light successfully deleted\n", ImVec4(1.f,1.f,0.f,1.f));
+        m_SceneEventsMenu.log("Directional light successfully deleted\n", ImVec4(1.f, 1.f, 0.f, 1.f));
     }
 
     void Scene::updateScene()

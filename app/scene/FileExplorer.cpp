@@ -12,7 +12,7 @@ namespace vks_engine
     {
     }
 
-    void FileExplorer::onFileSelected(std::function<void(const std::string &)> function)
+    void FileExplorer::onFileSelected(std::function<void(const std::vector<std::string> &)> function)
     {
         m_FileSelectedCallback = std::move(function);
     }
@@ -32,41 +32,64 @@ namespace vks_engine
 
                 if (SUCCEEDED(hr))
                 {
+                    DWORD dwOptions;
+                    hr = pFileOpen->GetOptions(&dwOptions);
+                    if (SUCCEEDED(hr))
+                        hr = pFileOpen->SetOptions(dwOptions | FOS_ALLOWMULTISELECT);
+
                     hr = pFileOpen->Show(NULL);
 
                     if (SUCCEEDED(hr))
                     {
-                        IShellItem *pItem;
-                        hr = pFileOpen->GetResult(&pItem);
+                        IShellItemArray *pItemArray;
+                        hr = pFileOpen->GetResults(&pItemArray);
                         if (SUCCEEDED(hr))
                         {
-                            PWSTR pszFilePath;
-
-                            hr = pItem->GetDisplayName(SIGDN_FILESYSPATH, &pszFilePath);
+                            DWORD dwCount;
+                            hr = pItemArray->GetCount(&dwCount);
 
                             if (SUCCEEDED(hr))
                             {
-                                try
+                                std::vector<std::string> paths;
+                                for (DWORD i = 0; i < dwCount; ++i)
                                 {
-                                    int bufferSize = WideCharToMultiByte(
-                                        CP_UTF8, 0, pszFilePath, -1, NULL, 0, NULL, NULL);
-                                    if (bufferSize > 0)
+                                    IShellItem *pItem;
+                                    hr = pItemArray->GetItemAt(i, &pItem);
+                                    if (SUCCEEDED(hr))
                                     {
-                                        std::string pathString(bufferSize - 1, 0);
-                                        WideCharToMultiByte(CP_UTF8, 0, pszFilePath, -1, &pathString[0], bufferSize,
-                                                            NULL,
-                                                            NULL);
-                                        if (!pathString.empty())
-                                            this->m_FileSelectedCallback(pathString);
-                                    }
-                                } catch (...)
-                                {
-                                    std::print("Failed to convert user input to std::string");
-                                }
+                                        PWSTR pszFilePath;
+                                        hr = pItem->GetDisplayName(SIGDN_FILESYSPATH, &pszFilePath);
 
-                                CoTaskMemFree(pszFilePath);
+                                        if (SUCCEEDED(hr))
+                                        {
+                                            try
+                                            {
+                                                int bufferSize = WideCharToMultiByte(
+                                                    CP_UTF8, 0, pszFilePath, -1, NULL, 0, NULL, NULL);
+                                                if (bufferSize > 0)
+                                                {
+                                                    std::string pathString(bufferSize - 1, 0);
+                                                    WideCharToMultiByte(
+                                                        CP_UTF8, 0, pszFilePath, -1, &pathString[0], bufferSize,
+                                                        NULL,
+                                                        NULL);
+                                                    if (!pathString.empty())
+                                                        paths.push_back(pathString);
+                                                }
+                                            } catch (...)
+                                            {
+                                                std::print("Failed to convert user input to std::string");
+                                            }
+
+                                            CoTaskMemFree(pszFilePath);
+                                        }
+                                        pItem->Release();
+                                    }
+                                }
+                                if (!paths.empty() && m_FileSelectedCallback)
+                                    this->m_FileSelectedCallback(paths);
                             }
-                            pItem->Release();
+                            pItemArray->Release();
                         }
                     }
                     pFileOpen->Release();
