@@ -135,6 +135,8 @@ add_executable(vksEngine
         app/scene/menus/SceneInfoMenu.cpp
 
         app/scene/menus/SceneEventsMenu.cpp
+
+        app/objects/Material.cpp
 )
 
 
