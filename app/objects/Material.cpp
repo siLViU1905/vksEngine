@@ -2,18 +2,21 @@
 
 namespace vks_engine
 {
-    void Material::setDiffuseTexture(Texture &texture)
+    void Material::setDiffuseTexture(const Texture &texture, bool isDefault)
     {
-        m_DiffuseTexture = std::move(texture);
+        m_DiffuseTexture.first = &texture;
+        m_DiffuseTexture.second = isDefault;
     }
 
-    void Material::setSpecularTexture(Texture &texture)
+    void Material::setSpecularTexture(const Texture &texture, bool isDefault)
     {
-        m_SpecularTexture = std::move(texture);
+        m_SpecularTexture.first = &texture;
+        m_SpecularTexture.second = isDefault;
     }
 
-    void Material::setNormalTexture(Texture &texture)
+    void Material::setNormalTexture(const Texture &texture, bool isDefault)
     {
-        m_NormalTexture = std::move(texture);
+        m_NormalTexture.first = &texture;
+        m_NormalTexture.second = isDefault;
     }
 }

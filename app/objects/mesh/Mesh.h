@@ -9,6 +9,7 @@
 #include <vulkan/vulkan_raii.hpp>
 
 #include "MeshType.h"
+#include "../Material.h"
 #include "../texture/Texture.h"
 
 namespace vks_engine
@@ -92,6 +93,10 @@ namespace vks_engine
 
         Texture& getTexture(TextureType type);
 
+        void setMaterial(const Texture& texture, bool isDefault);
+
+        constexpr const Material& getMaterial() const{return m_Material;}
+
         friend class VulkanHandler;
 
         friend class Scene;
@@ -132,6 +137,8 @@ namespace vks_engine
         void calculateTangentsAndBitangents();
 
         std::unordered_map<TextureType, Texture> m_Textures;
+
+        Material m_Material;
 
         bool m_HasTangentsAndBitangents;
 

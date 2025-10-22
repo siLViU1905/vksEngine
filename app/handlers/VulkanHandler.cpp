@@ -38,10 +38,6 @@ namespace vks_engine
 
         stbi_set_flip_vertically_on_load(true);
 
-        m_BackpackDiffuseTexture.setPath("../../app/models/backpack/diffuse.jpg");
-
-        m_BackpackNormalTexture.setPath("../../app/models/backpack/normal.png");
-
         createInstance();
 
         setupDebugMessenger();
@@ -995,27 +991,27 @@ namespace vks_engine
         CreateTexture(m_DefaultNormalTexture);
     }
 
-    const Texture &VulkanHandler::getTextureOrDefault(const Mesh &mesh, TextureType type) const
+    std::pair<const Texture *, bool> VulkanHandler::getTextureOrDefault(const Mesh &mesh, TextureType type) const
     {
         if (auto it = mesh.m_Textures.find(type); it != mesh.m_Textures.end())
         {
             const auto &texture = it->second;
             if (texture.isLoaded())
             {
-                return texture;
+                return {&texture, false};
             }
         }
 
         switch (type)
         {
             case TextureType::DIFFUSE:
-                return m_DefaultDiffuseTexture;
+                return {&m_DefaultDiffuseTexture, true};
             case TextureType::SPECULAR:
-                return m_DefaultSpecularTexture;
+                return {&m_DefaultSpecularTexture, true};
             case TextureType::NORMALS:
-                return m_DefaultNormalTexture;
+                return {&m_DefaultNormalTexture, true};
             default:
-                return m_DefaultDiffuseTexture;
+                return {&m_DefaultDiffuseTexture, true};
         }
     }
 
@@ -1275,6 +1271,11 @@ namespace vks_engine
         createTextureSampler(texture);
     }
 
+    void VulkanHandler::CreateMaterial(Material &material)
+    {
+
+    }
+
     void VulkanHandler::CreateMeshDescriptorSets(Mesh &mesh,
                                                  UniformBuffer &mvpUBO, vk::DeviceSize vpSize,
                                                  UniformBuffer &pointLightUBO, vk::DeviceSize plSize,
@@ -1329,9 +1330,10 @@ namespace vks_engine
             for (uint32_t i = 0; i < SUPPORTED_TEXTURE_TYPES_COUNT; ++i)
             {
                 TextureType type = Mesh::SUPPORTED_TEXTURE_TYPES[i];
-                const Texture &tex = getTextureOrDefault(mesh, type);
-                imageInfos[i].sampler = *tex.m_Sampler;
-                imageInfos[i].imageView = *tex.m_ImageView;
+                auto [tex, isDefault] = getTextureOrDefault(mesh, type);
+                mesh.setMaterial(*tex,isDefault);
+                imageInfos[i].sampler = *tex->m_Sampler;
+                imageInfos[i].imageView = *tex->m_ImageView;
                 imageInfos[i].imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
             }
 
@@ -1600,115 +1602,6 @@ namespace vks_engine
         );
 
         m_SimpleMeshDescriptorPool = vk::raii::DescriptorPool(m_Device, poolInfo);
-    }
-
-    void VulkanHandler::createComplexMeshDescriptorSets(UniformBuffer &mvpUBO, vk::DeviceSize vpSize,
-                                                        UniformBuffer &pointLightUBO, vk::DeviceSize plSize,
-                                                        UniformBuffer &directionalLightUBO, vk::DeviceSize dlSize,
-                                                        UniformBuffer &countersUBO, vk::DeviceSize ctSize)
-    {
-        std::vector<vk::DescriptorSetLayout> layouts(
-            MAX_FRAMES_IN_FLIGHT,
-            *m_ComplexMeshDescriptorSetLayout
-        );
-
-        vk::DescriptorSetAllocateInfo allocInfo(
-            m_ComplexMeshDescriptorPool,
-            layouts.size(),
-            layouts.data()
-        );
-
-        m_ComplexMeshDescriptorSets.clear();
-
-        m_ComplexMeshDescriptorSets = m_Device.allocateDescriptorSets(allocInfo);
-
-        for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++)
-        {
-            vk::DescriptorBufferInfo mvpBufferInfo(
-                mvpUBO.m_Buffers[i],
-                0,
-                vpSize
-            );
-
-            vk::DescriptorBufferInfo directionalLightBuffer(
-                directionalLightUBO.m_Buffers[i],
-                0,
-                dlSize
-            );
-
-            vk::DescriptorBufferInfo pointLightBuffer(
-                pointLightUBO.m_Buffers[i],
-                0,
-                plSize
-            );
-
-            vk::DescriptorBufferInfo countersBuffer(
-                countersUBO.m_Buffers[i],
-                0,
-                ctSize
-            );
-
-
-            vk::DescriptorImageInfo diffuseImageInfo(
-                m_BackpackDiffuseTexture.m_Sampler,
-                m_BackpackDiffuseTexture.m_ImageView,
-                vk::ImageLayout::eShaderReadOnlyOptimal
-            );
-
-            vk::DescriptorImageInfo specularImageInfo(
-                m_BackpackDiffuseTexture.m_Sampler,
-                m_BackpackDiffuseTexture.m_ImageView,
-                vk::ImageLayout::eShaderReadOnlyOptimal
-            );
-
-            vk::DescriptorImageInfo normalImageInfo(
-                m_BackpackNormalTexture.m_Sampler,
-                m_BackpackNormalTexture.m_ImageView,
-                vk::ImageLayout::eShaderReadOnlyOptimal
-            );
-
-            std::array<vk::DescriptorImageInfo, 2> imageInfos = {diffuseImageInfo, normalImageInfo};
-
-
-            std::array<vk::WriteDescriptorSet, 5> descriptorWrites{};
-
-            descriptorWrites[0].dstSet = m_ComplexMeshDescriptorSets[i];
-            descriptorWrites[0].dstBinding = 0;
-            descriptorWrites[0].dstArrayElement = 0;
-            descriptorWrites[0].descriptorType = vk::DescriptorType::eUniformBuffer;
-            descriptorWrites[0].descriptorCount = 1;
-            descriptorWrites[0].pBufferInfo = &mvpBufferInfo;
-
-            descriptorWrites[1].dstSet = m_ComplexMeshDescriptorSets[i];
-            descriptorWrites[1].dstBinding = 1;
-            descriptorWrites[1].dstArrayElement = 0;
-            descriptorWrites[1].descriptorType = vk::DescriptorType::eUniformBuffer;
-            descriptorWrites[1].descriptorCount = 1;
-            descriptorWrites[1].pBufferInfo = &directionalLightBuffer;
-
-            descriptorWrites[2].dstSet = m_ComplexMeshDescriptorSets[i];
-            descriptorWrites[2].dstBinding = 2;
-            descriptorWrites[2].dstArrayElement = 0;
-            descriptorWrites[2].descriptorType = vk::DescriptorType::eUniformBuffer;
-            descriptorWrites[2].descriptorCount = 1;
-            descriptorWrites[2].pBufferInfo = &pointLightBuffer;
-
-            descriptorWrites[3].dstSet = m_ComplexMeshDescriptorSets[i];
-            descriptorWrites[3].dstBinding = 3;
-            descriptorWrites[3].dstArrayElement = 0;
-            descriptorWrites[3].descriptorType = vk::DescriptorType::eUniformBuffer;
-            descriptorWrites[3].descriptorCount = 1;
-            descriptorWrites[3].pBufferInfo = &countersBuffer;
-
-            descriptorWrites[4].dstSet = m_ComplexMeshDescriptorSets[i];
-            descriptorWrites[4].dstBinding = 4;
-            descriptorWrites[4].dstArrayElement = 0;
-            descriptorWrites[4].descriptorType = vk::DescriptorType::eCombinedImageSampler;
-            descriptorWrites[4].descriptorCount = 2;
-            descriptorWrites[4].pImageInfo = imageInfos.data();
-
-            m_Device.updateDescriptorSets(descriptorWrites, {});
-        }
     }
 
     void VulkanHandler::createSimpleMeshDescriptorSets(UniformBuffer &mvpUBO, vk::DeviceSize vpSize,

@@ -8,24 +8,25 @@ namespace vks_engine
     class Material
     {
     public:
-        void setDiffuseTexture(Texture &texture);
+        void setDiffuseTexture(const Texture &texture, bool isDefault);
 
-        void setSpecularTexture(Texture &texture);
+        void setSpecularTexture(const Texture &texture, bool isDefault);
 
-        void setNormalTexture(Texture &texture);
+        void setNormalTexture(const Texture &texture, bool isDefault);
 
-        constexpr const Texture &getDiffuseTexture() const { return m_DiffuseTexture; }
+        constexpr const std::pair<const Texture*, bool>& getDiffuseTexture() const { return m_DiffuseTexture; }
 
-        constexpr const Texture &getSpecularTexture() const { return m_SpecularTexture; }
+        constexpr const std::pair<const Texture*, bool>& getSpecularTexture() const { return m_SpecularTexture; }
 
-        constexpr const Texture &getNormalTexture() const { return m_NormalTexture; }
+        constexpr const std::pair<const Texture*, bool>& getNormalTexture() const { return m_NormalTexture; }
 
+        friend class VulkanHandler;
     private:
-        Texture m_DiffuseTexture;
+        std::pair<const Texture*, bool> m_DiffuseTexture;
 
-        Texture m_SpecularTexture;
+        std::pair<const Texture*, bool> m_SpecularTexture;
 
-        Texture m_NormalTexture;
+        std::pair<const Texture*, bool> m_NormalTexture;
     };
 }
 

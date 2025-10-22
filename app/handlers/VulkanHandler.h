@@ -50,6 +50,8 @@ namespace vks_engine
 
         void CreateTexture(Texture &texture);
 
+        void CreateMaterial(Material& material);
+
         void CreateMeshDescriptorSets(
             Mesh &mesh,
             UniformBuffer &mvpUBO,
@@ -114,11 +116,6 @@ namespace vks_engine
         void createComplexMeshDescriptorPool();
 
         void createSimpleMeshDescriptorPool();
-
-        void createComplexMeshDescriptorSets(UniformBuffer &mvpUBO, vk::DeviceSize vpSize,
-                                             UniformBuffer &pointLightUBO, vk::DeviceSize plSize,
-                                             UniformBuffer &directionalLightUBO, vk::DeviceSize dlSize,
-                                             UniformBuffer &countersUBO, vk::DeviceSize ctSize);
 
         void createSimpleMeshDescriptorSets(UniformBuffer &mvpUBO, vk::DeviceSize vpSize,
                                             UniformBuffer &pointLightUBO, vk::DeviceSize plSize,
@@ -192,7 +189,7 @@ namespace vks_engine
 
         void createDefaultTextures();
 
-        const Texture& getTextureOrDefault(const Mesh& mesh, TextureType type) const;
+        std::pair<const Texture *, bool> getTextureOrDefault(const Mesh &mesh, TextureType type) const;
 
         vk::SampleCountFlagBits getMaxUsableSampleCount();
 
@@ -283,10 +280,6 @@ namespace vks_engine
         std::vector<vk::raii::DescriptorSet> m_ComplexMeshDescriptorSets;
 
         std::vector<vk::raii::DescriptorSet> m_SimpleMeshDescriptorSets;
-
-        Texture m_BackpackDiffuseTexture;
-
-        Texture m_BackpackNormalTexture;
 
         Texture m_DefaultDiffuseTexture;
 

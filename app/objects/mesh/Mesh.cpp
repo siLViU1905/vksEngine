@@ -202,6 +202,22 @@ namespace vks_engine
         return m_Textures[type];
     }
 
+    void Mesh::setMaterial(const Texture &texture, bool isDefault)
+    {
+        switch (texture.getType())
+        {
+            case TextureType::DIFFUSE:
+                m_Material.setDiffuseTexture(texture, isDefault);
+                break;
+            case TextureType::SPECULAR:
+                m_Material.setSpecularTexture(texture, isDefault);
+                break;
+            case TextureType::NORMALS:
+                m_Material.setNormalTexture(texture, isDefault);
+                break;
+        }
+    }
+
     void Mesh::processNode(aiNode *node, const aiScene *scene)
     {
         for (uint32_t i = 0; i < node->mNumMeshes; ++i)
