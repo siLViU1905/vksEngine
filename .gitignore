@@ -601,3 +601,13 @@ external/assimp/
 build/.cmake/api/v1/reply/index-2025-10-21T19-24-10-0627.json
 build/.cmake/api/v1/reply/toolchains-v1-efc2dc016c4b9b532673.json
 build/.cmake/api/v1/reply/cache-v2-b6723b868287e9c6165b.json
+build/.cmake/api/v1/reply/cmakeFiles-v1-4f7ca7fb757db35f37b7.json
+build/.cmake/api/v1/reply/codemodel-v2-6c8e5fd714232cebb60a.json
+build/.cmake/api/v1/reply/directory-external.GLFW.src-Debug-d33f9e05086829d13784.json
+build/.cmake/api/v1/reply/index-2025-10-22T16-40-11-0746.json
+build/.cmake/api/v1/reply/target-glfw-Debug-6aa1063dcb49ca2d9305.json
+build/.cmake/api/v1/reply/target-vksEngine-Debug-1d537cc08faeaf5e03ba.json
+build/CMakeFiles/vksEngine.dir/external/imnodes/imnodes.cpp.obj
+build/CMakeFiles/vksEngine.dir/external/imnodes/imnodes.cpp.obj.ddi
+build/CMakeFiles/vksEngine.dir/external/imnodes/imnodes.cpp.obj.modmap
+build/Debug/glfw3d.lib
