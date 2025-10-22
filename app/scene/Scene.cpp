@@ -186,13 +186,13 @@ namespace vks_engine
         MeshComponent component;
 
         uint32_t newID;
-        uint32_t totalMeshCount;
+        uint32_t titleID;
         {
             std::lock_guard<std::mutex> lock(m_ComplexMeshCountMutex);
-            totalMeshCount = getTotalMeshCount();
-            if (totalMeshCount == SCENE_MAX_ALLOWED_MESH_COUNT)
+            if (getTotalMeshCount() == SCENE_MAX_ALLOWED_MESH_COUNT)
                 return;
 
+            titleID = getTotalMeshCount();
             newID = m_CurrentComplexMeshCount;
             ++m_CurrentComplexMeshCount;
         }
@@ -217,7 +217,7 @@ namespace vks_engine
 
         component.bind();
 
-        component.m_Menu.setTitle("Mesh" + std::to_string(totalMeshCount));
+        component.m_Menu.setTitle("Mesh" + std::to_string(titleID));
         {
             std::lock_guard<std::mutex> lock(m_LoadedMeshMutex);
             m_LoadedMeshQueue.push_back(std::move(component));
