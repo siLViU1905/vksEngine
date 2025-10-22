@@ -14,3 +14,6 @@
 [submodule "external/stbimage"]
 	path = external/stbimage
 	url = https://github.com/nothings/stb.git
+[submodule "external/imnodes"]
+	path = external/imnodes
+	url = https://github.com/Nelarius/imnodes.git
