@@ -150,11 +150,22 @@ target_include_directories(vksEngine PRIVATE
         ${STB_IMAGE_DIR}
 )
 
-target_link_libraries(vksEngine
+target_link_libraries(vksEngine PRIVATE
         Vulkan::Vulkan
         glfw
         assimp
 )
+
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    target_link_libraries(vksEngine PRIVATE stdc++exp)
+    target_link_options(vksEngine PRIVATE 
+        -static-libgcc 
+        -static-libstdc++
+        -Wl,-Bstatic
+        -lstdc++
+        -lwinpthread
+    )
+endif()
 
 set_target_properties(vksEngine PROPERTIES
         VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"

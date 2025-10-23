@@ -96,15 +96,15 @@ namespace vks_engine
         ImGui::Separator();
         ImGui::Spacing();
 
-        ImGui::Text("Active simple meshes: %u", m_ActiveSimpleMeshCount);
-        ImGui::Text("Active complex meshes: %u", m_ActiveComplexMeshCount);
-        ImGui::Text("Total active meshes: %u", m_ActiveSimpleMeshCount + m_ActiveComplexMeshCount);
+        ImGui::Text("Active simple meshes: %u", this->m_ActiveSimpleMeshCount);
+        ImGui::Text("Active complex meshes: %u", this->m_ActiveComplexMeshCount);
+        ImGui::Text("Total active meshes: %u", this->m_ActiveSimpleMeshCount + this->m_ActiveComplexMeshCount);
 
         ImGui::Separator();
         ImGui::Spacing();
 
-        ImGui::Text("Active point lights: %u", m_ActivePointLightsCount);
-        ImGui::Text("Active directional lights: %u", m_ActiveDirectionalLightsCount);
-        ImGui::Text("Total active lights: %u", m_ActivePointLightsCount + m_ActiveDirectionalLightsCount);
+        ImGui::Text("Active point lights: %u", this->m_ActivePointLightsCount);
+        ImGui::Text("Active directional lights: %u", this->m_ActiveDirectionalLightsCount);
+        ImGui::Text("Total active lights: %u", this->m_ActivePointLightsCount + this->m_ActiveDirectionalLightsCount);
     }
 }

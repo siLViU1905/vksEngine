@@ -2,6 +2,12 @@
 
 namespace vks_engine
 {
+    Material::Material()
+        : m_DiffuseTexture(nullptr, true),
+          m_SpecularTexture(nullptr, true),
+          m_NormalTexture(nullptr, true)
+    {}
+
     void Material::setDiffuseTexture(const Texture &texture, bool isDefault)
     {
         m_DiffuseTexture.first = &texture;

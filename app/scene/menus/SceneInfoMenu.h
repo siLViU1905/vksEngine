@@ -1,6 +1,7 @@
 #ifndef VKSENGINESCENEINFOMENU_H
 #define VKSENGINESCENEINFOMENU_H
 #include "../../objects/menus/Menu.h"
+#include <cstdint>
 
 namespace vks_engine
 {

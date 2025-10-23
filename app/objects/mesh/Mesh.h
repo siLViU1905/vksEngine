@@ -93,7 +93,7 @@ namespace vks_engine
 
         Texture& getTexture(TextureType type);
 
-        void setMaterial(const Texture& texture, bool isDefault);
+        void setMaterial(const Texture& texture, TextureType type, bool isDefault);
 
         constexpr const Material& getMaterial() const{return m_Material;}
 
@@ -118,6 +118,9 @@ namespace vks_engine
 
         uint32_t m_Instances;
 
+        bool m_HasTangentsAndBitangents;
+
+
         vk::raii::Buffer m_VertexBuffer;
 
         vk::raii::DeviceMemory m_VertexBufferMemory;
@@ -132,24 +135,19 @@ namespace vks_engine
 
         MeshType m_Type;
 
-        void updateModel();
-
-        void calculateTangentsAndBitangents();
+        Material m_Material;
 
         std::unordered_map<TextureType, Texture> m_Textures;
 
-        Material m_Material;
-
-        bool m_HasTangentsAndBitangents;
-
         std::string m_Directory;
 
-        //================= TEMP VARS =================
         std::unordered_map<Vertex, uint32_t> uniqueVertices;
 
         std::unordered_map<TextureType, std::string> texturePaths;
 
-        //================= =================
+        void updateModel();
+
+        void calculateTangentsAndBitangents();
 
         void processNode(aiNode *node, const aiScene *scene);
 

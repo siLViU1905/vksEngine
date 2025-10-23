@@ -13,7 +13,7 @@ namespace vks_engine
         template<typename Ty, TimeType timeType>
         Ty getElapsedTime() const
         {
-            auto now = std::chrono::high_resolution_clock::now();
+            auto now = std::chrono::steady_clock::now();
 
             if constexpr (timeType == TimeType::Microseconds)
                 return std::chrono::duration<Ty, std::micro>(now - m_TimePoint).count();
@@ -30,7 +30,7 @@ namespace vks_engine
         {
             Ty elapsedTime = getElapsedTime<Ty, timeType>();
 
-            m_TimePoint = std::chrono::high_resolution_clock::now();
+            m_TimePoint = std::chrono::steady_clock::now();
 
             return elapsedTime;
         }

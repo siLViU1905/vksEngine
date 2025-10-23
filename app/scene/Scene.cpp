@@ -45,14 +45,6 @@ namespace vks_engine
 
         createUniformBuffers();
 
-        /*m_Vk.createComplexMeshDescriptorSets(m_UBOvpBuffer, sizeof(UBOvp),
-                                             m_UBOPointLightBuffer,
-                                             sizeof(PointLight::Aligned) * SCENE_MAX_ALLOWED_POINT_LIGHT_COUNT,
-                                             m_UBODirectionalLightBuffer,
-                                             sizeof(DirectionalLight::Aligned) * SCENE_MAX_ALLOWED_DIRECTIONAL_LIGHT_COUNT,
-                                             m_UBOCountersBuffer, sizeof(UBOcounters)
-        );*/
-
         m_Vk.createSimpleMeshDescriptorSets(m_UBOvpBuffer, sizeof(UBOvp),
                                             m_UBOPointLightBuffer,
                                             sizeof(PointLight::Aligned) * SCENE_MAX_ALLOWED_POINT_LIGHT_COUNT,

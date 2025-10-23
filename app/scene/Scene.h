@@ -60,6 +60,10 @@ namespace vks_engine
 
         //=====================================MESH RELATED=====================================
 
+        uint32_t m_CurrentSimpleMeshCount;
+
+        uint32_t m_CurrentComplexMeshCount;
+
         std::vector<vk::raii::CommandBuffer> m_SimpleMeshCommandBuffers;
 
         std::vector<vk::raii::CommandBuffer> m_ComplexMeshCommandBuffers;
@@ -67,10 +71,6 @@ namespace vks_engine
         std::vector<MeshComponent> m_SimpleMeshComponents;
 
         std::vector<MeshComponent> m_ComplexMeshComponents;
-
-        uint32_t m_CurrentSimpleMeshCount;
-
-        uint32_t m_CurrentComplexMeshCount;
 
         constexpr uint32_t getTotalMeshCount() const
         {

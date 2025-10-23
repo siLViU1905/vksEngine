@@ -1,5 +1,5 @@
 #ifndef VKSENGINEMATERIAL_H
-#define VKSENGINEMATERIAL_HMATERIAL_H
+#define VKSENGINEMATERIAL_H
 
 #include "texture/Texture.h"
 
@@ -8,6 +8,8 @@ namespace vks_engine
     class Material
     {
     public:
+        Material();
+
         void setDiffuseTexture(const Texture &texture, bool isDefault);
 
         void setSpecularTexture(const Texture &texture, bool isDefault);
@@ -30,4 +32,4 @@ namespace vks_engine
     };
 }
 
-#endif //VKSENGINEMATERIAL_HMATERIAL_H
+#endif //VKSENGINEMATERIAL_H

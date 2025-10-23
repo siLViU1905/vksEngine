@@ -68,18 +68,6 @@ namespace vks_engine
 
         createDefaultTextures();
 
-        /*createTextureImage(m_BackpackDiffuseTexture);
-
-        createTextureImageView(m_BackpackDiffuseTexture);
-
-        createTextureSampler(m_BackpackDiffuseTexture);
-
-        createTextureImage(m_BackpackNormalTexture);
-
-        createTextureImageView(m_BackpackNormalTexture);
-
-        createTextureSampler(m_BackpackNormalTexture);*/
-
         createComplexMeshDescriptorPool();
 
         createSimpleMeshDescriptorPool();
@@ -1331,7 +1319,7 @@ namespace vks_engine
             {
                 TextureType type = Mesh::SUPPORTED_TEXTURE_TYPES[i];
                 auto [tex, isDefault] = getTextureOrDefault(mesh, type);
-                mesh.setMaterial(*tex,isDefault);
+                mesh.setMaterial(*tex, type, isDefault);
                 imageInfos[i].sampler = *tex->m_Sampler;
                 imageInfos[i].imageView = *tex->m_ImageView;
                 imageInfos[i].imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal;

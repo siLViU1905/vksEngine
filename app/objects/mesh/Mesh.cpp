@@ -202,9 +202,9 @@ namespace vks_engine
         return m_Textures[type];
     }
 
-    void Mesh::setMaterial(const Texture &texture, bool isDefault)
+    void Mesh::setMaterial(const Texture &texture, TextureType type, bool isDefault)
     {
-        switch (texture.getType())
+        switch (type)
         {
             case TextureType::DIFFUSE:
                 m_Material.setDiffuseTexture(texture, isDefault);
