@@ -4,6 +4,8 @@
 
 namespace vks_engine
 {
+    std::function<void(const Mesh& mesh)> MeshMenu::m_OnEditMaterialPress;
+
     MeshMenu::MeshMenu()
     {
     }
@@ -48,6 +50,14 @@ namespace vks_engine
             modified = true;
         }
 
+        if (ImGui::Button("Material"))
+            m_OnEditMaterialPress(*this->m_Component);
+
         return modified;
+    }
+
+    void MeshMenu::setOnEditMaterial(std::function<void(const Mesh &mesh)> function)
+    {
+        m_OnEditMaterialPress = std::move(function);
     }
 }

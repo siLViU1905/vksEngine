@@ -18,6 +18,10 @@ namespace vks_engine
         using ComponentMenu::getComponent;
         using ComponentMenu::setTitle;
         using ComponentMenu::getTitle;
+
+        static void setOnEditMaterial(std::function<void(const Mesh& mesh)> function);
+    private:
+        static std::function<void(const Mesh& mesh)> m_OnEditMaterialPress;
     };
 }
 

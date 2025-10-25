@@ -120,7 +120,6 @@ namespace vks_engine
 
         bool m_HasTangentsAndBitangents;
 
-
         vk::raii::Buffer m_VertexBuffer;
 
         vk::raii::DeviceMemory m_VertexBufferMemory;

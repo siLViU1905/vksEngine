@@ -35,6 +35,8 @@ namespace vks_engine
 
         m_ImGui.init(m_Vk, m_Window.getWindow());
 
+        m_ImNodes.init();
+
         m_ColorAttachmentFormat = m_ImGui.m_ColorAttachmentFormat;
 
         m_DepthAttachmentFormat = m_ImGui.m_DepthAttachmentFormat;
@@ -178,8 +180,7 @@ namespace vks_engine
         MeshComponent component;
 
         uint32_t newID;
-        uint32_t titleID;
-        {
+        uint32_t titleID; {
             std::lock_guard<std::mutex> lock(m_ComplexMeshCountMutex);
             if (getTotalMeshCount() == SCENE_MAX_ALLOWED_MESH_COUNT)
                 return;
@@ -209,8 +210,7 @@ namespace vks_engine
 
         component.bind();
 
-        component.m_Menu.setTitle("Mesh" + std::to_string(titleID));
-        {
+        component.m_Menu.setTitle("Mesh" + std::to_string(titleID)); {
             std::lock_guard<std::mutex> lock(m_LoadedMeshMutex);
             m_LoadedMeshQueue.push_back(std::move(component));
         }
@@ -602,6 +602,8 @@ namespace vks_engine
         initSceneInfoMenu();
 
         initSceneEventsMenu();
+
+        initMaterialEditorMenu();
     }
 
     void Scene::fixMenus()
@@ -656,6 +658,13 @@ namespace vks_engine
         {
             this->updateUBOdirectionalLight(dl);
         });
+
+        MeshMenu::setOnEditMaterial([this](const Mesh &mesh)
+        {
+            this->m_MaterialEditor.setMesh(mesh);
+
+            this->m_MaterialEditor.open();
+        });
     }
 
     void Scene::initSceneInfoMenu()
@@ -666,6 +675,11 @@ namespace vks_engine
     void Scene::initSceneEventsMenu()
     {
         m_SceneEventsMenu.setTitle("Scene events");
+    }
+
+    void Scene::initMaterialEditorMenu()
+    {
+        m_MaterialEditor.setTitle("Material editor");
     }
 
     void Scene::renderMenus()
@@ -681,6 +695,8 @@ namespace vks_engine
         m_SceneInfoMenu.render();
 
         m_SceneEventsMenu.render();
+
+        m_MaterialEditor.render();
 
         m_ImGui.endFrame();
     }

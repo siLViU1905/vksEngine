@@ -8,6 +8,7 @@
 #include "SceneComponent.h"
 #include "../handlers/ImGuiHandler.h"
 #include "../Window.h"
+#include "../handlers/ImNodesHandler.h"
 #include "../handlers/InputHandler.h"
 #include "../objects/mesh/Mesh.h"
 #include "../objects/lights/DirectionalLight.h"
@@ -16,6 +17,7 @@
 #include "components/DirectionalLightComponent.h"
 #include "components/MeshComponent.h"
 #include "components/PointLightComponent.h"
+#include "menus/MaterialEditorMenu.h"
 #include "menus/SceneComponentPropertiesMenu.h"
 #include "menus/SceneComponentsMenu.h"
 #include "menus/SceneEventsMenu.h"
@@ -45,6 +47,8 @@ namespace vks_engine
         VulkanHandler &m_Vk;
 
         ImGuiHandler m_ImGui;
+
+        ImNodesHandler m_ImNodes;
 
         InputHandler m_InputHandler;
 
@@ -185,6 +189,8 @@ namespace vks_engine
 
         SceneEventsMenu m_SceneEventsMenu;
 
+        MaterialEditorMenu m_MaterialEditor;
+
         void initMenus();
 
         void fixMenus();
@@ -198,6 +204,8 @@ namespace vks_engine
         void initSceneInfoMenu();
 
         void initSceneEventsMenu();
+
+        void initMaterialEditorMenu();
 
         void renderMenus();
 

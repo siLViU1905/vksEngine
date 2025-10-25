@@ -137,6 +137,10 @@ add_executable(vksEngine
         app/scene/menus/SceneEventsMenu.cpp
 
         app/objects/Material.cpp
+
+        app/scene/menus/MaterialEditorMenu.cpp
+
+        app/handlers/ImNodesHandler.cpp
 )
 
 

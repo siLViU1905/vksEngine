@@ -55,6 +55,8 @@ namespace vks_engine
 
         bool isLoaded() const;
 
+        constexpr const uint8_t* getPixels() const {return m_Pixels;}
+
     private:
         std::string m_Path;
     };

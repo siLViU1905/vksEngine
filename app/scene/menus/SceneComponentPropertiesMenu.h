@@ -9,6 +9,7 @@
 
 namespace vks_engine
 {
+    class Mesh;
     class DirectionalLight;
 
     class SceneComponentPropertiesMenu : public Menu
