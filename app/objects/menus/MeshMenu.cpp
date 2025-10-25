@@ -4,7 +4,7 @@
 
 namespace vks_engine
 {
-    std::function<void(const Mesh& mesh)> MeshMenu::m_OnEditMaterialPress;
+    std::function<void(const Mesh &mesh)> MeshMenu::m_OnEditMaterialPress;
 
     MeshMenu::MeshMenu()
     {
@@ -20,7 +20,8 @@ namespace vks_engine
 
         auto position = m_Component->getPosition();
 
-        if (ImGui::SliderFloat3("Position", glm::value_ptr(position), SCENE_MESH_POSITION_LOWER_BOUND, SCENE_MESH_POSITION_UPPER_BOUND))
+        if (ImGui::SliderFloat3("Position", glm::value_ptr(position), SCENE_MESH_POSITION_LOWER_BOUND,
+                                SCENE_MESH_POSITION_UPPER_BOUND))
         {
             m_Component->setPosition(position);
             modified = true;
@@ -28,7 +29,8 @@ namespace vks_engine
 
         auto scale = m_Component->getScale();
 
-        if (ImGui::SliderFloat3("Scale", glm::value_ptr(scale), SCENE_MESH_SCALE_LOWER_BOUND, SCENE_MESH_SCALE_UPPER_BOUND))
+        if (ImGui::SliderFloat3("Scale", glm::value_ptr(scale), SCENE_MESH_SCALE_LOWER_BOUND,
+                                SCENE_MESH_SCALE_UPPER_BOUND))
         {
             m_Component->setScale(scale);
             modified = true;
@@ -50,8 +52,9 @@ namespace vks_engine
             modified = true;
         }
 
-        if (ImGui::Button("Material"))
-            m_OnEditMaterialPress(*this->m_Component);
+        if (m_Component->getType() == MeshType::MODEL)
+            if (ImGui::Button("Material"))
+                m_OnEditMaterialPress(*this->m_Component);
 
         return modified;
     }

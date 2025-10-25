@@ -1,6 +1,8 @@
 #include "MaterialEditorMenu.h"
 #include <imnodes.h>
 
+#include "imgui_impl_vulkan.h"
+
 namespace vks_engine
 {
     MaterialEditorMenu::MaterialEditorMenu(): m_Mesh(nullptr), m_IsOpened(false)
@@ -28,6 +30,8 @@ namespace vks_engine
 
         if (ImGui::Begin(m_Title.c_str(), &isOpen, ImGuiWindowFlags_NoCollapse))
         {
+            updateCachedDescriptors();
+
             ImNodes::BeginNodeEditor();
 
             renderMaterialNode();
@@ -64,7 +68,42 @@ namespace vks_engine
 
     void MaterialEditorMenu::setMesh(const Mesh &mesh)
     {
-        m_Mesh = &mesh;
+        if (m_Mesh != &mesh)
+        {
+            clearCachedDescriptors();
+            m_Mesh = &mesh;
+        }
+    }
+
+    void MaterialEditorMenu::updateCachedDescriptors()
+    {
+        const auto &material = m_Mesh->getMaterial();
+
+        for (auto type : {TextureType::DIFFUSE, TextureType::SPECULAR, TextureType::NORMALS})
+        {
+            const auto& [texture, isDefault] = material.getTexture(type);
+
+            if (texture->isLoaded() && m_CachedDescriptors[type] == VK_NULL_HANDLE)
+            {
+                m_CachedDescriptors[type] = ImGui_ImplVulkan_AddTexture(
+                    *texture->m_Sampler,
+                    *texture->m_ImageView,
+                    VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
+                );
+            }
+        }
+    }
+
+    void MaterialEditorMenu::clearCachedDescriptors()
+    {
+        for (auto& [type, descriptor] : m_CachedDescriptors)
+        {
+            if (descriptor != VK_NULL_HANDLE)
+            {
+                ImGui_ImplVulkan_RemoveTexture(descriptor);
+                descriptor = VK_NULL_HANDLE;
+            }
+        }
     }
 
     void MaterialEditorMenu::renderMaterialNode()
@@ -119,11 +158,7 @@ namespace vks_engine
 
         ImNodes::EndNodeTitleBar();
 
-        ImGui::Spacing();
-
-        ImGui::Text("Size: %dx%d", texture.m_Width, texture.m_Height);
-
-        ImGui::Spacing();
+        renderTexturePreview(texture, "Diffuse");
 
 
         ImNodes::BeginOutputAttribute(baseId + 1);
@@ -156,11 +191,7 @@ namespace vks_engine
 
         ImNodes::EndNodeTitleBar();
 
-        ImGui::Spacing();
-
-        ImGui::Text("Size: %dx%d", texture.m_Width, texture.m_Height);
-
-        ImGui::Spacing();
+        renderTexturePreview(texture, "Specular");
 
 
         ImNodes::BeginOutputAttribute(baseId + 1);
@@ -193,11 +224,7 @@ namespace vks_engine
 
         ImNodes::EndNodeTitleBar();
 
-        ImGui::Spacing();
-
-        ImGui::Text("Size: %dx%d", texture.m_Width, texture.m_Height);
-
-        ImGui::Spacing();
+        renderTexturePreview(texture, "Normal");
 
 
         ImNodes::BeginOutputAttribute(baseId + 1);
@@ -235,5 +262,36 @@ namespace vks_engine
         startAttr = static_cast<int>(TextureType::NORMALS) * 100 + 1;
         endAttr = materialNodeId + 3;
         ImNodes::Link(linkId, startAttr, endAttr);
+    }
+
+    void MaterialEditorMenu::renderTexturePreview(const Texture &texture, std::string_view label)
+    {
+        ImGui::Text("%s", label.data());
+
+        ImGui::Text("Size: %dx%d", texture.m_Width, texture.m_Height);
+
+        ImGui::Spacing();
+
+        float aspectRatio = static_cast<float>(texture.m_Width) / static_cast<float>(texture.m_Height);
+
+        ImVec2 imageSize;
+        if (aspectRatio > 1.f)
+            imageSize = ImVec2(m_TexturePreviewSize, m_TexturePreviewSize / aspectRatio);
+        else
+            imageSize = ImVec2(m_TexturePreviewSize * aspectRatio, m_TexturePreviewSize);
+
+        float offsetX = (m_TexturePreviewSize - imageSize.x) * 0.5f;
+
+        if (offsetX > 0)
+            ImGui::SetCursorPosX(ImGui::GetCursorPosX() + offsetX);
+
+        auto descriptor = m_CachedDescriptors[texture.getType()];
+
+        if (descriptor != VK_NULL_HANDLE)
+            ImGui::Image(descriptor, imageSize);
+        else
+            ImGui::Dummy(imageSize);
+
+        ImGui::Spacing();
     }
 }

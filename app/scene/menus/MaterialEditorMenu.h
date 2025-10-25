@@ -8,6 +8,9 @@ namespace vks_engine
 {
     class MaterialEditorMenu : public Menu
     {
+    private:
+        static constexpr float m_TexturePreviewSize = 128.f;
+
     public:
         MaterialEditorMenu();
 
@@ -26,6 +29,12 @@ namespace vks_engine
 
         bool m_IsOpened;
 
+        std::unordered_map<TextureType, VkDescriptorSet> m_CachedDescriptors;
+
+        void updateCachedDescriptors();
+
+        void clearCachedDescriptors();
+
         void renderMaterialNode();
 
         void renderDiffuseTextureNode(const ImVec2 &position);
@@ -35,6 +44,8 @@ namespace vks_engine
         void renderNormalTextureNode(const ImVec2 &position);
 
         void renderLinks();
+
+        void renderTexturePreview(const Texture& texture, std::string_view label);
     };
 }
 
