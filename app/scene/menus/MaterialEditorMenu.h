@@ -13,7 +13,7 @@ namespace vks_engine
 
         static constexpr int s_MaterialNodeID = 1000;
 
-        static constexpr int s_NodeIDMultiplier = 70;
+        static constexpr int s_NodeIDMultiplier = 100;
 
         static constexpr int s_DiffuseTextureNodeID = static_cast<int>(TextureType::DIFFUSE) * s_NodeIDMultiplier;
 
@@ -29,7 +29,7 @@ namespace vks_engine
             s_NormalTextureNodeID
         };
 
-        static constexpr int s_TextureNodeIndent = 100;
+        static constexpr int s_TextureNodeIndent = 70;
 
     public:
         MaterialEditorMenu();
