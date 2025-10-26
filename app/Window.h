@@ -34,6 +34,10 @@ namespace vks_engine
 
         constexpr int getWidth() const {return m_Width;}
 
+        void getFramebufferSize(int& width, int& height);
+
+        void waitForEvents();
+
         void setFramebufferResizeCallback(std::function<void(int, int)> function);
 
         void setKeyCallback(std::function<void(int, int, int, int)> function);

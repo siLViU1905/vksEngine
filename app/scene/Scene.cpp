@@ -918,13 +918,17 @@ namespace vks_engine
         if (m_Window.wasResized())
         {
             int w, h;
-            glfwGetFramebufferSize(m_Window.getWindow(), &w, &h);
+            m_Window.getFramebufferSize(w,h);
 
-            if (w != 0 && h != 0)
+            while (w == 0 || h == 0)
             {
-                handleSwapChainRecreation(w, h);
-                m_Camera.updateProjection(w, h);
+                m_Window.waitForEvents();
+
+                m_Window.getFramebufferSize(w,h);
             }
+
+            handleSwapChainRecreation(w, h);
+            m_Camera.updateProjection(w, h);
         }
     }
 }

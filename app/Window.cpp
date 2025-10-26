@@ -70,6 +70,16 @@ namespace vks_engine
         glfwSetWindowSize(m_Window, width, height);
     }
 
+    void Window::getFramebufferSize(int &width, int &height)
+    {
+        glfwGetFramebufferSize(m_Window, &width, &height);
+    }
+
+    void Window::waitForEvents()
+    {
+        glfwWaitEvents();
+    }
+
     void Window::setFramebufferResizeCallback(std::function<void(int, int)> function)
     {
         m_FramebufferResizeCallbackFunction = std::move(function);
