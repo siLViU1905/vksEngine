@@ -66,6 +66,15 @@ set(IMNODES_SOURCES
 )
 
 add_executable(vksEngine
+
+        ${CMAKE_SOURCE_DIR}/app/shaders/compiled/complexmesh/ComplexMeshShaderVert.spv
+
+        ${CMAKE_SOURCE_DIR}/app/shaders/compiled/complexmesh/ComplexMeshShaderFrag.spv
+
+        ${CMAKE_SOURCE_DIR}/app/shaders/compiled/simplemesh/SimpleMeshShaderVert.spv
+
+        ${CMAKE_SOURCE_DIR}/app/shaders/compiled/simplemesh/SimpleMeshShaderFrag.spv
+
         main.cpp
 
         app/handlers/VulkanHandler.cpp
@@ -171,6 +180,62 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     )
 endif()
 
+set(GLSLC_COMMAND "${CMAKE_SOURCE_DIR}/app/shaders/glslc")
+
+set(VERT_INPUT_FILE "${CMAKE_SOURCE_DIR}/app/shaders/glsl/complexmesh/ComplexMeshShader.vert")
+set(VERT_OUTPUT_FILE "${CMAKE_SOURCE_DIR}/app/shaders/compiled/complexmesh/ComplexMeshShaderVert.spv")
+set(OUTPUT_DIR "${CMAKE_SOURCE_DIR}/app/shaders/compiled/complexmesh")
+
+add_custom_command(
+        OUTPUT ${VERT_OUTPUT_FILE}
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${OUTPUT_DIR}
+        COMMAND ${GLSLC_COMMAND}
+        ${VERT_INPUT_FILE}
+        -o ${VERT_OUTPUT_FILE}
+        DEPENDS ${VERT_INPUT_FILE}
+        COMMENT "Compiling ComplexMeshShader.vert -> .spv"
+)
+
+set(FRAG_INPUT_FILE "${CMAKE_SOURCE_DIR}/app/shaders/glsl/complexmesh/ComplexMeshShader.frag")
+set(FRAG_OUTPUT_FILE "${CMAKE_SOURCE_DIR}/app/shaders/compiled/complexmesh/ComplexMeshShaderFrag.spv")
+
+add_custom_command(
+        OUTPUT ${FRAG_OUTPUT_FILE}
+        COMMAND ${GLSLC_COMMAND}
+        ${FRAG_INPUT_FILE}
+        -o ${FRAG_OUTPUT_FILE}
+        DEPENDS ${FRAG_INPUT_FILE}
+        COMMENT "Compiling ComplexMeshShader.frag -> .spv"
+)
+
+set(VERT_INPUT_FILE "${CMAKE_SOURCE_DIR}/app/shaders/glsl/simplemesh/SimpleMeshShader.vert")
+set(VERT_OUTPUT_FILE "${CMAKE_SOURCE_DIR}/app/shaders/compiled/simplemesh/SimpleMeshShaderVert.spv")
+set(OUTPUT_DIR "${CMAKE_SOURCE_DIR}/app/shaders/compiled/simplemesh")
+
+add_custom_command(
+        OUTPUT ${VERT_OUTPUT_FILE}
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${OUTPUT_DIR}
+        COMMAND ${GLSLC_COMMAND}
+        ${VERT_INPUT_FILE}
+        -o ${VERT_OUTPUT_FILE}
+        DEPENDS ${VERT_INPUT_FILE}
+        COMMENT "Compiling SimpleMeshShader.vert -> .spv"
+)
+
+set(FRAG_INPUT_FILE "${CMAKE_SOURCE_DIR}/app/shaders/glsl/simplemesh/SimpleMeshShader.frag")
+set(FRAG_OUTPUT_FILE "${CMAKE_SOURCE_DIR}/app/shaders/compiled/simplemesh/SimpleMeshShaderFrag.spv")
+
+add_custom_command(
+        OUTPUT ${FRAG_OUTPUT_FILE}
+        COMMAND ${GLSLC_COMMAND}
+        ${FRAG_INPUT_FILE}
+        -o ${FRAG_OUTPUT_FILE}
+        DEPENDS ${FRAG_INPUT_FILE}
+        COMMENT "Compiling SimpleMeshShader.frag -> .spv"
+)
+
+
+
 set_target_properties(vksEngine PROPERTIES
         VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
 )
@@ -190,8 +255,15 @@ add_custom_command(TARGET vksEngine POST_BUILD
 add_custom_command(TARGET vksEngine POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory
         ${CMAKE_SOURCE_DIR}/app/shaders/compiled
-        $<TARGET_FILE_DIR:vksEngine>/shaders
+        $<TARGET_FILE_DIR:vksEngine>/shaders/compiled
         COMMENT "Copying shaders to build directory"
+)
+
+add_custom_command(TARGET vksEngine POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_SOURCE_DIR}/app/fonts
+        $<TARGET_FILE_DIR:vksEngine>/fonts
+        COMMENT "Copying fonts to build directory"
 )
 
 message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")

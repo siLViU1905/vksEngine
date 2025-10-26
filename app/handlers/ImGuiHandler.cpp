@@ -243,7 +243,7 @@ namespace vks_engine
         style.TabRounding = 6.0f;
 
         io.FontGlobalScale = 1.2f;
-        io.Fonts->AddFontFromFileTTF("../../app/fonts/Roboto-Regular.ttf", 18.f);
+        io.Fonts->AddFontFromFileTTF("fonts/Roboto-Regular.ttf", 18.f);
         
         style.ItemSpacing = ImVec2(8, 6);
         style.ItemInnerSpacing = ImVec2(6, 6);

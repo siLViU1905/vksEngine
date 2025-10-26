@@ -1,5 +1,7 @@
 #include "Application.h"
 
+#include <direct.h>
+
 namespace vks_engine
 {
     Application::Application(int windowWidth, int windowHeight, const std::string &windowTitle)
@@ -16,9 +18,7 @@ namespace vks_engine
     void Application::run()
     {
         while (m_Window.isOpen())
-        {
             m_Scene.run();
-        }
 
         m_VulkanHandler.waitIdle();
     }
