@@ -12,7 +12,7 @@ Thanks to ImGui all UI is also rendered on the GPU.
 
 ### Prerequisites
 
-- **CMake** 3.31 or higher
+- **CMake** 3.30 or higher
 - **C++23** compatible compiler (MSVC 2022, GCC 13+, or Clang 16+)
 - **Vulkan SDK** 1.3 or higher
 - **Git** with submodule support
