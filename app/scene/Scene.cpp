@@ -640,6 +640,7 @@ namespace vks_engine
 
         m_SceneComponentsMenu.setOnComponentDelete([this](ComponentEntry &entry)
         {
+            this->m_MaterialEditor.close();
             this->m_SceneComponentPropertiesMenu.handleComponentDelete(entry);
             this->handleComponentDelete(entry);
         });

@@ -1,6 +1,7 @@
 #include "MaterialEditorMenu.h"
 #include <imnodes.h>
 #include <print>
+#include <ranges>
 
 #include "imgui_impl_vulkan.h"
 
@@ -8,6 +9,10 @@ namespace vks_engine
 {
     MaterialEditorMenu::MaterialEditorMenu(): m_Mesh(nullptr), m_IsOpened(false)
     {
+        m_NodePositions[s_MaterialNodeID] = ImVec2(400, 150);
+        m_NodePositions[s_DiffuseTextureNodeID] = ImVec2(30, 30);
+        m_NodePositions[s_SpecularTextureNodeID] = ImVec2(60, 220);
+        m_NodePositions[s_NormalTextureNodeID] = ImVec2(90, 410);
     }
 
     void MaterialEditorMenu::open()
@@ -37,17 +42,18 @@ namespace vks_engine
 
             renderMaterialNode();
 
-            renderDiffuseTextureNode(ImVec2(50, 50));
+            renderDiffuseTextureNode();
 
-            renderSpecularTextureNode(ImVec2(50, 250));
+            renderSpecularTextureNode();
 
-            renderNormalTextureNode(ImVec2(50, 450));
+            renderNormalTextureNode();
 
             renderLinks();
 
             ImNodes::MiniMap(0.2f, ImNodesMiniMapLocation_BottomRight);
             ImNodes::EndNodeEditor();
 
+            saveNodePositions();
 
             int start_attr, end_attr;
             if (ImNodes::IsLinkCreated(&start_attr, &end_attr))
@@ -80,9 +86,9 @@ namespace vks_engine
     {
         const auto &material = m_Mesh->getMaterial();
 
-        for (auto type : {TextureType::DIFFUSE, TextureType::SPECULAR, TextureType::NORMALS})
+        for (auto type: {TextureType::DIFFUSE, TextureType::SPECULAR, TextureType::NORMALS})
         {
-            const auto& [texture, isDefault] = material.getTexture(type);
+            const auto &[texture, isDefault] = material.getTexture(type);
 
             if (texture->isLoaded() && m_CachedDescriptors[type] == VK_NULL_HANDLE)
             {
@@ -97,7 +103,7 @@ namespace vks_engine
 
     void MaterialEditorMenu::clearCachedDescriptors()
     {
-        for (auto& [type, descriptor] : m_CachedDescriptors)
+        for (auto &descriptor: m_CachedDescriptors | std::views::values)
         {
             if (descriptor != VK_NULL_HANDLE)
             {
@@ -109,9 +115,9 @@ namespace vks_engine
 
     void MaterialEditorMenu::renderMaterialNode()
     {
-        constexpr int materialNodeId = 1000;
+        auto position = m_NodePositions[s_MaterialNodeID];
 
-        ImNodes::BeginNode(materialNodeId);
+        ImNodes::BeginNode(s_MaterialNodeID);
 
         ImNodes::BeginNodeTitleBar();
 
@@ -119,19 +125,19 @@ namespace vks_engine
 
         ImNodes::EndNodeTitleBar();
 
-        ImNodes::BeginInputAttribute(materialNodeId + 1);
+        ImNodes::BeginInputAttribute(s_MaterialNodeID + 1);
 
         ImGui::Text("Diffuse");
 
         ImNodes::EndInputAttribute();
 
-        ImNodes::BeginInputAttribute(materialNodeId + 2);
+        ImNodes::BeginInputAttribute(s_MaterialNodeID + 2);
 
         ImGui::Text("Specular");
 
         ImNodes::EndInputAttribute();
 
-        ImNodes::BeginInputAttribute(materialNodeId + 3);
+        ImNodes::BeginInputAttribute(s_MaterialNodeID + 3);
 
         ImGui::Text("Normal");
 
@@ -139,19 +145,22 @@ namespace vks_engine
 
         ImNodes::EndNode();
 
-        ImNodes::SetNodeGridSpacePos(materialNodeId, ImVec2(600, 250));
+        ImNodes::SetNodeGridSpacePos(s_MaterialNodeID, position);
     }
 
-    void MaterialEditorMenu::renderDiffuseTextureNode(const ImVec2 &position)
+    void MaterialEditorMenu::renderDiffuseTextureNode()
     {
-        constexpr int baseId = static_cast<int>(TextureType::DIFFUSE) * 100;
-
         const auto &material = m_Mesh->getMaterial();
 
         const auto &texture = *material.getDiffuseTexture().first;
 
-        ImNodes::BeginNode(baseId);
+        auto position = m_NodePositions[s_DiffuseTextureNodeID];
 
+        ImNodes::BeginNode(s_DiffuseTextureNodeID);
+
+        ImNodes::PushAttributeFlag(ImNodesAttributeFlags_EnableLinkDetachWithDragClick);
+
+        ImGui::PushItemWidth(150.0f);
 
         ImNodes::BeginNodeTitleBar();
 
@@ -162,9 +171,9 @@ namespace vks_engine
         renderTexturePreview(texture, "Diffuse");
 
 
-        ImNodes::BeginOutputAttribute(baseId + 1);
+        ImNodes::BeginOutputAttribute(s_DiffuseTextureNodeID + 1);
 
-        ImGui::Indent(150);
+        ImGui::Indent(s_TextureNodeIndent);
 
         ImGui::Text("→");
 
@@ -172,19 +181,22 @@ namespace vks_engine
 
         ImNodes::EndNode();
 
-        ImNodes::SetNodeGridSpacePos(baseId, position);
+        ImNodes::SetNodeGridSpacePos(s_DiffuseTextureNodeID, position);
     }
 
-    void MaterialEditorMenu::renderSpecularTextureNode(const ImVec2 &position)
+    void MaterialEditorMenu::renderSpecularTextureNode()
     {
-        constexpr int baseId = static_cast<int>(TextureType::SPECULAR) * 100;
-
         const auto &material = m_Mesh->getMaterial();
 
         const auto &texture = *material.getSpecularTexture().first;
 
-        ImNodes::BeginNode(baseId);
+        auto position = m_NodePositions[s_SpecularTextureNodeID];
 
+        ImNodes::BeginNode(s_SpecularTextureNodeID);
+
+        ImNodes::PushAttributeFlag(ImNodesAttributeFlags_EnableLinkDetachWithDragClick);
+
+        ImGui::PushItemWidth(150.0f);
 
         ImNodes::BeginNodeTitleBar();
 
@@ -195,9 +207,9 @@ namespace vks_engine
         renderTexturePreview(texture, "Specular");
 
 
-        ImNodes::BeginOutputAttribute(baseId + 1);
+        ImNodes::BeginOutputAttribute(s_SpecularTextureNodeID + 1);
 
-        ImGui::Indent(150);
+        ImGui::Indent(s_TextureNodeIndent);
 
         ImGui::Text("→");
 
@@ -205,18 +217,22 @@ namespace vks_engine
 
         ImNodes::EndNode();
 
-        ImNodes::SetNodeGridSpacePos(baseId, position);
+        ImNodes::SetNodeGridSpacePos(s_SpecularTextureNodeID, position);
     }
 
-    void MaterialEditorMenu::renderNormalTextureNode(const ImVec2 &position)
+    void MaterialEditorMenu::renderNormalTextureNode()
     {
-        constexpr int baseId = static_cast<int>(TextureType::NORMALS) * 100;
-
         const auto &material = m_Mesh->getMaterial();
 
         const auto &texture = *material.getNormalTexture().first;
 
-        ImNodes::BeginNode(baseId);
+        auto position = m_NodePositions[s_NormalTextureNodeID];
+
+        ImNodes::BeginNode(s_NormalTextureNodeID);
+
+        ImNodes::PushAttributeFlag(ImNodesAttributeFlags_EnableLinkDetachWithDragClick);
+
+        ImGui::PushItemWidth(150.0f);
 
 
         ImNodes::BeginNodeTitleBar();
@@ -228,9 +244,9 @@ namespace vks_engine
         renderTexturePreview(texture, "Normal");
 
 
-        ImNodes::BeginOutputAttribute(baseId + 1);
+        ImNodes::BeginOutputAttribute(s_NormalTextureNodeID + 1);
 
-        ImGui::Indent(150);
+        ImGui::Indent(s_TextureNodeIndent);
 
         ImGui::Text("→");
 
@@ -238,30 +254,28 @@ namespace vks_engine
 
         ImNodes::EndNode();
 
-        ImNodes::SetNodeGridSpacePos(baseId, position);
+        ImNodes::SetNodeGridSpacePos(s_NormalTextureNodeID, position);
     }
 
     void MaterialEditorMenu::renderLinks()
     {
-        constexpr int materialNodeId = 1000;
-
         auto &material = m_Mesh->getMaterial();
 
         int linkId = 1;
-        int startAttr = static_cast<int>(TextureType::DIFFUSE) * 100 + 1;
-        int endAttr = materialNodeId + 1;
+        int startAttr = s_DiffuseTextureNodeID + 1;
+        int endAttr = s_MaterialNodeID + 1;
         ImNodes::Link(linkId, startAttr, endAttr);
 
 
         linkId = 2;
-        startAttr = static_cast<int>(TextureType::SPECULAR) * 100 + 1;
-        endAttr = materialNodeId + 2;
+        startAttr = s_SpecularTextureNodeID + 1;
+        endAttr = s_MaterialNodeID + 2;
         ImNodes::Link(linkId, startAttr, endAttr);
 
 
         linkId = 3;
-        startAttr = static_cast<int>(TextureType::NORMALS) * 100 + 1;
-        endAttr = materialNodeId + 3;
+        startAttr = s_NormalTextureNodeID + 1;
+        endAttr = s_MaterialNodeID + 3;
         ImNodes::Link(linkId, startAttr, endAttr);
     }
 
@@ -277,11 +291,11 @@ namespace vks_engine
 
         ImVec2 imageSize;
         if (aspectRatio > 1.f)
-            imageSize = ImVec2(m_TexturePreviewSize, m_TexturePreviewSize / aspectRatio);
+            imageSize = ImVec2(s_TexturePreviewSize, s_TexturePreviewSize / aspectRatio);
         else
-            imageSize = ImVec2(m_TexturePreviewSize * aspectRatio, m_TexturePreviewSize);
+            imageSize = ImVec2(s_TexturePreviewSize * aspectRatio, s_TexturePreviewSize);
 
-        float offsetX = (m_TexturePreviewSize - imageSize.x) * 0.5f;
+        float offsetX = (s_TexturePreviewSize - imageSize.x) * 0.5f;
 
         if (offsetX > 0)
             ImGui::SetCursorPosX(ImGui::GetCursorPosX() + offsetX);
@@ -293,6 +307,16 @@ namespace vks_engine
         else
             ImGui::Dummy(imageSize);
 
+
         ImGui::Spacing();
+    }
+
+    void MaterialEditorMenu::saveNodePositions()
+    {
+        for (auto nodeID: s_NodeIDs)
+        {
+            auto position = ImNodes::GetNodeGridSpacePos(nodeID);
+            m_NodePositions[nodeID] = position;
+        }
     }
 }
