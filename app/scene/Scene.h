@@ -56,7 +56,9 @@ namespace vks_engine
 
         Clock m_Clock;
 
-        FileExplorer m_FileExplorer;
+        FileExplorer m_ModelFileExplorer;
+
+        FileExplorer m_TextureFileExplorer;
 
         vk::Format m_ColorAttachmentFormat;
 
@@ -107,11 +109,11 @@ namespace vks_engine
 
         std::deque<MeshComponent> m_LoadedMeshQueue;
 
-        void handleFileSelected(const std::vector<std::string>& paths);
+        void handleModelFileSelected(const std::vector<std::string> &paths);
 
         void handleLoadedModel(MeshComponent &component);
 
-        void procesPendingActions();
+        void processPendingActions();
 
         void processLoadedModels();
 
@@ -131,7 +133,7 @@ namespace vks_engine
 
         //=====================================LIGHTS RELATED=====================================
 
-        constexpr uint32_t getActiveLightsCount() const {return m_ActivePointLights + m_ActiveDirectionalLights;}
+        constexpr uint32_t getActiveLightsCount() const { return m_ActivePointLights + m_ActiveDirectionalLights; }
 
         //======== PointLight UBO ========
 
@@ -221,9 +223,27 @@ namespace vks_engine
 
         void deleteMesh(const Mesh &mesh);
 
-        void deletePointLight(const PointLight& pl);
+        void deletePointLight(const PointLight &pl);
 
-        void deleteDirectionalLight(const DirectionalLight& dl);
+        void deleteDirectionalLight(const DirectionalLight &dl);
+
+        //=====================================TEXTURE LOADING RELATED=====================================
+
+        std::string m_PendingTexturePath;
+
+        std::mutex m_PendingTexturePathsMutex;
+
+        Mesh* p_TextureChangeMesh;
+
+        Texture m_NewMaterialTexture;
+
+        void handleTextureFileSelected(const std::vector<std::string> &paths);
+
+        void processTextureChange();
+
+        void loadNewTexture(Mesh &mesh, std::string_view path);
+
+        void changeTexture(Mesh& mesh);
 
         //======== FUNCTIONS ========
 
@@ -246,6 +266,7 @@ namespace vks_engine
         void updateUBO(uint32_t frame);
 
         //======== Event handlers ========
+
         void setInputHandlers();
 
         void setupKeyHandlers();

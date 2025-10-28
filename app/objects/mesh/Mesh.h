@@ -91,11 +91,9 @@ namespace vks_engine
 
         void setType(MeshType type);
 
-        Texture& getTexture(TextureType type);
-
-        void setMaterial(const Texture& texture, TextureType type, bool isDefault);
-
         constexpr const Material& getMaterial() const{return m_Material;}
+
+        constexpr Material& getMaterial() {return m_Material;}
 
         friend class VulkanHandler;
 

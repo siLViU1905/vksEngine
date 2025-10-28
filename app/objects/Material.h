@@ -10,41 +10,64 @@ namespace vks_engine
     public:
         Material();
 
-        void setDiffuseTexture(const Texture &texture, bool isDefault);
+        void setDiffuseTexture(Texture &texture);
 
-        void setSpecularTexture(const Texture &texture, bool isDefault);
+        void setSpecularTexture(Texture &texture);
 
-        void setNormalTexture(const Texture &texture, bool isDefault);
+        void setNormalTexture(Texture &texture);
 
-        constexpr const std::pair<const Texture *, bool> &getDiffuseTexture() const { return m_DiffuseTexture; }
+        void setTexture(Texture &texture, TextureType type);
 
-        constexpr const std::pair<const Texture *, bool> &getSpecularTexture() const { return m_SpecularTexture; }
+        constexpr Texture &getDiffuseTexture() { return *m_DiffuseTexture; }
 
-        constexpr const std::pair<const Texture *, bool> &getNormalTexture() const { return m_NormalTexture; }
+        constexpr const Texture &getDiffuseTexture() const { return *m_DiffuseTexture; }
 
-        constexpr const std::pair<const Texture *, bool> &getTexture(TextureType type) const
+        constexpr Texture &getSpecularTexture() { return *m_SpecularTexture; }
+
+        constexpr const Texture &getSpecularTexture() const { return *m_SpecularTexture; }
+
+        constexpr Texture &getNormalTexture() { return *m_NormalTexture; }
+
+        constexpr const Texture &getNormalTexture() const { return *m_NormalTexture; }
+
+        constexpr Texture &getTexture(TextureType type)
         {
             switch (type)
             {
                 case TextureType::DIFFUSE:
-                    return m_DiffuseTexture;
+                    return *m_DiffuseTexture;
                 case TextureType::SPECULAR:
-                    return m_SpecularTexture;
+                    return *m_SpecularTexture;
                 case TextureType::NORMALS:
-                    return m_NormalTexture;
+                    return *m_NormalTexture;
                 default:
-                    return m_DiffuseTexture;
+                    return *m_DiffuseTexture;
+            }
+        }
+
+        constexpr const Texture &getTexture(TextureType type) const
+        {
+            switch (type)
+            {
+                case TextureType::DIFFUSE:
+                    return *m_DiffuseTexture;
+                case TextureType::SPECULAR:
+                    return *m_SpecularTexture;
+                case TextureType::NORMALS:
+                    return *m_NormalTexture;
+                default:
+                    return *m_DiffuseTexture;
             }
         }
 
         friend class VulkanHandler;
 
     private:
-        std::pair<const Texture *, bool> m_DiffuseTexture;
+        Texture *m_DiffuseTexture;
 
-        std::pair<const Texture *, bool> m_SpecularTexture;
+        Texture *m_SpecularTexture;
 
-        std::pair<const Texture *, bool> m_NormalTexture;
+        Texture *m_NormalTexture;
     };
 }
 

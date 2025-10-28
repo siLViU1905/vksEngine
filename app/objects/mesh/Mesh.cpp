@@ -197,27 +197,6 @@ namespace vks_engine
         m_Type = type;
     }
 
-    Texture &Mesh::getTexture(TextureType type)
-    {
-        return m_Textures[type];
-    }
-
-    void Mesh::setMaterial(const Texture &texture, TextureType type, bool isDefault)
-    {
-        switch (type)
-        {
-            case TextureType::DIFFUSE:
-                m_Material.setDiffuseTexture(texture, isDefault);
-                break;
-            case TextureType::SPECULAR:
-                m_Material.setSpecularTexture(texture, isDefault);
-                break;
-            case TextureType::NORMALS:
-                m_Material.setNormalTexture(texture, isDefault);
-                break;
-        }
-    }
-
     void Mesh::processNode(aiNode *node, const aiScene *scene)
     {
         for (uint32_t i = 0; i < node->mNumMeshes; ++i)
@@ -401,6 +380,8 @@ namespace vks_engine
                 auto &texture = it->second;
 
                 texture.m_Type = type;
+
+                m_Material.setTexture(texture, type);
 
                 texture.load(path);
             }

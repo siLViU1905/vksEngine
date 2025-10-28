@@ -25,6 +25,27 @@ namespace vks_engine
         m_IsOpened = false;
     }
 
+    void MaterialEditorMenu::setOnTextureChange(std::function<void(Mesh &mesh, TextureType type)> function)
+    {
+        m_OnTextureChange = std::move(function);
+    }
+
+    void MaterialEditorMenu::updateCachedDescriptor(TextureType type)
+    {
+        const auto& material = m_Mesh->getMaterial();
+
+        const auto &texture = material.getTexture(type);
+
+        if (texture.isLoaded())
+        {
+            m_CachedDescriptors[type] = ImGui_ImplVulkan_AddTexture(
+                *texture.m_Sampler,
+                *texture.m_ImageView,
+                VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
+            );
+        }
+    }
+
     bool MaterialEditorMenu::render()
     {
         if (!m_IsOpened)
@@ -73,7 +94,7 @@ namespace vks_engine
         return changed;
     }
 
-    void MaterialEditorMenu::setMesh(const Mesh &mesh)
+    void MaterialEditorMenu::setMesh(Mesh &mesh)
     {
         if (m_Mesh != &mesh)
         {
@@ -88,13 +109,13 @@ namespace vks_engine
 
         for (auto type: {TextureType::DIFFUSE, TextureType::SPECULAR, TextureType::NORMALS})
         {
-            const auto &[texture, isDefault] = material.getTexture(type);
+            const auto &texture = material.getTexture(type);
 
-            if (texture->isLoaded() && m_CachedDescriptors[type] == VK_NULL_HANDLE)
+            if (texture.isLoaded() && m_CachedDescriptors[type] == VK_NULL_HANDLE)
             {
                 m_CachedDescriptors[type] = ImGui_ImplVulkan_AddTexture(
-                    *texture->m_Sampler,
-                    *texture->m_ImageView,
+                    *texture.m_Sampler,
+                    *texture.m_ImageView,
                     VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
                 );
             }
@@ -152,7 +173,7 @@ namespace vks_engine
     {
         const auto &material = m_Mesh->getMaterial();
 
-        const auto &texture = *material.getDiffuseTexture().first;
+        const auto &texture = material.getDiffuseTexture();
 
         auto position = m_NodePositions[s_DiffuseTextureNodeID];
 
@@ -160,7 +181,7 @@ namespace vks_engine
 
         ImNodes::PushAttributeFlag(ImNodesAttributeFlags_EnableLinkDetachWithDragClick);
 
-        ImGui::PushItemWidth(150.0f);
+        ImGui::PushItemWidth(s_NodeWidth);
 
         ImNodes::BeginNodeTitleBar();
 
@@ -188,7 +209,7 @@ namespace vks_engine
     {
         const auto &material = m_Mesh->getMaterial();
 
-        const auto &texture = *material.getSpecularTexture().first;
+        const auto &texture = material.getSpecularTexture();
 
         auto position = m_NodePositions[s_SpecularTextureNodeID];
 
@@ -196,7 +217,7 @@ namespace vks_engine
 
         ImNodes::PushAttributeFlag(ImNodesAttributeFlags_EnableLinkDetachWithDragClick);
 
-        ImGui::PushItemWidth(150.0f);
+        ImGui::PushItemWidth(s_NodeWidth);
 
         ImNodes::BeginNodeTitleBar();
 
@@ -224,7 +245,7 @@ namespace vks_engine
     {
         const auto &material = m_Mesh->getMaterial();
 
-        const auto &texture = *material.getNormalTexture().first;
+        const auto &texture = material.getNormalTexture();
 
         auto position = m_NodePositions[s_NormalTextureNodeID];
 
@@ -232,7 +253,7 @@ namespace vks_engine
 
         ImNodes::PushAttributeFlag(ImNodesAttributeFlags_EnableLinkDetachWithDragClick);
 
-        ImGui::PushItemWidth(150.0f);
+        ImGui::PushItemWidth(s_NodeWidth);
 
 
         ImNodes::BeginNodeTitleBar();
@@ -309,6 +330,13 @@ namespace vks_engine
 
 
         ImGui::Spacing();
+
+
+        if (ImGui::Button("Change"))
+        {
+            removeCachedDescriptor(texture.getType());
+            m_OnTextureChange(*m_Mesh, texture.getType());
+        }
     }
 
     void MaterialEditorMenu::saveNodePositions()
@@ -318,5 +346,12 @@ namespace vks_engine
             auto position = ImNodes::GetNodeGridSpacePos(nodeID);
             m_NodePositions[nodeID] = position;
         }
+    }
+
+    void MaterialEditorMenu::removeCachedDescriptor(TextureType type)
+    {
+        ImGui_ImplVulkan_RemoveTexture(m_CachedDescriptors[type]);
+
+        m_CachedDescriptors[type] = VK_NULL_HANDLE;
     }
 }

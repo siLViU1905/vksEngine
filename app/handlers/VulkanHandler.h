@@ -50,7 +50,7 @@ namespace vks_engine
 
         void CreateTexture(Texture &texture);
 
-        void CreateMaterial(Material& material);
+        void CreateMeshMaterial(Mesh &mesh);
 
         void CreateMeshDescriptorSets(
             Mesh &mesh,
@@ -189,7 +189,22 @@ namespace vks_engine
 
         void createDefaultTextures();
 
-        std::pair<const Texture *, bool> getTextureOrDefault(const Mesh &mesh, TextureType type) const;
+        constexpr Texture& getDefaultTexture(TextureType type)
+        {
+            switch (type)
+            {
+                case TextureType::DIFFUSE:
+                    return m_DefaultDiffuseTexture;
+                case TextureType::SPECULAR:
+                    return m_DefaultSpecularTexture;
+                case TextureType::NORMALS:
+                    return m_DefaultNormalTexture;
+                default:
+                    return m_DefaultDiffuseTexture;
+            }
+        }
+
+        Texture &getTextureOrDefault(Mesh &mesh, TextureType type);
 
         vk::SampleCountFlagBits getMaxUsableSampleCount();
 

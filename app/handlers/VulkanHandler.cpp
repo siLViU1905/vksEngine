@@ -982,28 +982,12 @@ namespace vks_engine
         CreateTexture(m_DefaultNormalTexture);
     }
 
-    std::pair<const Texture *, bool> VulkanHandler::getTextureOrDefault(const Mesh &mesh, TextureType type) const
+    Texture &VulkanHandler::getTextureOrDefault(Mesh &mesh, TextureType type)
     {
-        if (auto it = mesh.m_Textures.find(type); it != mesh.m_Textures.end())
-        {
-            const auto &texture = it->second;
-            if (texture.isLoaded())
-            {
-                return {&texture, false};
-            }
-        }
+        if (!mesh.m_Textures.empty())
+            auto &texture = mesh.getMaterial().getTexture(type);
 
-        switch (type)
-        {
-            case TextureType::DIFFUSE:
-                return {&m_DefaultDiffuseTexture, true};
-            case TextureType::SPECULAR:
-                return {&m_DefaultSpecularTexture, true};
-            case TextureType::NORMALS:
-                return {&m_DefaultNormalTexture, true};
-            default:
-                return {&m_DefaultDiffuseTexture, true};
-        }
+        return getDefaultTexture(type);
     }
 
     vk::SampleCountFlagBits VulkanHandler::getMaxUsableSampleCount()
@@ -1262,9 +1246,20 @@ namespace vks_engine
         createTextureSampler(texture);
     }
 
-    void VulkanHandler::CreateMaterial(Material &material)
+    void VulkanHandler::CreateMeshMaterial(Mesh &mesh)
     {
+        for (uint32_t i = 0; i < SUPPORTED_TEXTURE_TYPES_COUNT; ++i)
+        {
+            TextureType type = Mesh::SUPPORTED_TEXTURE_TYPES[i];
+            auto& meshMat = mesh.getMaterial();
+            auto* meshTex = &meshMat.getTexture(type);
 
+            if (!meshTex)
+            {
+                auto &tex = getDefaultTexture(type);
+                meshMat.setTexture(tex, type);
+            }
+        }
     }
 
     void VulkanHandler::CreateMeshDescriptorSets(Mesh &mesh,
@@ -1318,14 +1313,13 @@ namespace vks_engine
 
             std::array<vk::DescriptorImageInfo, SUPPORTED_TEXTURE_TYPES_COUNT> imageInfos;
 
-            for (uint32_t i = 0; i < SUPPORTED_TEXTURE_TYPES_COUNT; ++i)
+            for (uint32_t j = 0; j < SUPPORTED_TEXTURE_TYPES_COUNT; ++j)
             {
-                TextureType type = Mesh::SUPPORTED_TEXTURE_TYPES[i];
-                auto [tex, isDefault] = getTextureOrDefault(mesh, type);
-                mesh.setMaterial(*tex, type, isDefault);
-                imageInfos[i].sampler = *tex->m_Sampler;
-                imageInfos[i].imageView = *tex->m_ImageView;
-                imageInfos[i].imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
+                TextureType type = Mesh::SUPPORTED_TEXTURE_TYPES[j];
+                auto& tex = mesh.getMaterial().getTexture(type);
+                imageInfos[j].sampler = *tex.m_Sampler;
+                imageInfos[j].imageView = *tex.m_ImageView;
+                imageInfos[j].imageLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
             }
 
             std::array<vk::WriteDescriptorSet, USED_UNIFORM_BUFFERS + 1> descriptorWrites{};

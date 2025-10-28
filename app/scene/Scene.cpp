@@ -17,6 +17,7 @@ namespace vks_engine
                                                                      2.f),
                                                             m_ActiveDirectionalLights(0), m_ActivePointLights(0),
                                                             m_CurrentComplexMeshCount(0), m_CurrentSimpleMeshCount(0),
+                                                            p_TextureChangeMesh(nullptr),
                                                             m_SceneInfoMenu(
                                                                 m_CurrentSimpleMeshCount, m_CurrentComplexMeshCount,
                                                                 m_ActivePointLights, m_ActiveDirectionalLights)
@@ -285,12 +286,12 @@ namespace vks_engine
                 break;
 
             case MeshType::MODEL:
-                m_FileExplorer.open();
+                m_ModelFileExplorer.open();
                 break;
         }
     }
 
-    void Scene::handleFileSelected(const std::vector<std::string> &paths)
+    void Scene::handleModelFileSelected(const std::vector<std::string> &paths)
     {
         std::lock_guard<std::mutex> lock(m_PendingModelsMutex);
 
@@ -315,6 +316,8 @@ namespace vks_engine
         for (auto &texture: mesh.m_Textures | std::views::values)
             m_Vk.CreateTexture(texture);
 
+        m_Vk.CreateMeshMaterial(mesh);
+
         m_Vk.CreateMeshDescriptorSets(mesh,
                                       m_UBOvpBuffer, sizeof(UBOvp),
                                       m_UBOPointLightBuffer,
@@ -325,7 +328,7 @@ namespace vks_engine
         );
     }
 
-    void Scene::procesPendingActions()
+    void Scene::processPendingActions()
     {
         std::lock_guard<std::mutex> lock(m_PendingModelsMutex);
 
@@ -357,7 +360,9 @@ namespace vks_engine
 
     void Scene::initFileExplorer()
     {
-        m_FileExplorer.onFileSelected([this](const auto &path) { this->handleFileSelected(path); });
+        m_ModelFileExplorer.onFileSelected([this](const auto &path) { this->handleModelFileSelected(path); });
+
+        m_TextureFileExplorer.onFileSelected([this](const auto &path) { this->handleTextureFileSelected(path); });
     }
 
     void Scene::addPointLight()
@@ -660,7 +665,7 @@ namespace vks_engine
             this->updateUBOdirectionalLight(dl);
         });
 
-        MeshMenu::setOnEditMaterial([this](const Mesh &mesh)
+        MeshMenu::setOnEditMaterial([this](Mesh &mesh)
         {
             this->m_MaterialEditor.setMesh(mesh);
 
@@ -681,6 +686,15 @@ namespace vks_engine
     void Scene::initMaterialEditorMenu()
     {
         m_MaterialEditor.setTitle("Material editor");
+
+        m_MaterialEditor.setOnTextureChange([this](Mesh &mesh, TextureType type)
+        {
+            m_TextureFileExplorer.open();
+
+            m_NewMaterialTexture.m_Type = type;
+
+            p_TextureChangeMesh = &mesh;
+        });
     }
 
     void Scene::renderMenus()
@@ -769,6 +783,12 @@ namespace vks_engine
     {
         m_Vk.waitIdle();
 
+        if (p_TextureChangeMesh == &mesh)
+        {
+            p_TextureChangeMesh = nullptr;
+            m_PendingTexturePath = "";
+        }
+
         if (mesh.getType() == MeshType::MODEL)
         {
             auto erase_it = m_ComplexMeshComponents.begin() + mesh.getID();
@@ -828,11 +848,61 @@ namespace vks_engine
         m_SceneEventsMenu.log("Directional light successfully deleted\n", ImVec4(1.f, 1.f, 0.f, 1.f));
     }
 
+    void Scene::handleTextureFileSelected(const std::vector<std::string> &paths)
+    {
+        std::lock_guard<std::mutex> lock(m_PendingTexturePathsMutex);
+
+        m_PendingTexturePath = paths.front();
+    }
+
+    void Scene::processTextureChange()
+    {
+        if (!m_PendingTexturePath.empty())
+        {
+            loadNewTexture(*p_TextureChangeMesh, m_PendingTexturePath);
+
+            changeTexture(*p_TextureChangeMesh);
+
+            m_PendingTexturePath = "";
+
+            p_TextureChangeMesh = nullptr;
+        }
+    }
+
+    void Scene::loadNewTexture(Mesh &mesh, std::string_view path)
+    {
+        m_NewMaterialTexture.load(path.data());
+
+        m_Vk.CreateTexture(m_NewMaterialTexture);
+    }
+
+    void Scene::changeTexture(Mesh &mesh)
+    {
+        auto newTexType = m_NewMaterialTexture.m_Type;
+
+        auto &oldTexture = mesh.getMaterial().getTexture(newTexType);
+
+        oldTexture = std::move(m_NewMaterialTexture);
+
+        mesh.getMaterial().setTexture(oldTexture, newTexType);
+
+        m_Vk.CreateMeshDescriptorSets(mesh,
+                                     m_UBOvpBuffer, sizeof(UBOvp),
+                                     m_UBOPointLightBuffer,
+                                     sizeof(PointLight::Aligned) * SCENE_MAX_ALLOWED_POINT_LIGHT_COUNT,
+                                     m_UBODirectionalLightBuffer,
+                                     sizeof(DirectionalLight::Aligned) * SCENE_MAX_ALLOWED_DIRECTIONAL_LIGHT_COUNT,
+                                     m_UBOCountersBuffer, sizeof(UBOcounters)
+       );
+    }
+
     void Scene::updateScene()
     {
-        procesPendingActions();
+        processPendingActions();
 
         processLoadedModels();
+
+        processTextureChange();
 
         const auto &currentFrame = m_Vk.m_CurrentFrame;
 
@@ -918,13 +988,13 @@ namespace vks_engine
         if (m_Window.wasResized())
         {
             int w, h;
-            m_Window.getFramebufferSize(w,h);
+            m_Window.getFramebufferSize(w, h);
 
             while (w == 0 || h == 0)
             {
                 m_Window.waitForEvents();
 
-                m_Window.getFramebufferSize(w,h);
+                m_Window.getFramebufferSize(w, h);
             }
 
             handleSwapChainRecreation(w, h);

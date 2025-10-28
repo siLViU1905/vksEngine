@@ -4,7 +4,7 @@
 
 namespace vks_engine
 {
-    std::function<void(const Mesh &mesh)> MeshMenu::m_OnEditMaterialPress;
+    std::function<void(Mesh &mesh)> MeshMenu::m_OnEditMaterialPress;
 
     MeshMenu::MeshMenu()
     {
@@ -59,7 +59,7 @@ namespace vks_engine
         return modified;
     }
 
-    void MeshMenu::setOnEditMaterial(std::function<void(const Mesh &mesh)> function)
+    void MeshMenu::setOnEditMaterial(std::function<void(Mesh &mesh)> function)
     {
         m_OnEditMaterialPress = std::move(function);
     }

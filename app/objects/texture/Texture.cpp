@@ -33,6 +33,13 @@ namespace vks_engine
                                                 m_Path(std::move(other.m_Path)),
                                                 m_Type(other.m_Type)
     {
+        other.m_Type = TextureType::NONE;
+
+        other.m_Image = nullptr;
+        other.m_ImageView = nullptr;
+        other.m_Memory = nullptr;
+        other.m_Sampler = nullptr;
+        other.m_Pixels = nullptr;
     }
 
     Texture &Texture::operator=(Texture &&other) noexcept
@@ -49,6 +56,14 @@ namespace vks_engine
             m_MipLevels = other.m_MipLevels;
             m_Path = std::move(other.m_Path);
             m_Type = other.m_Type;
+
+            other.m_Type = TextureType::NONE;
+
+            other.m_Image = nullptr;
+            other.m_ImageView = nullptr;
+            other.m_Memory = nullptr;
+            other.m_Sampler = nullptr;
+            other.m_Pixels = nullptr;
         }
 
         return *this;

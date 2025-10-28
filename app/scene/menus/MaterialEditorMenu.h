@@ -31,12 +31,14 @@ namespace vks_engine
 
         static constexpr int s_TextureNodeIndent = 70;
 
+        static constexpr float s_NodeWidth = 150.f;
+
     public:
         MaterialEditorMenu();
 
         bool render() override;
 
-        void setMesh(const Mesh &mesh);
+        void setMesh(Mesh &mesh);
 
         void open();
 
@@ -44,8 +46,12 @@ namespace vks_engine
 
         constexpr bool isOpened() const { return m_IsOpened; }
 
+        void setOnTextureChange(std::function<void(Mesh& mesh, TextureType type)> function);
+
+        void updateCachedDescriptor(TextureType type);
+
     private:
-        const Mesh *m_Mesh;
+        Mesh *m_Mesh;
 
         bool m_IsOpened;
 
@@ -70,6 +76,10 @@ namespace vks_engine
         void renderTexturePreview(const Texture &texture, std::string_view label);
 
         void saveNodePositions();
+
+        void removeCachedDescriptor(TextureType type);
+
+        std::function<void(Mesh& mesh, TextureType type)> m_OnTextureChange;
     };
 }
 
