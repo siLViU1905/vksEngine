@@ -10,7 +10,7 @@ namespace vks_engine
           m_Width(0), m_Height(0),
           m_ImageView(nullptr), m_Sampler(nullptr),
           m_Memory(nullptr), m_MipLevels(1),
-          m_Type(TextureType::NONE)
+          m_Type(TextureType::NONE), m_Origin(TextureOrigin::INTERNAL)
     {
     }
 
@@ -19,7 +19,8 @@ namespace vks_engine
           m_Width(0), m_Height(0),
           m_ImageView(nullptr), m_Sampler(nullptr),
           m_Memory(nullptr), m_Path(path),
-          m_MipLevels(1), m_Type(TextureType::NONE)
+          m_MipLevels(1), m_Type(TextureType::NONE),
+          m_Origin(TextureOrigin::INTERNAL)
     {
     }
 
@@ -31,9 +32,10 @@ namespace vks_engine
                                                 m_Width(other.m_Width), m_Height(other.m_Height),
                                                 m_MipLevels(other.m_MipLevels),
                                                 m_Path(std::move(other.m_Path)),
-                                                m_Type(other.m_Type)
+                                                m_Type(other.m_Type), m_Origin(other.m_Origin)
     {
         other.m_Type = TextureType::NONE;
+        other.m_Origin = TextureOrigin::INTERNAL;
 
         other.m_Image = nullptr;
         other.m_ImageView = nullptr;
@@ -56,8 +58,10 @@ namespace vks_engine
             m_MipLevels = other.m_MipLevels;
             m_Path = std::move(other.m_Path);
             m_Type = other.m_Type;
+            m_Origin = other.m_Origin;
 
             other.m_Type = TextureType::NONE;
+            other.m_Origin = TextureOrigin::INTERNAL;
 
             other.m_Image = nullptr;
             other.m_ImageView = nullptr;
@@ -86,6 +90,9 @@ namespace vks_engine
 
     void Texture::clear()
     {
+        if (m_Origin != TextureOrigin::EXTERNAL)
+            return;
+
         if (*m_Image)
             m_Image.clear();
 
@@ -112,6 +119,9 @@ namespace vks_engine
 
         m_Pixels = stbi_load(path.c_str(), &m_Width, &m_Height, &channels, STBI_rgb_alpha);
 
+        if (m_Pixels)
+            m_Origin = TextureOrigin::EXTERNAL;
+
         m_ImageSize = m_Width * m_Height * 4;
 
         m_MipLevels = static_cast<uint32_t>(std::floor(std::log2(std::max(m_Width, m_Height)))) + 1;
@@ -124,6 +134,9 @@ namespace vks_engine
         int channels;
 
         m_Pixels = stbi_load(m_Path.c_str(), &m_Width, &m_Height, &channels, STBI_rgb_alpha);
+
+        if (m_Pixels)
+            m_Origin = TextureOrigin::EXTERNAL;
 
         m_ImageSize = m_Width * m_Height * 4;
 

@@ -182,7 +182,7 @@ namespace vks_engine
 
         uint32_t newID;
         uint32_t titleID; {
-            std::lock_guard<std::mutex> lock(m_ComplexMeshCountMutex);
+            std::lock_guard lock(m_ComplexMeshCountMutex);
             if (getTotalMeshCount() == SCENE_MAX_ALLOWED_MESH_COUNT)
                 return;
 
@@ -212,7 +212,7 @@ namespace vks_engine
         component.bind();
 
         component.m_Menu.setTitle("Mesh" + std::to_string(titleID)); {
-            std::lock_guard<std::mutex> lock(m_LoadedMeshMutex);
+            std::lock_guard lock(m_LoadedMeshMutex);
             m_LoadedMeshQueue.push_back(std::move(component));
         }
     }
@@ -293,7 +293,7 @@ namespace vks_engine
 
     void Scene::handleModelFileSelected(const std::vector<std::string> &paths)
     {
-        std::lock_guard<std::mutex> lock(m_PendingModelsMutex);
+        std::lock_guard lock(m_PendingModelsMutex);
 
         for (const auto &path: paths)
             m_PendingModelPaths.push_back(path);
@@ -330,7 +330,7 @@ namespace vks_engine
 
     void Scene::processPendingActions()
     {
-        std::lock_guard<std::mutex> lock(m_PendingModelsMutex);
+        std::lock_guard lock(m_PendingModelsMutex);
 
         while (!m_PendingModelPaths.empty())
         {
@@ -344,7 +344,7 @@ namespace vks_engine
 
     void Scene::processLoadedModels()
     {
-        std::lock_guard<std::mutex> lock(m_LoadedMeshMutex);
+        std::lock_guard lock(m_LoadedMeshMutex);
 
         while (!m_LoadedMeshQueue.empty())
         {
@@ -852,7 +852,7 @@ namespace vks_engine
 
     void Scene::handleTextureFileSelected(const std::vector<std::string> &paths)
     {
-        std::lock_guard<std::mutex> lock(m_PendingTexturePathsMutex);
+        std::lock_guard lock(m_PendingTexturePathsMutex);
 
         m_PendingTexturePath = paths.front();
     }

@@ -958,6 +958,7 @@ namespace vks_engine
         m_DefaultDiffuseTexture.m_MipLevels = 1;
         m_DefaultDiffuseTexture.m_ImageSize = 4;
         m_DefaultDiffuseTexture.m_Type = TextureType::DIFFUSE;
+        m_DefaultDiffuseTexture.m_Origin = TextureOrigin::INTERNAL;
 
         CreateTexture(m_DefaultDiffuseTexture);
 
@@ -968,6 +969,7 @@ namespace vks_engine
         m_DefaultSpecularTexture.m_MipLevels = 1;
         m_DefaultSpecularTexture.m_ImageSize = 4;
         m_DefaultSpecularTexture.m_Type = TextureType::SPECULAR;
+        m_DefaultSpecularTexture.m_Origin = TextureOrigin::INTERNAL;
 
         CreateTexture(m_DefaultSpecularTexture);
 
@@ -978,6 +980,7 @@ namespace vks_engine
         m_DefaultNormalTexture.m_MipLevels = 1;
         m_DefaultNormalTexture.m_ImageSize = 4;
         m_DefaultNormalTexture.m_Type = TextureType::NORMALS;
+        m_DefaultNormalTexture.m_Origin = TextureOrigin::INTERNAL;
 
         CreateTexture(m_DefaultNormalTexture);
     }

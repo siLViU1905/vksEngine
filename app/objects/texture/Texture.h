@@ -2,6 +2,7 @@
 #define VKSENGINETEXTURE_H
 #include <vulkan/vulkan_raii.hpp>
 #include "TextureType.h"
+#include "TextureOrigin.h"
 
 namespace vks_engine
 {
@@ -40,6 +41,8 @@ namespace vks_engine
         TextureType m_Type;
 
         uint8_t* m_Pixels;
+
+        TextureOrigin m_Origin;
 
         uint8_t *load(const std::string &path);
 
