@@ -859,21 +859,37 @@ namespace vks_engine
     {
         if (!m_PendingTexturePath.empty())
         {
-            loadNewTexture(*p_TextureChangeMesh, m_PendingTexturePath);
+            if (loadNewTexture(*p_TextureChangeMesh, m_PendingTexturePath))
+            {
+                changeTexture(*p_TextureChangeMesh);
 
-            changeTexture(*p_TextureChangeMesh);
+                p_TextureChangeMesh = nullptr;
+            }
 
             m_PendingTexturePath = "";
-
-            p_TextureChangeMesh = nullptr;
         }
     }
 
-    void Scene::loadNewTexture(Mesh &mesh, std::string_view path)
+    bool Scene::loadNewTexture(Mesh &mesh, std::string_view path)
     {
-        m_NewMaterialTexture.load(path.data());
+        if (!m_NewMaterialTexture.load(path.data()))
+        {
+            m_SceneEventsMenu.log(std::format("Texture with path: {} failed to load. Incorrect format\n", path),
+                                  ImVec4(1.f, 0.f, 0.f, 1.f));
+
+            return false;
+        }
+
+        Clock clock;
 
         m_Vk.CreateTexture(m_NewMaterialTexture);
+
+        auto timeStamp = clock.getElapsedTime<float, TimeType::Seconds>();
+
+        m_SceneEventsMenu.log(std::format("Texture with path: {} loaded in {}s\n", path, timeStamp),
+                              ImVec4(0.f, 1.f, 0.f, 1.f));
+
+        return true;
     }
 
     void Scene::changeTexture(Mesh &mesh)
@@ -887,13 +903,13 @@ namespace vks_engine
         mesh.getMaterial().setTexture(oldTexture, newTexType);
 
         m_Vk.CreateMeshDescriptorSets(mesh,
-                                     m_UBOvpBuffer, sizeof(UBOvp),
-                                     m_UBOPointLightBuffer,
-                                     sizeof(PointLight::Aligned) * SCENE_MAX_ALLOWED_POINT_LIGHT_COUNT,
-                                     m_UBODirectionalLightBuffer,
-                                     sizeof(DirectionalLight::Aligned) * SCENE_MAX_ALLOWED_DIRECTIONAL_LIGHT_COUNT,
-                                     m_UBOCountersBuffer, sizeof(UBOcounters)
-       );
+                                      m_UBOvpBuffer, sizeof(UBOvp),
+                                      m_UBOPointLightBuffer,
+                                      sizeof(PointLight::Aligned) * SCENE_MAX_ALLOWED_POINT_LIGHT_COUNT,
+                                      m_UBODirectionalLightBuffer,
+                                      sizeof(DirectionalLight::Aligned) * SCENE_MAX_ALLOWED_DIRECTIONAL_LIGHT_COUNT,
+                                      m_UBOCountersBuffer, sizeof(UBOcounters)
+        );
 
         m_MaterialEditor.updateCachedDescriptor(newTexType);
     }

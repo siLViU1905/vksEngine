@@ -241,7 +241,7 @@ namespace vks_engine
 
         void processTextureChange();
 
-        void loadNewTexture(Mesh &mesh, std::string_view path);
+        bool loadNewTexture(Mesh &mesh, std::string_view path);
 
         void changeTexture(Mesh& mesh);
 

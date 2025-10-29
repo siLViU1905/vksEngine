@@ -92,9 +92,6 @@ namespace vks_engine
 
         m_Pixels = stbi_load(path.c_str(), &m_Width, &m_Height, &channels, STBI_rgb_alpha);
 
-        if (!m_Pixels)
-            throw std::runtime_error("File not found");
-
         m_ImageSize = m_Width * m_Height * 4;
 
         m_MipLevels = static_cast<uint32_t>(std::floor(std::log2(std::max(m_Width, m_Height)))) + 1;
@@ -107,9 +104,6 @@ namespace vks_engine
         int channels;
 
         m_Pixels = stbi_load(m_Path.c_str(), &m_Width, &m_Height, &channels, STBI_rgb_alpha);
-
-        if (!m_Pixels)
-            throw std::runtime_error("File not found");
 
         m_ImageSize = m_Width * m_Height * 4;
 
