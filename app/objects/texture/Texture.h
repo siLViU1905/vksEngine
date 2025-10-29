@@ -57,6 +57,9 @@ namespace vks_engine
 
         constexpr const uint8_t* getPixels() const {return m_Pixels;}
 
+        void clear();
+
+        ~Texture();
     private:
         std::string m_Path;
     };

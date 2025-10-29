@@ -221,7 +221,7 @@ namespace vks_engine
 
         void handleComponentDelete(ComponentEntry &entry);
 
-        void deleteMesh(const Mesh &mesh);
+        void deleteMesh(Mesh &mesh);
 
         void deletePointLight(const PointLight &pl);
 

@@ -60,6 +60,8 @@ namespace vks_engine
             }
         }
 
+        void clear();
+
         friend class VulkanHandler;
 
     private:

@@ -779,7 +779,7 @@ namespace vks_engine
         }
     }
 
-    void Scene::deleteMesh(const Mesh &mesh)
+    void Scene::deleteMesh(Mesh &mesh)
     {
         m_Vk.waitIdle();
 
@@ -791,6 +791,8 @@ namespace vks_engine
 
         if (mesh.getType() == MeshType::MODEL)
         {
+            mesh.getMaterial().clear();
+
             auto erase_it = m_ComplexMeshComponents.begin() + mesh.getID();
 
             for (auto it = erase_it + 1; it != m_ComplexMeshComponents.end(); ++it)

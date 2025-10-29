@@ -84,6 +84,26 @@ namespace vks_engine
         return m_ImageView != nullptr && m_Sampler != nullptr;
     }
 
+    void Texture::clear()
+    {
+        if (*m_Image)
+            m_Image.clear();
+
+        if (*m_ImageView)
+            m_ImageView.clear();
+
+        if (*m_Sampler)
+            m_Sampler.clear();
+
+        if (*m_Memory)
+            m_Memory.clear();
+    }
+
+    Texture::~Texture()
+    {
+        clear();
+    }
+
     uint8_t *Texture::load(const std::string &path)
     {
         m_Path = path;

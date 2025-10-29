@@ -40,4 +40,13 @@ namespace vks_engine
             default: ;
         }
     }
+
+    void Material::clear()
+    {
+        m_DiffuseTexture->clear();
+
+        m_SpecularTexture->clear();
+
+        m_NormalTexture->clear();
+    }
 }
