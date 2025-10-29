@@ -14,15 +14,34 @@ namespace vks_engine
         Ty getElapsedTime() const
         {
             auto now = std::chrono::steady_clock::now();
+            auto elapsed = now - m_TimePoint;
 
-            if constexpr (timeType == TimeType::Microseconds)
-                return std::chrono::duration<Ty, std::micro>(now - m_TimePoint).count();
-            else if constexpr (timeType == TimeType::Milliseconds)
-                return std::chrono::duration<Ty, std::milli>(now - m_TimePoint).count();
-            else if constexpr (timeType == TimeType::Seconds)
-                return std::chrono::duration<Ty, std::milli>(now - m_TimePoint).count() / static_cast<Ty>(1000);
+
+            if constexpr (std::is_floating_point_v<Ty>)
+            {
+                if constexpr (timeType == TimeType::Microseconds)
+                    return std::chrono::duration<Ty, std::micro>(elapsed).count();
+                else if constexpr (timeType == TimeType::Milliseconds)
+                    return std::chrono::duration<Ty, std::milli>(elapsed).count();
+                else if constexpr (timeType == TimeType::Seconds)
+                    return std::chrono::duration<Ty, std::ratio<1, 1>>(elapsed).count();
+                else
+                    return Ty{};
+            }
+            else if constexpr (std::is_integral_v<Ty>)
+            {
+                if constexpr (timeType == TimeType::Microseconds)
+                    return std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
+                else if constexpr (timeType == TimeType::Milliseconds)
+                    return std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count();
+                else if constexpr (timeType == TimeType::Seconds)
+                    return std::chrono::duration_cast<std::chrono::seconds>(elapsed).count();
+                else
+                    return Ty{};
+            }
             else
                 return Ty{};
+
         }
 
         template<typename Ty, TimeType timeType>
