@@ -894,6 +894,8 @@ namespace vks_engine
                                      sizeof(DirectionalLight::Aligned) * SCENE_MAX_ALLOWED_DIRECTIONAL_LIGHT_COUNT,
                                      m_UBOCountersBuffer, sizeof(UBOcounters)
        );
+
+        m_MaterialEditor.updateCachedDescriptor(newTexType);
     }
 
     void Scene::updateScene()

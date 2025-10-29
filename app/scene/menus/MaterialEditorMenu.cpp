@@ -32,6 +32,8 @@ namespace vks_engine
 
     void MaterialEditorMenu::updateCachedDescriptor(TextureType type)
     {
+        removeCachedDescriptor(type);
+
         const auto& material = m_Mesh->getMaterial();
 
         const auto &texture = material.getTexture(type);
