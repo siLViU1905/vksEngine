@@ -764,7 +764,6 @@ namespace vks_engine
 
         auto &dlComponent = *static_cast<DirectionalLightComponent *>(entry.p_Component);
 
-
         switch (entry.m_Type)
         {
             case ComponentType::MESH:
@@ -777,6 +776,8 @@ namespace vks_engine
                 deleteDirectionalLight(dlComponent.m_Light);
                 break;
         }
+
+        m_SceneComponentsMenu.deleteComponentEntry(entry);
     }
 
     void Scene::deleteMesh(Mesh &mesh)
@@ -822,11 +823,16 @@ namespace vks_engine
 
     void Scene::deletePointLight(const PointLight &pl)
     {
-        std::move(m_UBOpointLight.begin() + pl.getID() + 1, m_UBOpointLight.end(),
-                  m_UBOpointLight.begin() + pl.getID());
+        uint32_t deletedID = pl.getID();
 
-        std::move(m_PointLightComponents.begin() + pl.getID() + 1, m_PointLightComponents.end(),
-                  m_PointLightComponents.begin() + pl.getID());
+        std::move(m_UBOpointLight.begin() + deletedID + 1, m_UBOpointLight.end(),
+                  m_UBOpointLight.begin() + deletedID);
+
+        std::move(m_PointLightComponents.begin() + deletedID + 1, m_PointLightComponents.end(),
+                  m_PointLightComponents.begin() + deletedID);
+
+        for (uint32_t i = deletedID + 1; i < m_ActivePointLights; ++i)
+            m_PointLightComponents[i].m_Light.setID(i);
 
         --m_ActivePointLights;
 

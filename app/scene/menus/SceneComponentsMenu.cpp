@@ -8,18 +8,7 @@ namespace vks_engine
         ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x - 300, 0), ImGuiCond_Always);
         ImGui::SetNextWindowSize(ImVec2(300, displayHeight * 0.4f), ImGuiCond_Always);
 
-        static std::pair<bool, std::vector<ComponentEntry>::iterator> deleteComponentNextFrame = {};
-
         bool changed = false;
-
-        if (deleteComponentNextFrame.first)
-        {
-            changed = true;
-            deleteComponentNextFrame.first = false;
-            auto it = deleteComponentNextFrame.second;
-            m_OnComponentDelete(*it);
-            m_Components.erase(it);
-        }
 
         if (ImGui::Begin(m_Title.c_str(), nullptr,
                          ImGuiWindowFlags_NoResize |
@@ -105,8 +94,7 @@ namespace vks_engine
                         if (ImGui::MenuItem("Delete"))
                         {
                             changed = true;
-                            deleteComponentNextFrame.first = true;
-                            deleteComponentNextFrame.second = it;
+                            m_OnComponentDelete(entry);
                             ImGui::CloseCurrentPopup();
                         }
                         ImGui::PopStyleColor();
@@ -138,5 +126,16 @@ namespace vks_engine
     void SceneComponentsMenu::setOnComponentDelete(std::function<void(ComponentEntry &)> function)
     {
         m_OnComponentDelete = std::move(function);
+    }
+
+    void SceneComponentsMenu::deleteComponentEntry(const ComponentEntry &component)
+    {
+        auto it = std::find_if(m_Components.begin(), m_Components.end(), [component](const auto &comp)
+        {
+            return comp.p_Component == component.p_Component;
+        });
+
+        if (it != m_Components.end())
+            m_Components.erase(it);
     }
 }

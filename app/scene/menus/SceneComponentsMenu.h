@@ -1,5 +1,6 @@
 #ifndef VKSENGINESCENECOMPONENTSMENU_H
 #define VKSENGINESCENECOMPONENTSMENU_H
+#include <algorithm>
 #include <functional>
 #include <vector>
 
@@ -32,6 +33,8 @@ namespace vks_engine
 
         void setOnComponentDelete(std::function<void(ComponentEntry&)> function);
 
+        void deleteComponentEntry(const ComponentEntry& component);
+
     private:
         std::vector<ComponentEntry> m_Components;
 
@@ -40,8 +43,6 @@ namespace vks_engine
         std::function<void(ComponentEntry&, std::string_view)> m_OnComponentRename;
 
         std::function<void(ComponentEntry&)> m_OnComponentDelete;
-
-        void deleteComponentEntry();
     };
 }
 
