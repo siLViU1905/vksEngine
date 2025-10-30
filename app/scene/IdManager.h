@@ -10,17 +10,21 @@ namespace vks_engine
     class IDManager
     {
     public:
-        IDManager(uint32_t freeIds);
+        IDManager(uint32_t freeIDs);
 
         std::optional<uint32_t> getAvailableID();
 
         void returnID(uint32_t id);
 
         bool hasFreeIDs() const;
+
+        uint32_t getUsedIDs();
     private:
         std::deque<uint32_t> m_FreeIDs;
 
-        mutable std::mutex m_FreeIdsMutex;
+        mutable std::mutex m_FreeIDsMutex;
+
+        uint32_t m_InitFreeIDs;
     };
 }
 
