@@ -1,5 +1,5 @@
-#ifndef VKSENGINEPOINTLIGHTCOMPONENT_H
-#define VKSENGINEPOINTLIGHTCOMPONENT_H
+#ifndef VKSENGINE_POINTLIGHTCOMPONENT_H
+#define VKSENGINE_POINTLIGHTCOMPONENT_H
 #include "ComponentType.h"
 #include "../../objects/lights/PointLight.h"
 #include "../../objects/menus/PointLightMenu.h"
@@ -19,4 +19,4 @@ namespace vks_engine
 }
 
 
-#endif //VKSENGINEPOINTLIGHTCOMPONENT_H
+#endif //VKSENGINE_POINTLIGHTCOMPONENT_H

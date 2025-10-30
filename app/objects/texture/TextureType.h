@@ -1,5 +1,5 @@
-#ifndef VKSENGINETEXTURETYPE_H
-#define VKSENGINETEXTURETYPE_H
+#ifndef VKSENGINE_TEXTURETYPE_H
+#define VKSENGINE_TEXTURETYPE_H
 #include "assimp/material.h"
 #include <unordered_map>
 
@@ -25,4 +25,4 @@ struct std::hash<vks_engine::TextureType>
     }
 };
 
-#endif //VKSENGINETEXTURETYPE_H
+#endif //VKSENGINE_TEXTURETYPE_H

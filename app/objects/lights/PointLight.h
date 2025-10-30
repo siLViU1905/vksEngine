@@ -1,5 +1,5 @@
-#ifndef VKSENGINEPOINTLIGHT_H
-#define VKSENGINEPOINTLIGHT_H
+#ifndef VKSENGINE_POINTLIGHT_H
+#define VKSENGINE_POINTLIGHT_H
 #include "Light.h"
 
 namespace vks_engine
@@ -70,4 +70,4 @@ namespace vks_engine
 }
 
 
-#endif //VKSENGINEPOINTLIGHT_H
+#endif //VKSENGINE_POINTLIGHT_H

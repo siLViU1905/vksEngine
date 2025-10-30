@@ -1,5 +1,5 @@
-#ifndef VKSENGINEMESHMENU_H
-#define VKSENGINEMESHMENU_H
+#ifndef VKSENGINE_MESHMENU_H
+#define VKSENGINE_MESHMENU_H
 #include "ComponentMenu.h"
 #include "../mesh/Mesh.h"
 
@@ -26,4 +26,4 @@ namespace vks_engine
 }
 
 
-#endif //VKSENGINEMESHMENU_H
+#endif //VKSENGINE_MESHMENU_H

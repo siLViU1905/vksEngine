@@ -1,5 +1,5 @@
-#ifndef VKSENGINESCENEINFOMENU_H
-#define VKSENGINESCENEINFOMENU_H
+#ifndef VKSENGINE_SCENEINFOMENU_H
+#define VKSENGINE_SCENEINFOMENU_H
 #include "../../objects/menus/Menu.h"
 #include <cstdint>
 
@@ -27,4 +27,4 @@ namespace vks_engine
     };
 }
 
-#endif //VKSENGINESCENEINFOMENU_H
+#endif //VKSENGINE_SCENEINFOMENU_H

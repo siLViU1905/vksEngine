@@ -1,5 +1,5 @@
-#ifndef VKSENGINEMESHCOMPONENT_H
-#define VKSENGINEMESHCOMPONENT_H
+#ifndef VKSENGINE_MESHCOMPONENT_H
+#define VKSENGINE_MESHCOMPONENT_H
 #include "ComponentType.h"
 #include "../../objects/mesh/Mesh.h"
 #include "../../objects/menus/MeshMenu.h"
@@ -18,4 +18,4 @@ namespace vks_engine
     };
 }
 
-#endif //VKSENGINEMESHCOMPONENT_H
+#endif //VKSENGINE_MESHCOMPONENT_H

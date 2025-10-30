@@ -1,5 +1,5 @@
-#ifndef VKSENGINEDIRECTIONALLIGHTCOMPONENT_H
-#define VKSENGINEDIRECTIONALLIGHTCOMPONENT_H
+#ifndef VKSENGINE_DIRECTIONALLIGHTCOMPONENT_H
+#define VKSENGINE_DIRECTIONALLIGHTCOMPONENT_H
 #include "ComponentType.h"
 #include "../../objects/lights/DirectionalLight.h"
 #include "../../objects/menus/DirectionalLightMenu.h"
@@ -18,4 +18,4 @@ namespace vks_engine
     };
 }
 
-#endif //VKSENGINEDIRECTIONALLIGHTCOMPONENT_H
+#endif //VKSENGINE_DIRECTIONALLIGHTCOMPONENT_H

@@ -1,5 +1,5 @@
-#ifndef VKSENGINESCENEEVENTSMENU_H
-#define VKSENGINESCENEEVENTSMENU_H
+#ifndef VKSENGINE_SCENEEVENTSMENU_H
+#define VKSENGINE_SCENEEVENTSMENU_H
 #include <mutex>
 #include <vector>
 
@@ -22,4 +22,4 @@ namespace vks_engine
     };
 }
 
-#endif //VKSENGINESCENEEVENTSMENU_H
+#endif //VKSENGINE_SCENEEVENTSMENU_H

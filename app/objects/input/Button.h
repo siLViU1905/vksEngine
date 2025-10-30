@@ -1,5 +1,5 @@
-#ifndef VKSENGINEBUTTON_H
-#define VKSENGINEBUTTON_H
+#ifndef VKSENGINE_BUTTON_H
+#define VKSENGINE_BUTTON_H
 #include <unordered_map>
 
 #include <GLFW/glfw3.h>
@@ -61,4 +61,4 @@ namespace std
     };
 }
 
-#endif //VKSENGINEBUTTON_H
+#endif //VKSENGINE_BUTTON_H

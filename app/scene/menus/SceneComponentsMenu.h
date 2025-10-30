@@ -1,5 +1,5 @@
-#ifndef VKSENGINESCENECOMPONENTSMENU_H
-#define VKSENGINESCENECOMPONENTSMENU_H
+#ifndef VKSENGINE_SCENECOMPONENTSMENU_H
+#define VKSENGINE_SCENECOMPONENTSMENU_H
 #include <algorithm>
 #include <functional>
 #include <vector>
@@ -46,4 +46,4 @@ namespace vks_engine
     };
 }
 
-#endif //VKSENGINESCENECOMPONENTSMENU_H
+#endif //VKSENGINE_SCENECOMPONENTSMENU_H

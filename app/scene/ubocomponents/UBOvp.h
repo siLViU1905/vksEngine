@@ -1,5 +1,5 @@
-#ifndef VKSENGINEUBOMVP_H
-#define VKSENGINEUBOMVP_H
+#ifndef VKSENGINE_UBOMVP_H
+#define VKSENGINE_UBOMVP_H
 #include <glm/glm.hpp>
 
 namespace vks_engine
@@ -12,4 +12,4 @@ namespace vks_engine
         float padding;
     };
 }
-#endif //VKSENGINEUBOMVP_H
+#endif //VKSENGINE_UBOMVP_H

@@ -1,5 +1,5 @@
-#ifndef VKSENGINECAMERA_H
-#define VKSENGINECAMERA_H
+#ifndef VKSENGINE_CAMERA_H
+#define VKSENGINE_CAMERA_H
 #include <chrono>
 
 #include <GLFW/glfw3.h>
@@ -73,4 +73,4 @@ namespace vks_engine
 }
 
 
-#endif //VKSENGINECAMERA_H
+#endif //VKSENGINE_CAMERA_H

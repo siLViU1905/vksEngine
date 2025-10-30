@@ -1,5 +1,5 @@
-#ifndef VKSENGINETEXTURE_H
-#define VKSENGINETEXTURE_H
+#ifndef VKSENGINE_TEXTURE_H
+#define VKSENGINE_TEXTURE_H
 #include <vulkan/vulkan_raii.hpp>
 #include "TextureType.h"
 #include "TextureOrigin.h"
@@ -68,4 +68,4 @@ namespace vks_engine
     };
 }
 
-#endif //VKSENGINETEXTURE_H
+#endif //VKSENGINE_TEXTURE_H

@@ -1,5 +1,5 @@
-#ifndef VKSENGINEMENU_H
-#define VKSENGINEMENU_H
+#ifndef VKSENGINE_MENU_H
+#define VKSENGINE_MENU_H
 #include <string>
 #include <imgui.h>
 
@@ -41,4 +41,4 @@ namespace vks_engine
     };
 }
 
-#endif //VKSENGINEMENU_H
+#endif //VKSENGINE_MENU_H

@@ -1,5 +1,5 @@
-#ifndef VKSENGINEAPPLICATION_H
-#define VKSENGINEAPPLICATION_H
+#ifndef VKSENGINE_APPLICATION_H
+#define VKSENGINE_APPLICATION_H
 #include "handlers/VulkanHandler.h"
 #include "Window.h"
 #include "scene/Scene.h"
@@ -23,4 +23,4 @@ namespace vks_engine
 }
 
 
-#endif //VKSENGINEAPPLICATION_H
+#endif //VKSENGINE_APPLICATION_H

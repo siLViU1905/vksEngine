@@ -1,5 +1,5 @@
-#ifndef VKSENGINEIMGUIHANDER_H
-#define VKSENGINEIMGUIHANDER_H
+#ifndef VKSENGINE_IMGUIHANDER_H
+#define VKSENGINE_IMGUIHANDER_H
 
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
@@ -56,4 +56,4 @@ namespace vks_engine
     };
 }
 
-#endif //VKSENGINEIMGUIHANDER_H
+#endif //VKSENGINE_IMGUIHANDER_H

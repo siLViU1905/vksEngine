@@ -1,5 +1,5 @@
-#ifndef VKSENGINELIGHT_H
-#define VKSENGINELIGHT_H
+#ifndef VKSENGINE_LIGHT_H
+#define VKSENGINE_LIGHT_H
 #include <glm/glm.hpp>
 
 namespace vks_engine
@@ -61,4 +61,4 @@ namespace vks_engine
     };
 }
 
-#endif //VKSENGINELIGHT_H
+#endif //VKSENGINE_LIGHT_H

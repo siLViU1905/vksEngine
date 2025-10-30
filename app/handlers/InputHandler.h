@@ -1,5 +1,5 @@
-#ifndef VKSENGINEINPUTHANDLER_H
-#define VKSENGINEINPUTHANDLER_H
+#ifndef VKSENGINE_INPUTHANDLER_H
+#define VKSENGINE_INPUTHANDLER_H
 
 #include <functional>
 #include <unordered_map>
@@ -27,4 +27,4 @@ namespace vks_engine
     };
 }
 
-#endif //VKSENGINEINPUTHANDLER_H
+#endif //VKSENGINE_INPUTHANDLER_H

@@ -1,5 +1,5 @@
-#ifndef VKSENGINECOMPONENTENTRY_H
-#define VKSENGINECOMPONENTENTRY_H
+#ifndef VKSENGINE_COMPONENTENTRY_H
+#define VKSENGINE_COMPONENTENTRY_H
 #include <string>
 
 #include "ComponentType.h"
@@ -20,4 +20,4 @@ namespace vks_engine
     };
 }
 
-#endif //VKSENGINECOMPONENTENTRY_H
+#endif //VKSENGINE_COMPONENTENTRY_H

@@ -1,5 +1,5 @@
-#ifndef VKSENGINEMATERIAL_H
-#define VKSENGINEMATERIAL_H
+#ifndef VKSENGINE_MATERIAL_H
+#define VKSENGINE_MATERIAL_H
 
 #include "texture/Texture.h"
 
@@ -73,4 +73,4 @@ namespace vks_engine
     };
 }
 
-#endif //VKSENGINEMATERIAL_H
+#endif //VKSENGINE_MATERIAL_H

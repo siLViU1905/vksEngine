@@ -2,8 +2,8 @@
 // Created by Silviu on 20.09.2025.
 //
 
-#ifndef VKSENGINEUBOCOUNTERS_H
-#define VKSENGINEUBOCOUNTERS_H
+#ifndef VKSENGINE_UBOCOUNTERS_H
+#define VKSENGINE_UBOCOUNTERS_H
 
 namespace vks_engine
 {
@@ -19,4 +19,4 @@ namespace vks_engine
     };
 }
 
-#endif //VKSENGINEUBOCOUNTERS_H
+#endif //VKSENGINE_UBOCOUNTERS_H

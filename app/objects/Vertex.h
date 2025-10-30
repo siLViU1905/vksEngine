@@ -1,5 +1,5 @@
-#ifndef VKSENGINEVERTEX_H
-#define VKSENGINEVERTEX_H
+#ifndef VKSENGINE_VERTEX_H
+#define VKSENGINE_VERTEX_H
 #include <glm/glm.hpp>
 #include <vulkan/vulkan_raii.hpp>
 
@@ -47,4 +47,4 @@ namespace std
         }
     };
 }
-#endif //VKSENGINEVERTEX_H
+#endif //VKSENGINE_VERTEX_H

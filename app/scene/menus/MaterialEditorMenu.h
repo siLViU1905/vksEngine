@@ -1,5 +1,5 @@
-#ifndef VKSENGINEMATERIALEDITORMENU_H
-#define VKSENGINEMATERIALEDITORMENU_H
+#ifndef VKSENGINE_MATERIALEDITORMENU_H
+#define VKSENGINE_MATERIALEDITORMENU_H
 
 #include "../../objects/menus/Menu.h"
 #include "../../objects/mesh/Mesh.h"
@@ -83,4 +83,4 @@ namespace vks_engine
     };
 }
 
-#endif //VKSENGINEMATERIALEDITORMENU_H
+#endif //VKSENGINE_MATERIALEDITORMENU_H

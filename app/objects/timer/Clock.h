@@ -1,5 +1,5 @@
-#ifndef VKSENGINECLOCK_H
-#define VKSENGINECLOCK_H
+#ifndef VKSENGINE_CLOCK_H
+#define VKSENGINE_CLOCK_H
 #include <chrono>
 #include "TimeType.h"
 
@@ -62,4 +62,4 @@ namespace vks_engine
 }
 
 
-#endif //VKSENGINECLOCK_H
+#endif //VKSENGINE_CLOCK_H

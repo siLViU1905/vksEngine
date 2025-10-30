@@ -1,5 +1,5 @@
-#ifndef VKSENGINEDIRECTIONALLIGHT_H
-#define VKSENGINEDIRECTIONALLIGHT_H
+#ifndef VKSENGINE_DIRECTIONALLIGHT_H
+#define VKSENGINE_DIRECTIONALLIGHT_H
 #include "Light.h"
 
 namespace vks_engine
@@ -47,4 +47,4 @@ namespace vks_engine
     };
 }
 
-#endif //VKSENGINEDIRECTIONALLIGHT_H
+#endif //VKSENGINE_DIRECTIONALLIGHT_H

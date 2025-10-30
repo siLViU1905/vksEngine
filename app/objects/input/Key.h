@@ -1,5 +1,5 @@
-#ifndef VKSENGINEKEY_H
-#define VKSENGINEKEY_H
+#ifndef VKSENGINE_KEY_H
+#define VKSENGINE_KEY_H
 #include <unordered_map>
 #include <GLFW/glfw3.h>
 
@@ -182,4 +182,4 @@ namespace std
     };
 }
 
-#endif //VKSENGINEKEY_H
+#endif //VKSENGINE_KEY_H

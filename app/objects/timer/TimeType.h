@@ -1,5 +1,5 @@
-#ifndef VKSENGINETIMETYPE_H
-#define VKSENGINETIMETYPE_H
+#ifndef VKSENGINE_TIMETYPE_H
+#define VKSENGINE_TIMETYPE_H
 
 namespace vks_engine
 {
@@ -11,4 +11,4 @@ namespace vks_engine
     };
 }
 
-#endif //VKSENGINETIMETYPE_H
+#endif //VKSENGINE_TIMETYPE_H

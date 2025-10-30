@@ -1,5 +1,5 @@
-#ifndef VKSENGINEUNIFORMBUFFER_H
-#define VKSENGINEUNIFORMBUFFER_H
+#ifndef VKSENGINE_UNIFORMBUFFER_H
+#define VKSENGINE_UNIFORMBUFFER_H
 #include <vulkan/vulkan_raii.hpp>
 
 namespace vks_engine
@@ -32,4 +32,4 @@ namespace vks_engine
     };
 }
 
-#endif //VKSENGINEUNIFORMBUFFER_H
+#endif //VKSENGINE_UNIFORMBUFFER_H

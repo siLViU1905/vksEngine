@@ -1,5 +1,5 @@
-#ifndef VKSENGINESCENEFUNCTIONSMENU_H
-#define VKSENGINESCENEFUNCTIONSMENU_H
+#ifndef VKSENGINE_SCENEFUNCTIONSMENU_H
+#define VKSENGINE_SCENEFUNCTIONSMENU_H
 #include <functional>
 
 #include "../../objects/menus/Menu.h"
@@ -27,4 +27,4 @@ namespace vks_engine
     };
 }
 
-#endif //VKSENGINESCENEFUNCTIONSMENU_H
+#endif //VKSENGINE_SCENEFUNCTIONSMENU_H

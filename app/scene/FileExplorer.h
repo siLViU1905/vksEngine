@@ -1,5 +1,5 @@
-#ifndef VKSENGINEFILEEXPLORER_H
-#define VKSENGINEFILEEXPLORER_H
+#ifndef VKSENGINE_FILEEXPLORER_H
+#define VKSENGINE_FILEEXPLORER_H
 #include <functional>
 #include <string>
 
@@ -19,4 +19,4 @@ namespace vks_engine
     };
 }
 
-#endif //VKSENGINEFILEEXPLORER_H
+#endif //VKSENGINE_FILEEXPLORER_H

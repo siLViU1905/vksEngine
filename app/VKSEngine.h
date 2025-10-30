@@ -1,5 +1,5 @@
-#ifndef VKSENGINE_H
-#define VKSENGINE_H
+#ifndef VKSENGINE__H
+#define VKSENGINE__H
 #include <cstdint>
 
 namespace vks_engine
@@ -27,4 +27,4 @@ namespace vks_engine
         static constexpr uint32_t USED_UNIFORM_BUFFERS = 4;
 }
 
-#endif //VKSENGINE_H
+#endif //VKSENGINE__H

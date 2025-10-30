@@ -1,5 +1,5 @@
-#ifndef VKSENGINEMESH_H
-#define VKSENGINEMESH_H
+#ifndef VKSENGINE_MESH_H
+#define VKSENGINE_MESH_H
 
 #include "../../VKSEngine.h"
 #include "../Vertex.h"
@@ -162,4 +162,4 @@ namespace vks_engine
         static Mesh generateCube(const glm::vec3 &position, float size);
     };
 }
-#endif //VKSENGINEMESH_H
+#endif //VKSENGINE_MESH_H

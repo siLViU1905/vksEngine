@@ -1,5 +1,5 @@
-#ifndef VKSENGINEIMNODESHANDLER_H
-#define VKSENGINEIMNODESHANDLER_H
+#ifndef VKSENGINE_IMNODESHANDLER_H
+#define VKSENGINE_IMNODESHANDLER_H
 #include "imnodes.h"
 
 namespace vks_engine
@@ -18,4 +18,4 @@ namespace vks_engine
     };
 }
 
-#endif //VKSENGINEIMNODESHANDLER_H
+#endif //VKSENGINE_IMNODESHANDLER_H

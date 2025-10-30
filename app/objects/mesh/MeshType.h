@@ -1,5 +1,5 @@
-#ifndef VKSENGINEMESHTYPE_H
-#define VKSENGINEMESHTYPE_H
+#ifndef VKSENGINE_MESHTYPE_H
+#define VKSENGINE_MESHTYPE_H
 
 namespace vks_engine
 {
@@ -12,4 +12,4 @@ namespace vks_engine
     };
 }
 
-#endif //VKSENGINEMESHTYPE_H
+#endif //VKSENGINE_MESHTYPE_H

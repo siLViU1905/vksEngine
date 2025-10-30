@@ -1,5 +1,5 @@
-#ifndef VKSENGINETEXTUREORIGIN_H
-#define VKSENGINETEXTUREORIGIN_H
+#ifndef VKSENGINE_TEXTUREORIGIN_H
+#define VKSENGINE_TEXTUREORIGIN_H
 
 namespace vks_engine
 {
@@ -10,4 +10,4 @@ namespace vks_engine
     };
 }
 
-#endif //VKSENGINETEXTUREORIGIN_H
+#endif //VKSENGINE_TEXTUREORIGIN_H

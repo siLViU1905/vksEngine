@@ -1,5 +1,5 @@
-#ifndef VKSENGINECOMPONENTTYPE_H
-#define VKSENGINECOMPONENTTYPE_H
+#ifndef VKSENGINE_COMPONENTTYPE_H
+#define VKSENGINE_COMPONENTTYPE_H
 #include <string>
 
 namespace vks_engine
@@ -15,4 +15,4 @@ namespace vks_engine
     std::string componentType_to_string(ComponentType type);
 }
 
-#endif //VKSENGINECOMPONENTTYPE_H
+#endif //VKSENGINE_COMPONENTTYPE_H

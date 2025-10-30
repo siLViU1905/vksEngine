@@ -1,5 +1,5 @@
-#ifndef VKSENGINESCENECOMPONENT_H
-#define VKSENGINESCENECOMPONENT_H
+#ifndef VKSENGINE_SCENECOMPONENT_H
+#define VKSENGINE_SCENECOMPONENT_H
 #include "../objects/menus/ComponentMenu.h"
 
 namespace vks_engine
@@ -20,4 +20,4 @@ namespace vks_engine
 }
 
 
-#endif //VKSENGINESCENECOMPONENT_H
+#endif //VKSENGINE_SCENECOMPONENT_H

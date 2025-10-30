@@ -1,5 +1,5 @@
-#ifndef VKSENGINEAPPWINDOW_H
-#define VKSENGINEAPPWINDOW_H
+#ifndef VKSENGINE_APPWINDOW_H
+#define VKSENGINE_APPWINDOW_H
 #include <functional>
 #include <string>
 
@@ -69,4 +69,4 @@ namespace vks_engine
     };
 }
 
-#endif //VKSENGINEAPPWINDOW_H
+#endif //VKSENGINE_APPWINDOW_H
