@@ -2,6 +2,7 @@
 #define VKSENGINE_IDMANAGER_H
 #include <cstdint>
 #include <deque>
+#include <mutex>
 #include <optional>
 
 namespace vks_engine
@@ -11,13 +12,15 @@ namespace vks_engine
     public:
         IDManager(uint32_t freeIds);
 
-        uint32_t getAvailableID();
+        std::optional<uint32_t> getAvailableID();
 
         void returnID(uint32_t id);
 
         bool hasFreeIDs() const;
     private:
         std::deque<uint32_t> m_FreeIDs;
+
+        std::mutex m_FreeIdsMutex;
     };
 }
 
