@@ -20,7 +20,7 @@ namespace vks_engine
     private:
         std::deque<uint32_t> m_FreeIDs;
 
-        std::mutex m_FreeIdsMutex;
+        mutable std::mutex m_FreeIdsMutex;
     };
 }
 
