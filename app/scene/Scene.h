@@ -5,6 +5,7 @@
 #include <mutex>
 #include <vector>
 #include "FileExplorer.h"
+#include "IdManager.h"
 #include "SceneComponent.h"
 #include "../handlers/ImGuiHandler.h"
 #include "../Window.h"
@@ -63,6 +64,16 @@ namespace vks_engine
         vk::Format m_ColorAttachmentFormat;
 
         vk::Format m_DepthAttachmentFormat;
+
+        //=====================================ID MANAGEMENT RELATED=====================================
+
+        IDManager m_SimpleMeshIDManager;
+
+        IDManager m_ComplexMeshIDManager;
+
+        IDManager m_PointLightIDManager;
+
+        IDManager m_DirectionalLightIDManager;
 
         //=====================================MESH RELATED=====================================
 
@@ -133,17 +144,15 @@ namespace vks_engine
 
         //=====================================LIGHTS RELATED=====================================
 
-        constexpr uint32_t getActiveLightsCount() const { return m_ActivePointLights + m_ActiveDirectionalLights; }
-
         //======== PointLight UBO ========
 
-        uint32_t m_ActivePointLights;
-
-        std::array<PointLightComponent, SCENE_MAX_ALLOWED_POINT_LIGHT_COUNT> m_PointLightComponents;
+        std::array<std::optional<PointLightComponent>, SCENE_MAX_ALLOWED_POINT_LIGHT_COUNT> m_PointLightComponents;
 
         UniformBuffer m_UBOPointLightBuffer;
 
-        std::array<PointLight::Aligned, SCENE_MAX_ALLOWED_POINT_LIGHT_COUNT> m_UBOpointLight;
+        std::vector<PointLight::Aligned> m_UBOPointLight;
+
+        std::vector<uint32_t> m_PointLightUBOMapping;
 
         void initUBOPointLight();
 
@@ -151,23 +160,25 @@ namespace vks_engine
 
         void addPointLight();
 
+        void rebuildPointLightUBO();
+
         //======== DirectionalLight UBO ========
 
-        uint32_t m_ActiveDirectionalLights;
-
-        std::array<DirectionalLightComponent, SCENE_MAX_ALLOWED_DIRECTIONAL_LIGHT_COUNT>
-        m_DirectionalLightComponents;
+        std::array<std::optional<DirectionalLightComponent>, SCENE_MAX_ALLOWED_DIRECTIONAL_LIGHT_COUNT> m_DirectionalLightComponents;
 
         UniformBuffer m_UBODirectionalLightBuffer;
 
-        std::array<DirectionalLight::Aligned, SCENE_MAX_ALLOWED_DIRECTIONAL_LIGHT_COUNT>
-        m_UBOdirectionalLight;
+        std::vector<DirectionalLight::Aligned> m_UBODirectionalLight;
+
+        std::vector<uint32_t> m_DirectionalLightUBOMapping;
 
         void initUBODirectionalLight();
 
         void updateUBOdirectionalLight(const DirectionalLight &directionalLight);
 
         void addDirectionalLight();
+
+        void rebuildDirectionalLightUBO();
 
         //======== COUNTERS UBO ========
 
