@@ -150,6 +150,8 @@ add_executable(vksEngine
         app/scene/menus/MaterialEditorMenu.cpp
 
         app/handlers/ImNodesHandler.cpp
+
+        app/scene/IdManager.cpp
 )
 
 
