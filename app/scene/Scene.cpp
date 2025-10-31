@@ -19,7 +19,8 @@ namespace vks_engine
                                                             p_TextureChangeMesh(nullptr),
                                                             m_SceneInfoMenu(
                                                                 m_CurrentSimpleMeshCount, m_CurrentComplexMeshCount,
-                                                                m_PointLightIDManager.getUsedIDs(), m_DirectionalLightIDManager.getUsedIDs()),
+                                                                m_PointLightIDManager.getUsedIDs(),
+                                                                m_DirectionalLightIDManager.getUsedIDs()),
                                                             m_SimpleMeshIDManager(SCENE_MAX_ALLOWED_SIMPLE_MESH_COUNT),
                                                             m_ComplexMeshIDManager(
                                                                 SCENE_MAX_ALLOWED_COMPLEX_MESH_COUNT),
@@ -157,7 +158,6 @@ namespace vks_engine
 
     void Scene::initUBODirectionalLight()
     {
-
     }
 
     void Scene::initUBOCounters()
@@ -827,12 +827,12 @@ namespace vks_engine
 
     void Scene::renamePointLight(const PointLight &pl, std::string_view newName)
     {
-        //m_PointLightComponents[pl.getID()].m_Menu.setTitle(newName.data());
+        m_PointLightComponents[pl.getID()].value().m_Menu.setTitle(newName.data());
     }
 
     void Scene::renameDirectionalLight(const DirectionalLight &dl, std::string_view newName)
     {
-        //m_DirectionalLightComponents[dl.getID()].m_Menu.setTitle(newName.data());
+        m_DirectionalLightComponents[dl.getID()].value().m_Menu.setTitle(newName.data());
     }
 
     void Scene::handleComponentDelete(ComponentEntry &entry)
@@ -1023,7 +1023,8 @@ namespace vks_engine
 
         m_UBOPointLightBuffer.update(m_UBOPointLight.data(), m_PointLightIDManager.getUsedIDs(), frame);
 
-        m_UBODirectionalLightBuffer.update(m_UBODirectionalLight.data(), m_DirectionalLightIDManager.getUsedIDs(), frame);
+        m_UBODirectionalLightBuffer.update(m_UBODirectionalLight.data(), m_DirectionalLightIDManager.getUsedIDs(),
+                                           frame);
     }
 
     void Scene::setInputHandlers()
