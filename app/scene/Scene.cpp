@@ -15,12 +15,18 @@ namespace vks_engine
                                                             m_Window(window),
                                                             m_Camera(window.getWindow(), glm::vec3(0.f, 0.f, 2.f), 5.f,
                                                                      2.f),
-                                                            m_ActiveDirectionalLights(0), m_ActivePointLights(0),
-                                                            m_CurrentComplexMeshCount(0), m_CurrentSimpleMeshCount(0),
                                                             p_TextureChangeMesh(nullptr),
                                                             m_SceneInfoMenu(
-                                                                m_CurrentSimpleMeshCount, m_CurrentComplexMeshCount,
-                                                                m_ActivePointLights, m_ActiveDirectionalLights)
+                                                                m_SimpleMeshIDManager.getUsedIDs(),
+                                                                m_ComplexMeshIDManager.getUsedIDs(),
+                                                                m_PointLightIDManager.getUsedIDs(),
+                                                                m_DirectionalLightIDManager.getUsedIDs()),
+                                                            m_SimpleMeshIDManager(SCENE_MAX_ALLOWED_SIMPLE_MESH_COUNT),
+                                                            m_ComplexMeshIDManager(
+                                                                SCENE_MAX_ALLOWED_COMPLEX_MESH_COUNT),
+                                                            m_PointLightIDManager(SCENE_MAX_ALLOWED_POINT_LIGHT_COUNT),
+                                                            m_DirectionalLightIDManager(
+                                                                SCENE_MAX_ALLOWED_DIRECTIONAL_LIGHT_COUNT)
     {
     }
 
@@ -55,9 +61,6 @@ namespace vks_engine
                                             sizeof(DirectionalLight::Aligned) *
                                             SCENE_MAX_ALLOWED_DIRECTIONAL_LIGHT_COUNT,
                                             m_UBOCountersBuffer, sizeof(UBOcounters));
-
-        m_SimpleMeshComponents.reserve(SCENE_MAX_ALLOWED_MESH_COUNT);
-        m_ComplexMeshComponents.reserve(SCENE_MAX_ALLOWED_MESH_COUNT);
     }
 
     void Scene::run()
@@ -140,60 +143,35 @@ namespace vks_engine
         m_UBOvp.viewPos = m_Camera.getPosition();
     }
 
-    void Scene::initUBOPointLight()
-    {
-        for (int i = 0; i < SCENE_MAX_ALLOWED_POINT_LIGHT_COUNT; ++i)
-        {
-            m_PointLightComponents[i].bind();
-            m_UBOpointLight[i] = m_PointLightComponents[i].m_Light.getAligned();
-        }
-    }
-
-    void Scene::initUBODirectionalLight()
-    {
-        for (int i = 0; i < SCENE_MAX_ALLOWED_DIRECTIONAL_LIGHT_COUNT; ++i)
-        {
-            m_DirectionalLightComponents[i].bind();
-            m_UBOdirectionalLight[i] = m_DirectionalLightComponents[i].m_Light.getAligned();
-        }
-    }
-
     void Scene::initUBOCounters()
     {
-        m_Counters.directionalLightCount = static_cast<int>(m_ActiveDirectionalLights);
+        m_Counters.directionalLightCount = static_cast<int>(m_DirectionalLightIDManager.getUsedIDs());
 
-        m_Counters.pointLightCount = static_cast<int>(m_ActivePointLights);
+        m_Counters.pointLightCount = static_cast<int>(m_PointLightIDManager.getUsedIDs());
     }
 
     void Scene::initUBO()
     {
         initUBOmvp();
 
-        initUBODirectionalLight();
-
-        initUBOPointLight();
-
         initUBOCounters();
     }
 
     void Scene::loadModelWorker(std::string_view path)
     {
-        MeshComponent component;
+        auto id = m_ComplexMeshIDManager.getAvailableID();
 
-        uint32_t newID;
-        uint32_t titleID; {
-            std::lock_guard lock(m_ComplexMeshCountMutex);
-            if (getTotalMeshCount() == SCENE_MAX_ALLOWED_MESH_COUNT)
-                return;
-
-            titleID = getTotalMeshCount();
-            newID = m_CurrentComplexMeshCount;
-            ++m_CurrentComplexMeshCount;
+        if (!id)
+        {
+            m_SceneEventsMenu.log("No more complex meshes id's available", ImVec4(1.f, 0.f, 0.f, 1.f));
+            return;
         }
+
+        MeshComponent component;
 
         auto &mesh = component.m_Mesh;
 
-        mesh.setID(newID);
+        mesh.setID(id.value());
 
         auto [result, loaded] = mesh.load(path.data());
 
@@ -211,7 +189,7 @@ namespace vks_engine
 
         component.bind();
 
-        component.m_Menu.setTitle("Mesh" + std::to_string(titleID)); {
+        component.m_Menu.setTitle("ComplexMesh" + std::to_string(id.value())); {
             std::lock_guard lock(m_LoadedMeshMutex);
             m_LoadedMeshQueue.push_back(std::move(component));
         }
@@ -219,16 +197,19 @@ namespace vks_engine
 
     void Scene::addSphereMesh()
     {
-        if (getTotalMeshCount() == SCENE_MAX_ALLOWED_MESH_COUNT)
+        auto id = m_SimpleMeshIDManager.getAvailableID();
+
+        if (!id)
+        {
+            m_SceneEventsMenu.log("No more simple meshes id's available", ImVec4(1.f, 0.f, 0.f, 1.f));
             return;
+        }
 
-        Mesh sphere = Mesh::generateSphere({}, 1.f, 64, 64);
+        auto &component = m_SimpleMeshComponents[id.value()];
 
-        auto &component = m_SimpleMeshComponents.emplace_back();
+        component.m_Mesh = Mesh::generateSphere({}, 0.5f);
 
-        component.m_Mesh = std::move(sphere);
-
-        component.m_Mesh.setID(m_CurrentSimpleMeshCount);
+        component.m_Mesh.setID(id.value());
 
         auto &mesh = component.m_Mesh;
 
@@ -238,25 +219,26 @@ namespace vks_engine
 
         component.bind();
 
-        component.m_Menu.setTitle("Mesh" + std::to_string(getTotalMeshCount()));
-
-        ++m_CurrentSimpleMeshCount;
+        component.m_Menu.setTitle("SimpleMesh" + std::to_string(id.value()));
 
         m_SceneComponentsMenu.addComponent(ComponentType::MESH, component);
     }
 
     void Scene::addCubeMesh()
     {
-        if (getTotalMeshCount() == SCENE_MAX_ALLOWED_MESH_COUNT)
+        auto id = m_SimpleMeshIDManager.getAvailableID();
+
+        if (!id)
+        {
+            m_SceneEventsMenu.log("No more simple meshes id's available", ImVec4(1.f, 0.f, 0.f, 1.f));
             return;
+        }
 
-        Mesh cube = Mesh::generateCube({}, 1.f);
+        auto &component = m_SimpleMeshComponents[id.value()];
 
-        auto &component = m_SimpleMeshComponents.emplace_back();
+        component.m_Mesh = Mesh::generateCube({}, 1.f);
 
-        component.m_Mesh = std::move(cube);
-
-        component.m_Mesh.setID(m_CurrentSimpleMeshCount);
+        component.m_Mesh.setID(id.value());
 
         auto &mesh = component.m_Mesh;
 
@@ -266,9 +248,7 @@ namespace vks_engine
 
         component.bind();
 
-        component.m_Menu.setTitle("Mesh" + std::to_string(getTotalMeshCount()));
-
-        ++m_CurrentSimpleMeshCount;
+        component.m_Menu.setTitle("SimpleMesh" + std::to_string(id.value()));
 
         m_SceneComponentsMenu.addComponent(ComponentType::MESH, component);
     }
@@ -301,9 +281,7 @@ namespace vks_engine
 
     void Scene::handleLoadedModel(MeshComponent &component)
     {
-        m_ComplexMeshComponents.push_back(std::move(component));
-
-        auto &addedComponent = m_ComplexMeshComponents.back();
+        auto &addedComponent = m_ComplexMeshComponents[component.m_Mesh.getID()] = std::move(component);
 
         addedComponent.bind();
 
@@ -326,6 +304,8 @@ namespace vks_engine
                                       sizeof(DirectionalLight::Aligned) * SCENE_MAX_ALLOWED_DIRECTIONAL_LIGHT_COUNT,
                                       m_UBOCountersBuffer, sizeof(UBOcounters)
         );
+
+        m_SceneComponentsMenu.addComponent(ComponentType::MESH, addedComponent);
     }
 
     void Scene::processPendingActions()
@@ -352,8 +332,6 @@ namespace vks_engine
 
             handleLoadedModel(componentToProcess);
 
-            m_SceneComponentsMenu.addComponent(ComponentType::MESH, m_ComplexMeshComponents.back());
-
             m_LoadedMeshQueue.pop_front();
         }
     }
@@ -367,46 +345,116 @@ namespace vks_engine
 
     void Scene::addPointLight()
     {
-        if (m_ActivePointLights == SCENE_MAX_ALLOWED_POINT_LIGHT_COUNT)
+        auto id = m_PointLightIDManager.getAvailableID();
+
+        if (!id.has_value())
+        {
+            m_SceneEventsMenu.log("No available Point Light IDs!\n", ImVec4(1.f, 0.f, 0.f, 1.f));
             return;
+        }
 
-        auto &component = m_PointLightComponents[m_ActivePointLights];
+        const auto &newID = id.value();
 
-        component.m_Light.setID(m_ActivePointLights);
+        m_PointLightComponents[newID].emplace();
 
-        component.m_Menu.setTitle("PointLight" + std::to_string(component.m_Light.getID()));
+        auto &component = m_PointLightComponents[newID].value();
+
+        component.m_Light.setID(newID);
+
+        component.m_Menu.setTitle("PointLight" + std::to_string(newID));
 
         component.bind();
 
-        m_UBOpointLight[m_ActivePointLights] = component.m_Light.getAligned();
+        uint32_t uboIndex = m_UBOPointLight.size();
 
-        ++m_ActivePointLights;
+        m_UBOPointLight.push_back(component.m_Light.getAligned());
+
+        if (m_PointLightUBOMapping.size() <= newID)
+            m_PointLightUBOMapping.resize(newID + 1, UINT32_MAX);
+
+        m_PointLightUBOMapping[newID] = uboIndex;
+
+        m_UBOPointLight[m_PointLightIDManager.getUsedIDs() - 1] = component.m_Light.getAligned();
 
         updateUBOcounters();
 
         m_SceneComponentsMenu.addComponent(ComponentType::POINT_LIGHT, component);
     }
 
+    void Scene::rebuildPointLightUBO()
+    {
+        m_UBOPointLight.clear();
+
+        m_PointLightUBOMapping.assign(SCENE_MAX_ALLOWED_POINT_LIGHT_COUNT, UINT32_MAX);
+
+        uint32_t uboIndex = 0;
+
+        for (uint32_t id = 0; id < SCENE_MAX_ALLOWED_POINT_LIGHT_COUNT; ++id)
+            if (m_PointLightComponents[id].has_value())
+            {
+                m_UBOPointLight.push_back(m_PointLightComponents[id]->m_Light.getAligned());
+
+                m_PointLightUBOMapping[id] = uboIndex;
+
+                ++uboIndex;
+            }
+    }
+
     void Scene::addDirectionalLight()
     {
-        if (m_ActiveDirectionalLights == SCENE_MAX_ALLOWED_DIRECTIONAL_LIGHT_COUNT)
+        auto id = m_DirectionalLightIDManager.getAvailableID();
+
+        if (!id.has_value())
+        {
+            m_SceneEventsMenu.log("No available Directional Light IDs!\n", ImVec4(1.f, 0.f, 0.f, 1.f));
             return;
+        }
 
-        auto &component = m_DirectionalLightComponents[m_ActiveDirectionalLights];
+        const auto &newID = id.value();
 
-        component.m_Light.setID(m_ActiveDirectionalLights);
+        m_DirectionalLightComponents[newID].emplace();
 
-        component.m_Menu.setTitle("DirectionalLight" + std::to_string(component.m_Light.getID()));
+        auto &component = m_DirectionalLightComponents[newID].value();
+
+        component.m_Light.setID(newID);
+
+        component.m_Menu.setTitle("DirectionalLight" + std::to_string(newID));
 
         component.bind();
 
-        m_UBOdirectionalLight[m_ActiveDirectionalLights] = component.m_Light.getAligned();
+        uint32_t uboIndex = m_UBODirectionalLight.size();
 
-        ++m_ActiveDirectionalLights;
+        m_UBODirectionalLight.push_back(component.m_Light.getAligned());
+
+        if (m_DirectionalLightUBOMapping.size() <= newID)
+            m_DirectionalLightUBOMapping.resize(newID + 1, UINT32_MAX);
+
+        m_DirectionalLightUBOMapping[newID] = uboIndex;
+
+        m_UBODirectionalLight[m_DirectionalLightIDManager.getUsedIDs() - 1] = component.m_Light.getAligned();
 
         updateUBOcounters();
 
         m_SceneComponentsMenu.addComponent(ComponentType::DIRECTIONAL_LIGHT, component);
+    }
+
+    void Scene::rebuildDirectionalLightUBO()
+    {
+        m_UBODirectionalLight.clear();
+
+        m_DirectionalLightUBOMapping.assign(SCENE_MAX_ALLOWED_DIRECTIONAL_LIGHT_COUNT, UINT32_MAX);
+
+        uint32_t uboIndex = 0;
+
+        for (uint32_t id = 0; id < SCENE_MAX_ALLOWED_DIRECTIONAL_LIGHT_COUNT; ++id)
+            if (m_DirectionalLightComponents[id].has_value())
+            {
+                m_UBODirectionalLight.push_back(m_DirectionalLightComponents[id]->m_Light.getAligned());
+
+                m_DirectionalLightUBOMapping[id] = uboIndex;
+
+                ++uboIndex;
+            }
     }
 
     void Scene::recordMeshCommands(uint32_t currentFrame)
@@ -461,7 +509,7 @@ namespace vks_engine
                                          nullptr
         );
 
-        for (const auto &meshComponent: m_SimpleMeshComponents)
+        for (const auto &meshComponent: m_SimpleMeshComponents | std::views::values)
         {
             const auto &mesh = meshComponent.m_Mesh;
 
@@ -524,7 +572,7 @@ namespace vks_engine
 
         commandBuffer.bindPipeline(vk::PipelineBindPoint::eGraphics, m_Vk.m_ComplexMeshGraphicsPipeline);
 
-        for (const auto &meshComponent: m_ComplexMeshComponents)
+        for (const auto &meshComponent: m_ComplexMeshComponents | std::views::values)
         {
             const auto &mesh = meshComponent.m_Mesh;
 
@@ -581,19 +629,19 @@ namespace vks_engine
 
     void Scene::updateUBOpointLight(const PointLight &pointLight)
     {
-        m_UBOpointLight[pointLight.getID()] = pointLight.getAligned();
+        m_UBOPointLight[pointLight.getID()] = pointLight.getAligned();
     }
 
     void Scene::updateUBOdirectionalLight(const DirectionalLight &directionalLight)
     {
-        m_UBOdirectionalLight[directionalLight.getID()] = directionalLight.getAligned();
+        m_UBODirectionalLight[directionalLight.getID()] = directionalLight.getAligned();
     }
 
     void Scene::updateUBOcounters()
     {
-        m_Counters.directionalLightCount = static_cast<int>(m_ActiveDirectionalLights);
+        m_Counters.directionalLightCount = static_cast<int>(m_DirectionalLightIDManager.getUsedIDs());
 
-        m_Counters.pointLightCount = static_cast<int>(m_ActivePointLights);
+        m_Counters.pointLightCount = static_cast<int>(m_PointLightIDManager.getUsedIDs());
     }
 
     void Scene::initMenus()
@@ -748,12 +796,12 @@ namespace vks_engine
 
     void Scene::renamePointLight(const PointLight &pl, std::string_view newName)
     {
-        m_PointLightComponents[pl.getID()].m_Menu.setTitle(newName.data());
+        m_PointLightComponents[pl.getID()].value().m_Menu.setTitle(newName.data());
     }
 
     void Scene::renameDirectionalLight(const DirectionalLight &dl, std::string_view newName)
     {
-        m_DirectionalLightComponents[dl.getID()].m_Menu.setTitle(newName.data());
+        m_DirectionalLightComponents[dl.getID()].value().m_Menu.setTitle(newName.data());
     }
 
     void Scene::handleComponentDelete(ComponentEntry &entry)
@@ -792,30 +840,24 @@ namespace vks_engine
 
         if (mesh.getType() == MeshType::MODEL)
         {
-            mesh.getMaterial().clear();
+            auto id = mesh.getID();
 
-            auto erase_it = m_ComplexMeshComponents.begin() + mesh.getID();
+            m_ComplexMeshIDManager.returnID(id);
 
-            for (auto it = erase_it + 1; it != m_ComplexMeshComponents.end(); ++it)
-                it->m_Mesh.setID(it->m_Mesh.getID() - 1);
+            m_ComplexMeshComponents.erase(id);
 
-            for (auto &commandBuffer: m_ComplexMeshCommandBuffers)
-                commandBuffer.reset();
-
-            m_ComplexMeshComponents.erase(erase_it);
-            --m_CurrentComplexMeshCount;
+            for (const auto &cb: m_ComplexMeshCommandBuffers)
+                cb.reset();
         } else
         {
-            auto erase_it = m_SimpleMeshComponents.begin() + mesh.getID();
+            auto id = mesh.getID();
 
-            for (auto it = erase_it + 1; it != m_SimpleMeshComponents.end(); ++it)
-                it->m_Mesh.setID(it->m_Mesh.getID() - 1);
+            m_SimpleMeshIDManager.returnID(id);
 
-            for (auto &commandBuffer: m_SimpleMeshCommandBuffers)
-                commandBuffer.reset();
+            m_SimpleMeshComponents.erase(id);
 
-            m_SimpleMeshComponents.erase(erase_it);
-            --m_CurrentSimpleMeshCount;
+            for (const auto &cb: m_SimpleMeshCommandBuffers)
+                cb.reset();
         }
 
         m_SceneEventsMenu.log("Mesh successfully deleted\n", ImVec4(1.f, 1.f, 0.f, 1.f));
@@ -823,18 +865,16 @@ namespace vks_engine
 
     void Scene::deletePointLight(const PointLight &pl)
     {
-        uint32_t deletedID = pl.getID();
+        uint32_t lightID = pl.getID();
 
-        std::move(m_UBOpointLight.begin() + deletedID + 1, m_UBOpointLight.end(),
-                  m_UBOpointLight.begin() + deletedID);
+        if (lightID >= SCENE_MAX_ALLOWED_POINT_LIGHT_COUNT || !m_PointLightComponents[lightID].has_value())
+            return;
 
-        std::move(m_PointLightComponents.begin() + deletedID + 1, m_PointLightComponents.end(),
-                  m_PointLightComponents.begin() + deletedID);
+        m_PointLightComponents[lightID].reset();
 
-        for (uint32_t i = deletedID + 1; i < m_ActivePointLights; ++i)
-            m_PointLightComponents[i].m_Light.setID(i);
+        m_PointLightIDManager.returnID(lightID);
 
-        --m_ActivePointLights;
+        rebuildPointLightUBO();
 
         updateUBOcounters();
 
@@ -843,13 +883,11 @@ namespace vks_engine
 
     void Scene::deleteDirectionalLight(const DirectionalLight &dl)
     {
-        std::move(m_UBOdirectionalLight.begin() + dl.getID() + 1, m_UBOdirectionalLight.end(),
-                  m_UBOdirectionalLight.begin() + dl.getID());
+        std::move(m_UBODirectionalLight.begin() + dl.getID() + 1, m_UBODirectionalLight.end(),
+                  m_UBODirectionalLight.begin() + dl.getID());
 
         std::move(m_DirectionalLightComponents.begin() + dl.getID() + 1, m_DirectionalLightComponents.end(),
                   m_DirectionalLightComponents.begin() + dl.getID());
-
-        --m_ActiveDirectionalLights;
 
         updateUBOcounters();
 
@@ -950,9 +988,10 @@ namespace vks_engine
 
         m_UBOCountersBuffer.update(m_Counters, frame);
 
-        m_UBOPointLightBuffer.update(m_UBOpointLight.data(), m_ActivePointLights, frame);
+        m_UBOPointLightBuffer.update(m_UBOPointLight.data(), m_PointLightIDManager.getUsedIDs(), frame);
 
-        m_UBODirectionalLightBuffer.update(m_UBOdirectionalLight.data(), m_ActiveDirectionalLights, frame);
+        m_UBODirectionalLightBuffer.update(m_UBODirectionalLight.data(), m_DirectionalLightIDManager.getUsedIDs(),
+                                           frame);
     }
 
     void Scene::setInputHandlers()

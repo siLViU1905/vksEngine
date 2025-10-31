@@ -4,7 +4,9 @@
 
 namespace vks_engine
 {
-        static constexpr uint32_t SCENE_MAX_ALLOWED_MESH_COUNT = 10;
+        static constexpr uint32_t SCENE_MAX_ALLOWED_SIMPLE_MESH_COUNT = 10;
+
+        static constexpr uint32_t SCENE_MAX_ALLOWED_COMPLEX_MESH_COUNT = 10;
 
         static constexpr uint32_t SCENE_MAX_ALLOWED_POINT_LIGHT_COUNT = 10;
 

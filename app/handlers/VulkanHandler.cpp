@@ -1552,7 +1552,7 @@ namespace vks_engine
 
     void VulkanHandler::createComplexMeshDescriptorPool()
     {
-        constexpr uint32_t totalSets = MAX_FRAMES_IN_FLIGHT * SCENE_MAX_ALLOWED_MESH_COUNT;
+        constexpr uint32_t totalSets = MAX_FRAMES_IN_FLIGHT * SCENE_MAX_ALLOWED_COMPLEX_MESH_COUNT;
 
         std::array<vk::DescriptorPoolSize, 2> poolSizes = {
             vk::DescriptorPoolSize(

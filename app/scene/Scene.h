@@ -5,6 +5,7 @@
 #include <mutex>
 #include <vector>
 #include "FileExplorer.h"
+#include "IdManager.h"
 #include "SceneComponent.h"
 #include "../handlers/ImGuiHandler.h"
 #include "../Window.h"
@@ -64,24 +65,25 @@ namespace vks_engine
 
         vk::Format m_DepthAttachmentFormat;
 
+        //=====================================ID MANAGEMENT RELATED=====================================
+
+        IDManager m_SimpleMeshIDManager;
+
+        IDManager m_ComplexMeshIDManager;
+
+        IDManager m_PointLightIDManager;
+
+        IDManager m_DirectionalLightIDManager;
+
         //=====================================MESH RELATED=====================================
-
-        uint32_t m_CurrentSimpleMeshCount;
-
-        uint32_t m_CurrentComplexMeshCount;
 
         std::vector<vk::raii::CommandBuffer> m_SimpleMeshCommandBuffers;
 
         std::vector<vk::raii::CommandBuffer> m_ComplexMeshCommandBuffers;
 
-        std::vector<MeshComponent> m_SimpleMeshComponents;
+        std::unordered_map<uint32_t, MeshComponent> m_SimpleMeshComponents;
 
-        std::vector<MeshComponent> m_ComplexMeshComponents;
-
-        constexpr uint32_t getTotalMeshCount() const
-        {
-            return m_CurrentSimpleMeshCount + m_CurrentComplexMeshCount;
-        }
+        std::unordered_map<uint32_t, MeshComponent> m_ComplexMeshComponents;
 
         std::mutex m_ComplexMeshCountMutex;
 
@@ -133,41 +135,38 @@ namespace vks_engine
 
         //=====================================LIGHTS RELATED=====================================
 
-        constexpr uint32_t getActiveLightsCount() const { return m_ActivePointLights + m_ActiveDirectionalLights; }
-
         //======== PointLight UBO ========
 
-        uint32_t m_ActivePointLights;
-
-        std::array<PointLightComponent, SCENE_MAX_ALLOWED_POINT_LIGHT_COUNT> m_PointLightComponents;
+        std::array<std::optional<PointLightComponent>, SCENE_MAX_ALLOWED_POINT_LIGHT_COUNT> m_PointLightComponents;
 
         UniformBuffer m_UBOPointLightBuffer;
 
-        std::array<PointLight::Aligned, SCENE_MAX_ALLOWED_POINT_LIGHT_COUNT> m_UBOpointLight;
+        std::vector<PointLight::Aligned> m_UBOPointLight;
 
-        void initUBOPointLight();
+        std::vector<uint32_t> m_PointLightUBOMapping;
 
         void updateUBOpointLight(const PointLight &pointLight);
 
         void addPointLight();
 
+        void rebuildPointLightUBO();
+
         //======== DirectionalLight UBO ========
 
-        uint32_t m_ActiveDirectionalLights;
-
-        std::array<DirectionalLightComponent, SCENE_MAX_ALLOWED_DIRECTIONAL_LIGHT_COUNT>
+        std::array<std::optional<DirectionalLightComponent>, SCENE_MAX_ALLOWED_DIRECTIONAL_LIGHT_COUNT>
         m_DirectionalLightComponents;
 
         UniformBuffer m_UBODirectionalLightBuffer;
 
-        std::array<DirectionalLight::Aligned, SCENE_MAX_ALLOWED_DIRECTIONAL_LIGHT_COUNT>
-        m_UBOdirectionalLight;
+        std::vector<DirectionalLight::Aligned> m_UBODirectionalLight;
 
-        void initUBODirectionalLight();
+        std::vector<uint32_t> m_DirectionalLightUBOMapping;
 
         void updateUBOdirectionalLight(const DirectionalLight &directionalLight);
 
         void addDirectionalLight();
+
+        void rebuildDirectionalLightUBO();
 
         //======== COUNTERS UBO ========
 
@@ -233,7 +232,7 @@ namespace vks_engine
 
         std::mutex m_PendingTexturePathsMutex;
 
-        Mesh* p_TextureChangeMesh;
+        Mesh *p_TextureChangeMesh;
 
         Texture m_NewMaterialTexture;
 
@@ -243,7 +242,7 @@ namespace vks_engine
 
         bool loadNewTexture(Mesh &mesh, std::string_view path);
 
-        void changeTexture(Mesh& mesh);
+        void changeTexture(Mesh &mesh);
 
         //======== FUNCTIONS ========
 

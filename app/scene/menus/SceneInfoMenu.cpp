@@ -60,7 +60,8 @@ namespace vks_engine
         ImGui::Separator();
         ImGui::Spacing();
 
-        ImGui::Text("Max Meshes: %u", SCENE_MAX_ALLOWED_MESH_COUNT);
+        ImGui::Text("Max Simple Meshes: %u", SCENE_MAX_ALLOWED_SIMPLE_MESH_COUNT);
+        ImGui::Text("Max Complex Meshes: %u", SCENE_MAX_ALLOWED_COMPLEX_MESH_COUNT);
         ImGui::Text("Max Point Lights: %u", SCENE_MAX_ALLOWED_POINT_LIGHT_COUNT);
         ImGui::Text("Max Dir Lights: %u", SCENE_MAX_ALLOWED_DIRECTIONAL_LIGHT_COUNT);
 
