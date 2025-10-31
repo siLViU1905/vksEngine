@@ -95,6 +95,10 @@ namespace vks_engine
 
         constexpr Material& getMaterial() {return m_Material;}
 
+        void clear();
+
+        ~Mesh();
+
         friend class VulkanHandler;
 
         friend class Scene;

@@ -94,8 +94,20 @@ namespace vks_engine
                         if (ImGui::MenuItem("Delete"))
                         {
                             changed = true;
+
                             m_OnComponentDelete(entry);
+
                             ImGui::CloseCurrentPopup();
+
+                            ImGui::PopStyleColor();
+
+                            ImGui::EndPopup();
+
+                            ImGui::PopStyleColor(3);
+
+                            ImGui::Spacing();
+
+                            break;
                         }
                         ImGui::PopStyleColor();
 

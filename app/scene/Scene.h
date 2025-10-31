@@ -77,22 +77,13 @@ namespace vks_engine
 
         //=====================================MESH RELATED=====================================
 
-        uint32_t m_CurrentSimpleMeshCount;
-
-        uint32_t m_CurrentComplexMeshCount;
-
         std::vector<vk::raii::CommandBuffer> m_SimpleMeshCommandBuffers;
 
         std::vector<vk::raii::CommandBuffer> m_ComplexMeshCommandBuffers;
 
-        std::vector<MeshComponent> m_SimpleMeshComponents;
+        std::unordered_map<uint32_t, MeshComponent> m_SimpleMeshComponents;
 
-        std::vector<MeshComponent> m_ComplexMeshComponents;
-
-        constexpr uint32_t getTotalMeshCount() const
-        {
-            return m_CurrentSimpleMeshCount + m_CurrentComplexMeshCount;
-        }
+        std::unordered_map<uint32_t, MeshComponent> m_ComplexMeshComponents;
 
         std::mutex m_ComplexMeshCountMutex;
 
@@ -154,8 +145,6 @@ namespace vks_engine
 
         std::vector<uint32_t> m_PointLightUBOMapping;
 
-        void initUBOPointLight();
-
         void updateUBOpointLight(const PointLight &pointLight);
 
         void addPointLight();
@@ -164,15 +153,14 @@ namespace vks_engine
 
         //======== DirectionalLight UBO ========
 
-        std::array<std::optional<DirectionalLightComponent>, SCENE_MAX_ALLOWED_DIRECTIONAL_LIGHT_COUNT> m_DirectionalLightComponents;
+        std::array<std::optional<DirectionalLightComponent>, SCENE_MAX_ALLOWED_DIRECTIONAL_LIGHT_COUNT>
+        m_DirectionalLightComponents;
 
         UniformBuffer m_UBODirectionalLightBuffer;
 
         std::vector<DirectionalLight::Aligned> m_UBODirectionalLight;
 
         std::vector<uint32_t> m_DirectionalLightUBOMapping;
-
-        void initUBODirectionalLight();
 
         void updateUBOdirectionalLight(const DirectionalLight &directionalLight);
 
@@ -244,7 +232,7 @@ namespace vks_engine
 
         std::mutex m_PendingTexturePathsMutex;
 
-        Mesh* p_TextureChangeMesh;
+        Mesh *p_TextureChangeMesh;
 
         Texture m_NewMaterialTexture;
 
@@ -254,7 +242,7 @@ namespace vks_engine
 
         bool loadNewTexture(Mesh &mesh, std::string_view path);
 
-        void changeTexture(Mesh& mesh);
+        void changeTexture(Mesh &mesh);
 
         //======== FUNCTIONS ========
 

@@ -197,6 +197,25 @@ namespace vks_engine
         m_Type = type;
     }
 
+    void Mesh::clear()
+    {
+        m_VertexBuffer.clear();
+
+        m_VertexBufferMemory.clear();
+
+        m_IndexBuffer.clear();
+
+        m_IndexBufferMemory.clear();
+
+        for (auto &ds: m_DescriptorSets)
+            ds.clear();
+    }
+
+    Mesh::~Mesh()
+    {
+        clear();
+    }
+
     void Mesh::processNode(aiNode *node, const aiScene *scene)
     {
         for (uint32_t i = 0; i < node->mNumMeshes; ++i)

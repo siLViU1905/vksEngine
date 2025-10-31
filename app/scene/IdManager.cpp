@@ -36,7 +36,7 @@ namespace vks_engine
         return !m_FreeIDs.empty();
     }
 
-    uint32_t IDManager::getUsedIDs()
+    uint32_t IDManager::getUsedIDs() const
     {
         return m_InitFreeIDs - m_FreeIDs.size();
     }

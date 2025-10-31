@@ -18,7 +18,7 @@ namespace vks_engine
 
         bool hasFreeIDs() const;
 
-        uint32_t getUsedIDs();
+        uint32_t getUsedIDs() const;
     private:
         std::deque<uint32_t> m_FreeIDs;
 

@@ -15,10 +15,10 @@ namespace vks_engine
                                                             m_Window(window),
                                                             m_Camera(window.getWindow(), glm::vec3(0.f, 0.f, 2.f), 5.f,
                                                                      2.f),
-                                                            m_CurrentComplexMeshCount(0), m_CurrentSimpleMeshCount(0),
                                                             p_TextureChangeMesh(nullptr),
                                                             m_SceneInfoMenu(
-                                                                m_CurrentSimpleMeshCount, m_CurrentComplexMeshCount,
+                                                                m_SimpleMeshIDManager.getUsedIDs(),
+                                                                m_ComplexMeshIDManager.getUsedIDs(),
                                                                 m_PointLightIDManager.getUsedIDs(),
                                                                 m_DirectionalLightIDManager.getUsedIDs()),
                                                             m_SimpleMeshIDManager(SCENE_MAX_ALLOWED_SIMPLE_MESH_COUNT),
@@ -61,9 +61,6 @@ namespace vks_engine
                                             sizeof(DirectionalLight::Aligned) *
                                             SCENE_MAX_ALLOWED_DIRECTIONAL_LIGHT_COUNT,
                                             m_UBOCountersBuffer, sizeof(UBOcounters));
-
-        m_SimpleMeshComponents.reserve(SCENE_MAX_ALLOWED_SIMPLE_MESH_COUNT);
-        m_ComplexMeshComponents.reserve(SCENE_MAX_ALLOWED_COMPLEX_MESH_COUNT);
     }
 
     void Scene::run()
@@ -146,20 +143,6 @@ namespace vks_engine
         m_UBOvp.viewPos = m_Camera.getPosition();
     }
 
-    void Scene::initUBOPointLight()
-    {
-        /*m_UBOpointLight.resize(SCENE_MAX_ALLOWED_POINT_LIGHT_COUNT);
-
-        PointLight pl;
-
-        for (int i = 0; i < SCENE_MAX_ALLOWED_POINT_LIGHT_COUNT; ++i)
-            m_UBOpointLight[i] = pl.getAligned();*/
-    }
-
-    void Scene::initUBODirectionalLight()
-    {
-    }
-
     void Scene::initUBOCounters()
     {
         m_Counters.directionalLightCount = static_cast<int>(m_DirectionalLightIDManager.getUsedIDs());
@@ -170,10 +153,6 @@ namespace vks_engine
     void Scene::initUBO()
     {
         initUBOmvp();
-
-        initUBODirectionalLight();
-
-        initUBOPointLight();
 
         initUBOCounters();
     }
@@ -226,11 +205,9 @@ namespace vks_engine
             return;
         }
 
-        Mesh sphere = Mesh::generateSphere({}, 1.f, 64, 64);
+        auto &component = m_SimpleMeshComponents[id.value()];
 
-        auto &component = m_SimpleMeshComponents.emplace_back();
-
-        component.m_Mesh = std::move(sphere);
+        component.m_Mesh = Mesh::generateSphere({}, 0.5f);
 
         component.m_Mesh.setID(id.value());
 
@@ -243,8 +220,6 @@ namespace vks_engine
         component.bind();
 
         component.m_Menu.setTitle("SimpleMesh" + std::to_string(id.value()));
-
-        ++m_CurrentSimpleMeshCount;
 
         m_SceneComponentsMenu.addComponent(ComponentType::MESH, component);
     }
@@ -259,11 +234,9 @@ namespace vks_engine
             return;
         }
 
-        Mesh cube = Mesh::generateCube({}, 1.f);
+        auto &component = m_SimpleMeshComponents[id.value()];
 
-        auto &component = m_SimpleMeshComponents.emplace_back();
-
-        component.m_Mesh = std::move(cube);
+        component.m_Mesh = Mesh::generateCube({}, 1.f);
 
         component.m_Mesh.setID(id.value());
 
@@ -276,8 +249,6 @@ namespace vks_engine
         component.bind();
 
         component.m_Menu.setTitle("SimpleMesh" + std::to_string(id.value()));
-
-        ++m_CurrentSimpleMeshCount;
 
         m_SceneComponentsMenu.addComponent(ComponentType::MESH, component);
     }
@@ -310,9 +281,7 @@ namespace vks_engine
 
     void Scene::handleLoadedModel(MeshComponent &component)
     {
-        m_ComplexMeshComponents.push_back(std::move(component));
-
-        auto &addedComponent = m_ComplexMeshComponents.back();
+        auto &addedComponent = m_ComplexMeshComponents[component.m_Mesh.getID()] = std::move(component);
 
         addedComponent.bind();
 
@@ -335,6 +304,8 @@ namespace vks_engine
                                       sizeof(DirectionalLight::Aligned) * SCENE_MAX_ALLOWED_DIRECTIONAL_LIGHT_COUNT,
                                       m_UBOCountersBuffer, sizeof(UBOcounters)
         );
+
+        m_SceneComponentsMenu.addComponent(ComponentType::MESH, addedComponent);
     }
 
     void Scene::processPendingActions()
@@ -360,8 +331,6 @@ namespace vks_engine
             MeshComponent &componentToProcess = m_LoadedMeshQueue.front();
 
             handleLoadedModel(componentToProcess);
-
-            m_SceneComponentsMenu.addComponent(ComponentType::MESH, m_ComplexMeshComponents.back());
 
             m_LoadedMeshQueue.pop_front();
         }
@@ -540,7 +509,7 @@ namespace vks_engine
                                          nullptr
         );
 
-        for (const auto &meshComponent: m_SimpleMeshComponents)
+        for (const auto &meshComponent: m_SimpleMeshComponents | std::views::values)
         {
             const auto &mesh = meshComponent.m_Mesh;
 
@@ -603,7 +572,7 @@ namespace vks_engine
 
         commandBuffer.bindPipeline(vk::PipelineBindPoint::eGraphics, m_Vk.m_ComplexMeshGraphicsPipeline);
 
-        for (const auto &meshComponent: m_ComplexMeshComponents)
+        for (const auto &meshComponent: m_ComplexMeshComponents | std::views::values)
         {
             const auto &mesh = meshComponent.m_Mesh;
 
@@ -871,26 +840,24 @@ namespace vks_engine
 
         if (mesh.getType() == MeshType::MODEL)
         {
-            mesh.getMaterial().clear();
-
             auto id = mesh.getID();
-
-            auto erase_it = m_ComplexMeshComponents.begin() + id;
 
             m_ComplexMeshIDManager.returnID(id);
 
-            m_ComplexMeshComponents.erase(erase_it);
-            --m_CurrentComplexMeshCount;
+            m_ComplexMeshComponents.erase(id);
+
+            for (const auto &cb: m_ComplexMeshCommandBuffers)
+                cb.reset();
         } else
         {
             auto id = mesh.getID();
 
-            auto erase_it = m_SimpleMeshComponents.begin() + id;
-
             m_SimpleMeshIDManager.returnID(id);
 
-            m_SimpleMeshComponents.erase(erase_it);
-            --m_CurrentSimpleMeshCount;
+            m_SimpleMeshComponents.erase(id);
+
+            for (const auto &cb: m_SimpleMeshCommandBuffers)
+                cb.reset();
         }
 
         m_SceneEventsMenu.log("Mesh successfully deleted\n", ImVec4(1.f, 1.f, 0.f, 1.f));
